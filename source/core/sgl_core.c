@@ -1083,24 +1083,13 @@ uint32_t sgl_utf8_to_unicode(const char *utf8_str, uint32_t *p_unicode_buffer)
  */
 uint32_t sgl_search_unicode_ch_index(const sgl_font_t *font, uint32_t unicode)
 {
-    uint32_t left = 0;
-    uint32_t right = font->unicode_list_len - 1, mid = 0;
-
-    while (left <= right) {
-        mid = left + (right - left) / 2;
-
-        if (font->unicode_list[mid] == unicode) {
-            return mid;
-        }
-        else if (font->unicode_list[mid] < unicode) {
-            left = mid + 1;
-        }
-        else {
-            right = mid - 1;
+    for (int i = 0; i < font->unicode_list_len; i ++) {
+        if (font->unicode_list[i] == unicode) {
+            return i;
         }
     }
 
-    SGL_LOG_WARN("sgl_search_unicode_ch_index: unicode not found in font table");
+    SGL_LOG_WARN("sgl_search_unicode_ch_index: [0x%x] unicode not found in font table", unicode);
     return 0;
 }
 #endif // !CONFIG_SGL_TEXT_UTF8
