@@ -53,6 +53,7 @@
 #include "widgets/unzip_image/sgl_unzip_image.h"
 #include "widgets/led/sgl_led.h"
 #include "widgets/2dball/sgl_2dball.h"
+#include "widgets/scroll/sgl_scroll.h"
 
 
 #endif // __SGL_H__

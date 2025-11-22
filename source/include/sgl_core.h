@@ -475,6 +475,14 @@ typedef struct sgl_context {
 } sgl_context_t;
 
 
+/**
+ * @brief sgl object foreach child macro
+ * @param obj: The parent object whose children are being iterated.
+ * @param child: The current child object being processed.
+ */
+#define  sgl_obj_foreach_child(obj, child)                  for (sgl_obj_t *child = obj->child; child; child = child->sibling)
+
+
 /* dont to use this variable, it is used internally by sgl library */
 extern sgl_context_t sgl_ctx;
 
