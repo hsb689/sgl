@@ -480,7 +480,7 @@ typedef struct sgl_context {
  * @param obj: The parent object whose children are being iterated.
  * @param child: The current child object being processed.
  */
-#define  sgl_obj_foreach_child(obj, child)                  for (sgl_obj_t *child = obj->child; child != NULL; child = child->sibling)
+#define  sgl_obj_foreach_child(obj, child)                  for ((child) = (obj)->child; (child) != NULL; (child) = (child)->sibling)
 
 
 /* dont to use this variable, it is used internally by sgl library */
