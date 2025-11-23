@@ -344,3 +344,53 @@ void sgl_event_task(void)
         }
     }
 }
+
+
+/**
+ * @brief Touch event read, this function will be called by user
+ * @param x: touch x position
+ * @param y: touch y position
+ * @param flag: touch flag, it means touch event type:
+ *              true: touch down
+ *              false: touch up
+ * @return none
+ * @note: for example, you can call it in while loop for 30ms tick handler function
+ *        void exapmle_30ms_tick_handler(void)
+ *        {
+ *            int pos_x, pos_y;
+ *            bool button_status;
+ * 
+ *            bsp_touch_read_pos(&pos_x, &pos_y);
+ *            button_status = bsp_touch_read_status();
+ *            
+ *            sgl_event_read_pos_helper(pos_x, pos_y, button_status);
+ *        }
+ */
+void sgl_event_read_pos_helper(int16_t x, int16_t y, bool flag)
+{
+    static sgl_event_pos_t last_pos;
+    static bool pressed_flag = false;
+    sgl_event_pos_t pos = { .x = x, .y = y };
+
+    if (flag) {
+        if (pressed_flag == false) {
+            pressed_flag = true;
+            sgl_event_send_pos(pos, SGL_EVENT_PRESSED);
+            SGL_LOG_INFO("Touch SGL_EVENT_PRESSED x: %d, y: %d", x, y);
+        }
+    } else {
+        if (pressed_flag == true) {
+            pressed_flag = false;
+            sgl_event_send_pos(pos, SGL_EVENT_RELEASED);
+            SGL_LOG_INFO("Touch SGL_EVENT_RELEASED x: %d, y: %d", x, y);
+        }
+    }
+
+    if (pressed_flag) {
+        if (last_pos.x != x || last_pos.y != y) {
+            sgl_event_send_pos(pos, SGL_EVENT_MOTION);
+            last_pos = pos;
+            SGL_LOG_INFO("Touch SGL_EVENT_MOTION x: %d, y: %d", x, y);
+        }
+    }
+}
