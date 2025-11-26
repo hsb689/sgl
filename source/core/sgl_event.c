@@ -31,8 +31,8 @@
 
 
 /* define event queue size */
-#define SGL_EVENT_QUEUE_SIZE  CONFIG_SGL_EVENT_QUEUE_SIZE
-
+#define SGL_EVENT_QUEUE_SIZE          (CONFIG_SGL_EVENT_QUEUE_SIZE)
+#define SGL_EVENT_QUEUE_SIZE_MASK     (SGL_EVENT_QUEUE_SIZE - 1)
 
 /**
  * @brief event queue struct
@@ -45,7 +45,6 @@ typedef struct event_queue {
     sgl_event_t buffer[SGL_EVENT_QUEUE_SIZE];
     uint16_t    head;
     uint16_t    tail;
-    uint16_t    size;
 } event_queue_t;
 
 
@@ -75,7 +74,7 @@ int sgl_event_queue_init(void)
         return -1;
     }
 
-    evt_ctx.evtq.head = evt_ctx.evtq.tail = evt_ctx.evtq.size = 0;
+    evt_ctx.evtq.head = evt_ctx.evtq.tail = 0;
     return 0;
 }
 
@@ -87,7 +86,19 @@ int sgl_event_queue_init(void)
  */
 static inline bool sgl_event_queue_is_empty(void)
 {
-    return evt_ctx.evtq.size == 0;
+    return evt_ctx.evtq.head == evt_ctx.evtq.tail;
+}
+
+
+/**
+ * @brief Check whether the event queue is full
+ * @param none
+ * @return true if the event queue is full, false otherwise
+ */
+static inline bool sgl_event_queue_is_full(void)
+{
+    uint32_t next_head = (evt_ctx.evtq.head + 1) & SGL_EVENT_QUEUE_SIZE_MASK;
+    return next_head == evt_ctx.evtq.tail;
 }
 
 
@@ -98,14 +109,13 @@ static inline bool sgl_event_queue_is_empty(void)
  */
 void sgl_event_queue_push(sgl_event_t event)
 {
-    if (unlikely( evt_ctx.evtq.size == SGL_EVENT_QUEUE_SIZE )) {
+    if (unlikely(sgl_event_queue_is_full())) {
         SGL_LOG_ERROR("Event queue is full, maybe system is too slow");
-        evt_ctx.evtq.head = evt_ctx.evtq.tail = evt_ctx.evtq.size = 0;
+        return;
     }
 
-    evt_ctx.evtq.buffer[evt_ctx.evtq.tail] = event;
-    evt_ctx.evtq.tail = ((evt_ctx.evtq.tail + 1) & (SGL_EVENT_QUEUE_SIZE - 1));
-    evt_ctx.evtq.size++;
+    evt_ctx.evtq.buffer[evt_ctx.evtq.head] = event;
+    evt_ctx.evtq.head = ((evt_ctx.evtq.head + 1) & SGL_EVENT_QUEUE_SIZE_MASK);
 }
 
 
@@ -120,10 +130,8 @@ static inline int sgl_event_queue_pop(sgl_event_t* out_event)
         return -1;
     }
 
-    *out_event = evt_ctx.evtq.buffer[evt_ctx.evtq.head];
-    evt_ctx.evtq.head = ((evt_ctx.evtq.head + 1) & (SGL_EVENT_QUEUE_SIZE - 1));
-    evt_ctx.evtq.size--;
-
+    *out_event = evt_ctx.evtq.buffer[evt_ctx.evtq.tail];
+    evt_ctx.evtq.tail = ((evt_ctx.evtq.tail + 1) & SGL_EVENT_QUEUE_SIZE_MASK);
     return 0;
 }
 
