@@ -353,32 +353,39 @@ typedef struct sgl_font {
  *
  * Key features:
  * - Hierarchical organization via parent-child-sibling links.
- * - Event callback mechanism for user interaction.
- * - Style accessors for dynamic appearance customization.
- * - Bit flags for efficient state tracking (visible, dirty, clickable, etc.).
- * - Optional object ID for identification (controlled by CONFIG_SGL_USE_OBJ_ID).
+ * - Event callback mechanism for user interaction (including press, leave, etc.).
+ * - Bit-packed flags for efficient state tracking (visible, dirty, clickable, pressed, etc.).
+ * - Layout control: horizontal/vertical stacking, margin, flexible sizing, and corner radius.
+ * - Optional object name for debugging or identification (enabled via CONFIG_SGL_OBJ_USE_NAME).
  *
  * Members:
- * @area: The logical area (width, height) of the object, used for layout calculations.
- * @coords: The current screen coordinates (x, y) and dimensions of the rendered object.
- * @event_fn: Function pointer called when an event (e.g., touch, click) occurs on this object.
- * @event_data: User-provided data passed to the event callback; useful for context or state.
- * @construct_fn: Constructor function invoked during object initialization to set up resources.
- * @parent: Pointer to the parent object in the UI hierarchy; NULL if this is a root object.
- * @child: Pointer to the first child object; forms the head of the children list.
- * @sibling: Pointer to the next sibling object in the same parent's children list.
- * @set_style: Function pointer to set a specific style property (e.g., color, font).
- * @get_style: Function pointer to retrieve a specific style property value.
- * @destroyed: Flag indicating the object has been marked for destruction (1 = destroyed).
- * @dirty: Flag indicating the object needs to be redrawn (1 = dirty).
- * @hide: Flag indicating the object is hidden and should not be rendered (1 = hidden).
- * @needinit: Flag indicating the object requires initialization (1 = needs init).
- * @h_layout: Flag indicating horizontal layout should be applied to children (1 = enabled).
- * @v_layout: Flag indicating vertical layout should be applied to children (1 = enabled).
- * @clickable: Flag indicating the object can receive and process click/touch events (1 = clickable).
- * @movable: Flag indicating the object can be moved by user interaction (1 = movable).
- * @margin: Signed margin value around the object, used in layout spacing calculations.
- * @id: [Optional] Unique identifier for the object. Only included if CONFIG_SGL_USE_OBJ_ID is enabled.
+ * @area: The logical size (width, height) of the object, used for layout and measurement.
+ * @coords: The current screen position (x, y) and dimensions after layout calculation.
+ * @event_fn: Callback function invoked when an event (e.g., touch, click) targets this object.
+ * @event_data: User-defined context data passed to the event callback.
+ * @construct_fn: Initialization hook called during object creation to allocate resources or set defaults.
+ * @parent: Pointer to the parent object; NULL if this is a root-level object.
+ * @child: Pointer to the first child in the list of children.
+ * @sibling: Pointer to the next sibling under the same parent.
+ * @destroyed: (1 bit) Set to 1 when the object is marked for destruction.
+ * @dirty: (1 bit) Set to 1 when the object needs to be redrawn.
+ * @hide: (1 bit) Set to 1 to exclude the object from rendering (hidden).
+ * @needinit: (1 bit) Set to 1 if the object requires deferred initialization.
+ * @layout: (2 bits) Layout mode for children:
+ *          - 0: No auto-layout
+ *          - 1: Horizontal layout (left to right)
+ *          - 2: Vertical layout (top to bottom)
+ *          - 3: Reserved
+ * @clickable: (1 bit) Set to 1 if the object can receive click/touch events.
+ * @movable: (1 bit) Set to 1 if the object can be dragged by the user.
+ * @margin: Signed pixel value for outer spacing around the object in layout calculations.
+ * @flexible: (1 bit, in uint16_t field) Indicates the object can expand to fill available space.
+ * @evt_leave: (1 bit) Set to 1 if the object should receive "pointer leave" events.
+ * @pressed: (1 bit) Tracks whether the object is currently being pressed.
+ * @page: (1 bit) Reserved for page/view switching logic (e.g., in tabbed interfaces).
+ * @radius: (12 bits) Corner radius in pixels for rounded rectangle rendering (max 4095).
+ * @name: [Optional] Null-terminated string identifier for debugging or lookup.
+ *        Only present if CONFIG_SGL_OBJ_USE_NAME is defined.
  */
 typedef struct sgl_obj {
     sgl_area_t         area;
@@ -398,7 +405,7 @@ typedef struct sgl_obj {
     uint8_t            movable : 1;
     uint8_t            margin;
     uint16_t           flexible : 1;
-    uint16_t           invalid : 1;
+    uint16_t           evt_leave : 1;
     uint16_t           pressed : 1;
     uint16_t           page : 1;
     uint16_t           radius : 12;
@@ -952,42 +959,6 @@ static inline bool sgl_obj_is_hidden(sgl_obj_t *obj)
 {
     SGL_ASSERT(obj != NULL);
     return obj->hide == 1 ? true : false;
-}
-
-
-/**
- * @brief set object invalid
- * @param obj point to object
- * @return none
- */
-static inline void sgl_obj_set_invalid(sgl_obj_t *obj)
-{
-    SGL_ASSERT(obj != NULL);
-    obj->invalid = 1;
-}
-
-
-/**
- * @brief set object valid
- * @param obj point to object
- * @return none
- */
-static inline void sgl_obj_set_valid(sgl_obj_t *obj)
-{
-    SGL_ASSERT(obj != NULL);
-    obj->invalid = 0;
-}
-
-
-/**
- * @brief check object invalid flag
- * @param obj point to object
- * @return flag, false - valid, true - invalid
- */
-static inline bool sgl_obj_is_invalid(sgl_obj_t *obj)
-{
-    SGL_ASSERT(obj != NULL);
-    return obj->invalid == 1 ? true : false;
 }
 
 

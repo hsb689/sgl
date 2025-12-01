@@ -50,12 +50,14 @@ typedef struct event_queue {
 
 /**
  * @brief event context struct
- * @last_click: last click object
+ * @last_click: last click object which may be lost event
+ * @last_obj:   last object which is clicked
  * @last_touch: last touch position
  * @evtq: event queue
  */
 static struct event_context {
     struct sgl_obj *last_click;
+    struct sgl_obj *last_obj;
     sgl_event_pos_t last_touch;
     event_queue_t   evtq;
 } evt_ctx;
@@ -75,6 +77,7 @@ int sgl_event_queue_init(void)
     }
 
     evt_ctx.evtq.head = evt_ctx.evtq.tail = 0;
+    evt_ctx.last_obj = sgl_screen_act();
     return 0;
 }
 
@@ -296,7 +299,7 @@ static void sgl_get_move_info(sgl_event_t *evt)
 */
 void sgl_event_task(void)
 {
-    sgl_event_t evt;
+    sgl_event_t evt, evt_leave;
     struct sgl_obj *obj = NULL;
 
     /* Get event from event queue */
@@ -307,6 +310,18 @@ void sgl_event_task(void)
         if (obj == NULL) {
             if (evt.type != SGL_EVENT_MOTION) {
                 obj = click_detect_object(&evt.pos);
+
+                if (evt_ctx.last_obj->evt_leave && obj != evt_ctx.last_obj) {
+                    /* if the last object is not NULL, and current object is not last object, should send leave event to the last object */
+                    evt_leave.obj = evt_ctx.last_obj;
+                    evt_leave.type = SGL_EVENT_LEAVE;
+                    evt_leave.param = evt_ctx.last_obj->event_data;
+
+                    if (evt_leave.obj->construct_fn) {
+                        sgl_obj_set_dirty(evt_leave.obj);
+                        evt_leave.obj->construct_fn(NULL, evt_leave.obj, &evt_leave);
+                    }
+                }
             } else {
                 obj = evt_ctx.last_click;
                 sgl_get_move_info(&evt);
@@ -327,6 +342,7 @@ void sgl_event_task(void)
                 }
                 obj->pressed = true;
                 evt_ctx.last_click = obj;
+                evt_ctx.last_obj = obj;
             }
             else if (evt.type == SGL_EVENT_RELEASED) {
                 if (!obj->pressed) {
