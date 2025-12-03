@@ -3,6 +3,17 @@
 
 ![SGL_LOGO](SGL_logo.png)
 
+## Continuous Integration Status
+
+| Status (main) | Status (devel) | Description |
+| :-------------: | :------------: | :---------: |
+| [![build status](https://github.com/sgl-org/sgl/actions/workflows/ubuntu-gcc.yml/badge.svg?branch=main)](https://github.com/sgl-org/sgl/actions/workflows/ubuntu-gcc.yml?query=branch%3Amain) | [![build status](https://github.com/sgl-org/sgl/actions/workflows/ubuntu-gcc.yml/badge.svg?branch=devel)](https://github.com/sgl-org/sgl/actions/workflows/ubuntu-gcc.yml?query=branch%3Adevel) | Build default config on Ubuntu GCC |
+| [![build status](https://github.com/sgl-org/sgl/actions/workflows/ubuntu-clang.yml/badge.svg?branch=main)](https://github.com/sgl-org/sgl/actions/workflows/ubuntu-clang.yml?query=branch%3Amain) | [![build status](https://github.com/sgl-org/sgl/actions/workflows/ubuntu-clang.yml/badge.svg?branch=devel)](https://github.com/sgl-org/sgl/actions/workflows/ubuntu-clang.yml?query=branch%3Adevel) | Build default config on Ubuntu Clang |
+| [![build status](https://github.com/sgl-org/sgl/actions/workflows/ubuntu-armv7-gcc.yml/badge.svg?branch=main)](https://github.com/sgl-org/sgl/actions/workflows/ubuntu-armv7-gcc.yml?query=branch%3Amain) | [![build status](https://github.com/sgl-org/sgl/actions/workflows/ubuntu-armv7-gcc.yml/badge.svg?branch=devel)](https://github.com/sgl-org/sgl/actions/workflows/ubuntu-armv7-gcc.yml?query=branch%3Adevel) | Cross build ARMv7 default on Ubuntu GCC |
+| [![build status](https://github.com/sgl-org/sgl/actions/workflows/ubuntu-aarch64-gcc.yml/badge.svg?branch=main)](https://github.com/sgl-org/sgl/actions/workflows/ubuntu-aarch64-gcc.yml?query=branch%3Amain) | [![build status](https://github.com/sgl-org/sgl/actions/workflows/ubuntu-aarch64-gcc.yml/badge.svg?branch=devel)](https://github.com/sgl-org/sgl/actions/workflows/ubuntu-aarch64-gcc.yml?query=branch%3Adevel) | Cross build AArch64 default on Ubuntu GCC |
+| [![build status](https://github.com/sgl-org/sgl/actions/workflows/ubuntu-mips-gcc.yml/badge.svg?branch=main)](https://github.com/sgl-org/sgl/actions/workflows/ubuntu-mips-gcc.yml?query=branch%3Amain) | [![build status](https://github.com/sgl-org/sgl/actions/workflows/ubuntu-mips-gcc.yml/badge.svg?branch=devel)](https://github.com/sgl-org/sgl/actions/workflows/ubuntu-mips-gcc.yml?query=branch%3Adevel) | Cross build MIPS default on Ubuntu GCC |
+| [![build status](https://github.com/sgl-org/sgl/actions/workflows/ubuntu-mips64-gcc.yml/badge.svg?branch=main)](https://github.com/sgl-org/sgl/actions/workflows/ubuntu-mips64-gcc.yml?query=branch%3Amain) | [![build status](https://github.com/sgl-org/sgl/actions/workflows/ubuntu-mips64-gcc.yml/badge.svg?branch=devel)](https://github.com/sgl-org/sgl/actions/workflows/ubuntu-mips64-gcc.yml?query=branch%3Adevel) | Cross build MIPS64 default on Ubuntu GCC |
+
 ## shotcut
 <table>
   <tr>
@@ -41,11 +52,11 @@ Please refer to the `docs` directory for documentation.
 ## Quick Start (Based on SDL2 Simulation)
 Steps are as follows:
 1. Install gcc compiler
-2. git clone https://github.com/sgl-org/sgl-port-windows.git    
-3. cd sgl-port-windows && git submodule init    
-4. git submodule update --remote    
-3. cd demo && make config    
-4. make run    
+2. git clone https://github.com/sgl-org/sgl-port-windows.git
+3. cd sgl-port-windows && git submodule init
+4. git submodule update --remote
+3. cd demo && make config
+4. make run
 
 Note: Please use git terminal or VSCode's git bash terminal to enter the above commands
 
@@ -57,9 +68,9 @@ Then extract to any directory and add to environment variables
 git clone https://github.com/sgl-org/sgl-port-windows.git
 
 ## 3. Configure Project
-cd sgl-port-windows && git submodule init    
-git submodule update --remote    
-cd demo && make config   
+cd sgl-port-windows && git submodule init
+git submodule update --remote
+cd demo && make config
 
 ## 4. Run
 Execute `make run` command to run
