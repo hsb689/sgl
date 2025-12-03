@@ -140,7 +140,7 @@ sgl_obj_t* sgl_textbox_create(sgl_obj_t* parent)
 
     textbox->text_color = SGL_THEME_TEXT_COLOR;
     textbox->line_margin = 1;
-    textbox->text = "textboxdwkdjhwkdhwkjfnewjfnewjgnmrkwegnrkegnmnfm mrnjkewjgkerjgkrngklnqrwklmrklhmntklhmtrklmhtkltrmhkltrm|";
+    textbox->text = "textbox";
 
     textbox->y_offset = 0;
     textbox->scroll_enable = 0;
