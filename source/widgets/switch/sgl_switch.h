@@ -117,7 +117,7 @@ static inline void sgl_switch_set_alpha(sgl_obj_t *obj, uint8_t alpha)
  * @param radius switch radius
  * @return none
  */
-static inline void sgl_swaitch_set_radius(sgl_obj_t *obj, uint16_t radius)
+static inline void sgl_switch_set_radius(sgl_obj_t *obj, uint16_t radius)
 {
     sgl_switch_t *switch_obj = (sgl_switch_t *)obj;
     switch_obj->bg_desc.radius = sgl_obj_fix_radius(obj, radius);
