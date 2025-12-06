@@ -471,6 +471,27 @@ sgl_obj_t* sgl_scope_create(sgl_obj_t* parent)
     return obj;
 }
 
+// 设置示波器数据点 
+void sgl_scope_set_data(sgl_obj_t* obj, uint16_t value)
+{
+    sgl_scope_t *scope = (sgl_scope_t*)obj;
+    
+    // 更新运行极值（仅当启用 auto_scale）
+    if (scope->auto_scale) {
+        if (value < scope->running_min) scope->running_min = value;
+        if (value > scope->running_max) scope->running_max = value;
+    }
+    
+    scope->data[scope->current_index] = value;
+    scope->current_index = (scope->current_index + 1) % SCOPE_DATA_SIZE;
+    
+    // 更新数据计数
+    if (scope->data_count < SCOPE_DATA_SIZE) {
+        scope->data_count++;
+    }
+    
+    sgl_obj_set_dirty(obj);
+}
 
 
 // 获取示波器数据点
