@@ -55,7 +55,6 @@
 #include "widgets/2dball/sgl_2dball.h"
 #include "widgets/scroll/sgl_scroll.h"
 #include "widgets/dropdown/sgl_dropdown.h"
-
 #include "widgets/scope/sgl_scope.h"
 
 

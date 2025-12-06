@@ -377,7 +377,7 @@ void sgl_draw_fill_round_rect_pixmap(sgl_surf_t *surf, sgl_area_t *area, sgl_are
                     }
                     else if (real_r2 >= r2) {
                         edge_alpha = SGL_ALPHA_MAX - sgl_sqrt_error(real_r2);
-                        *buf = (alpha == SGL_ALPHA_MAX ? sgl_color_mixer(*pbuf, *buf, alpha) : sgl_color_mixer(sgl_color_mixer(*pbuf, *buf, edge_alpha), *buf, alpha));
+                        *buf = (alpha == SGL_ALPHA_MAX ? sgl_color_mixer(*pbuf, *buf, edge_alpha) : sgl_color_mixer(sgl_color_mixer(*pbuf, *buf, edge_alpha), *buf, alpha));
                     }
                     else {
                         *buf = (alpha == SGL_ALPHA_MAX ? *pbuf : sgl_color_mixer(*pbuf, *buf, alpha));
