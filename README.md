@@ -70,7 +70,7 @@ git clone https://github.com/sgl-org/sgl-port-windows.git
 ## 3. Configure Project
 cd sgl-port-windows && git submodule init
 git submodule update --remote
-cd demo && make config
+cd demo && make -j8
 
 ## 4. Run
 Execute `make run` command to run
