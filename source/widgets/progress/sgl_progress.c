@@ -40,12 +40,12 @@ static void sgl_progress_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_even
     knob.x1 = obj->coords.x1 + obj->radius / 2 + 2;
     sgl_area_t rect = {
         .x1 = obj->coords.x1 - progress->interval * 2 + progress->shift,
-        .y1 = obj->coords.y1 + 2,
+        .y1 = obj->coords.y1 + 1,
         .x2 = 0,
-        .y2 = obj->coords.y2 - 2,
+        .y2 = obj->coords.y2 - 1,
     };
 
-    if (progress->shift > progress->interval * 2) {
+    if (progress->shift > (progress->interval + progress->knob_width)) {
         progress->shift = 0;
     }
 
@@ -95,7 +95,7 @@ sgl_obj_t* sgl_progress_create(sgl_obj_t* parent)
     progress->knob_width = 4;
     progress->interval = 4;
     progress->value = 50;
-    progress->knob_radius = 2;
+    progress->knob_radius = 0;
 
     return obj;
 }
