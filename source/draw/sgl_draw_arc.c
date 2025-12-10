@@ -236,7 +236,7 @@ void sgl_draw_fill_arc(sgl_surf_t *surf, sgl_area_t *area, sgl_draw_arc_t *desc)
                 }
             }
 
-            *buf = desc->alpha == SGL_ALPHA_MAX ? sgl_color_mixer(tmp_color, *buf, desc->alpha) : sgl_color_mixer(sgl_color_mixer(tmp_color, *buf, edge_alpha), *buf, desc->alpha);
+            *buf = desc->alpha == SGL_ALPHA_MAX ? sgl_color_mixer(tmp_color, *buf, edge_alpha) : sgl_color_mixer(sgl_color_mixer(tmp_color, *buf, edge_alpha), *buf, desc->alpha);
         }
     }
 }
