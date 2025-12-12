@@ -758,6 +758,18 @@ static inline bool sgl_obj_has_child(sgl_obj_t *obj) {
 
 
 /**
+ * @brief get child of an object
+ * @param obj the object
+ * @return the child of the object
+ */
+static inline sgl_obj_t* sgl_obj_get_child(sgl_obj_t* obj)
+{
+    SGL_ASSERT(obj != NULL);
+    return obj->child;
+}
+
+
+/**
  * @brief check if object has sibling
  * @param  obj object
  * @return true or false, true means object has sibling, false means object has no sibling
@@ -765,6 +777,18 @@ static inline bool sgl_obj_has_child(sgl_obj_t *obj) {
 static inline bool sgl_obj_has_sibling(sgl_obj_t *obj) {
     SGL_ASSERT(obj != NULL);
     return obj->sibling != NULL ? true : false;
+}
+
+
+/**
+ * @brief get sibling of an object
+ * @param obj the object
+ * @return the sibling of the object
+ */
+static inline sgl_obj_t* sgl_obj_get_sibling(sgl_obj_t* obj)
+{
+    SGL_ASSERT(obj != NULL);
+    return obj->sibling;
 }
 
 
@@ -1799,30 +1823,6 @@ static inline sgl_obj_t* sgl_obj_get_patent(sgl_obj_t* obj)
 {
     SGL_ASSERT(obj != NULL);
     return obj->parent;
-}
-
-
-/**
- * @brief get child of an object
- * @param obj the object
- * @return the child of the object
- */
-static inline sgl_obj_t* sgl_obj_get_child(sgl_obj_t* obj)
-{
-    SGL_ASSERT(obj != NULL);
-    return obj->child;
-}
-
-
-/**
- * @brief get sibling of an object
- * @param obj the object
- * @return the sibling of the object
- */
-static inline sgl_obj_t* sgl_obj_get_sibling(sgl_obj_t* obj)
-{
-    SGL_ASSERT(obj != NULL);
-    return obj->sibling;
 }
 
 

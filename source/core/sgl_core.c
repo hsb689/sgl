@@ -895,6 +895,11 @@ void sgl_obj_dirty_merge(sgl_obj_t *obj)
     sgl_ctx.dirty[sgl_ctx.dirty_num] = obj->area;
     sgl_ctx.dirty_num ++;
 #else
+    /* skip invalid area */
+    if (obj->area.x1 > obj->area.x2 || obj->area.y1 > obj->area.y2) {
+        return;
+    }
+
     /* direct to merge object area with dirty area  */
     sgl_ctx.dirty.x1 = sgl_min(sgl_ctx.dirty.x1, obj->area.x1);
     sgl_ctx.dirty.x2 = sgl_max(sgl_ctx.dirty.x2, obj->area.x2);
@@ -1582,7 +1587,7 @@ static inline void sgl_draw_task(sgl_area_t *dirty)
     dirty->x1 = sgl_max(dirty->x1, 0);
     dirty->x2 = sgl_min(dirty->x2, sgl_panel_resolution_width() - 1);
     dirty->y1 = sgl_max(dirty->y1, 0);
-    dirty->y2 = sgl_min(dirty->y2, sgl_panel_resolution_height());
+    dirty->y2 = sgl_min(dirty->y2, sgl_panel_resolution_height() - 1);
 
 #if (!CONFIG_SGL_USE_FULL_FB)
     /* to set start x and y position for dirty area */
