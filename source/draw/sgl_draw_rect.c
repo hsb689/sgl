@@ -131,18 +131,18 @@ void sgl_draw_fill_rect_pixmap(sgl_surf_t *surf, sgl_area_t *area, sgl_rect_t *r
         return;
     }
 
-    int cx = (rect->x1 + rect->x2 - 1) / 2;
-    int cy = (rect->y1 + rect->y2 - 1) / 2;
-    int pick_cx = pixmap->width / 2;
-    int pick_cy = pixmap->height / 2;
+    uint32_t scale_x = ((pixmap->width << 10) / (rect->x2 - rect->x1 + 1));
+    uint32_t scale_y = ((pixmap->height << 10) / (rect->y2 - rect->y1 + 1));
+    uint32_t step_x = 0, step_y = 0;
 
     for (int y = clip.y1; y <= clip.y2; y++) {
         buf = sgl_surf_get_buf(surf, clip.x1 - surf->x, y - surf->y);
-        pbuf = sgl_pixmap_get_buf(pixmap, pick_cx - (cx - clip.x1 + 1), pick_cy - (cy - y + 1), clip.x2 - clip.x1);
+        step_y = (scale_y * (y - rect->y1)) >> 10;
 
         for (int x = clip.x1; x <= clip.x2; x++, buf++) {
+            step_x = (scale_x * (x - rect->x1)) >> 10;
+            pbuf = sgl_pixmap_get_buf(pixmap, step_x, step_y, 10);
             *buf = (alpha == SGL_ALPHA_MAX ? *pbuf : sgl_color_mixer(*pbuf, *buf, alpha));
-            pbuf ++;
         }
     }
 }
@@ -218,6 +218,7 @@ void sgl_draw_fill_round_rect(sgl_surf_t *surf, sgl_area_t *area, sgl_area_t *re
 }
 
 
+#include <math.h>
 /**
  * @brief fill a round rectangle with alpha and border
  * @param surf point to surface
@@ -340,10 +341,6 @@ void sgl_draw_fill_round_rect_pixmap(sgl_surf_t *surf, sgl_area_t *area, sgl_are
     int cy2 = rect->y2 - radius;
     int cx_tmp = 0;
     int cy_tmp = 0;
-    int cx = (rect->x1 + rect->x2 - 1) / 2;
-    int cy = (rect->y1 + rect->y2 - 1) / 2;
-    int pick_cx = pixmap->width / 2;
-    int pick_cy = pixmap->height / 2;
 
     if (!sgl_surf_clip(surf, area, &clip)) {
         return;
@@ -356,13 +353,18 @@ void sgl_draw_fill_round_rect_pixmap(sgl_surf_t *surf, sgl_area_t *area, sgl_are
     int y2 = 0, real_r2 = 0;
     int r2 = sgl_pow2(radius);
     int r2_edge = sgl_pow2(radius + 1);
+    uint32_t scale_x = ((pixmap->width << 10) / (rect->x2 - rect->x1 + 1));
+    uint32_t scale_y = ((pixmap->height << 10) / (rect->y2 - rect->y1 + 1));
+    uint32_t step_x = 0, step_y = 0;
 
     for (int y = clip.y1; y <= clip.y2; y++) {
         buf = sgl_surf_get_buf(surf, clip.x1 - surf->x, y - surf->y);
-        pbuf = sgl_pixmap_get_buf(pixmap, pick_cx - (cx - clip.x1 + 1), pick_cy - (cy - y + 1), clip.x2 - clip.x1 + 1);
+        step_y = (scale_y * (y - rect->y1)) >> 10;
 
         if (y > cy1 && y < cy2) {
-            for (int x = clip.x1; x <= clip.x2; x++, buf++, pbuf++) {
+            for (int x = clip.x1; x <= clip.x2; x++, buf++) {
+                step_x = (scale_x * (x - rect->x1)) >> 10;
+                pbuf = sgl_pixmap_get_buf(pixmap, step_x, step_y, 10);
                 *buf = (alpha == SGL_ALPHA_MAX ? *pbuf : sgl_color_mixer(*pbuf, *buf, alpha));
             }
         }
@@ -370,7 +372,10 @@ void sgl_draw_fill_round_rect_pixmap(sgl_surf_t *surf, sgl_area_t *area, sgl_are
             cy_tmp = y > cy1 ? cy2 : cy1;
             y2 = sgl_pow2(y - cy_tmp);
 
-            for (int x = clip.x1; x <= clip.x2; x++, buf++, pbuf++) {
+            for (int x = clip.x1; x <= clip.x2; x++, buf++) {
+                step_x = (scale_x * (x - rect->x1)) >> 10;
+                pbuf = sgl_pixmap_get_buf(pixmap, step_x, step_y, 10);
+
                 if(x > cx1 && x < cx2) {
                     *buf = (alpha == SGL_ALPHA_MAX ? *pbuf : sgl_color_mixer(*pbuf, *buf, alpha));
                 }
