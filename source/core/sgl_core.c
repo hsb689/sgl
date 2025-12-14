@@ -415,12 +415,12 @@ void sgl_obj_move_background(sgl_obj_t *obj)
  */
 int16_t sgl_obj_fix_radius(sgl_obj_t *obj, size_t radius)
 {
-    int16_t w = (obj->coords.x2 - obj->coords.x1 + 1) / 2;
-    int16_t h = (obj->coords.y2 - obj->coords.y1 + 1) / 2;
-    int16_t r_min = w > h ? h : w;
+    int16_t w = (obj->coords.x2 - obj->coords.x1 + 1);
+    int16_t h = (obj->coords.y2 - obj->coords.y1 + 1);
+    int16_t d_min = w > h ? h : w;
 
-    if ((int16_t)radius > r_min) {
-        radius = r_min;
+    if ((int16_t)radius >= (d_min / 2)) {
+        radius = sgl_is_odd(d_min) ? d_min / 2 : (d_min - 1) / 2;
     }
 
     obj->radius = radius & 0xFFF;

@@ -107,7 +107,7 @@ static inline void sgl_2dball_set_alpha(sgl_obj_t *obj, uint8_t alpha)
 static inline void sgl_2dball_set_radius(sgl_obj_t *obj, uint16_t radius)
 {
     sgl_2dball_t *ball = (sgl_2dball_t *)obj;
-    ball->radius = radius;
+    ball->radius = sgl_obj_fix_radius(obj, radius);
     sgl_obj_set_dirty(obj);
 }
 

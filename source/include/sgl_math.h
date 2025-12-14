@@ -51,7 +51,8 @@ extern "C" {
 #define sgl_pow4(x)                       ((x) * (x) * (x) * (x))
 
 #define sgl_is_pow2(x)                    (((x) & ((x) - 1)) == 0)
-
+#define sgl_is_even(x)                    (((x) & 1) == 0)
+#define sgl_is_odd(x)                     ((x) & 1)
 
 /**
  * @brief Calculate the sine of an angle

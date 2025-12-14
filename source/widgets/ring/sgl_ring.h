@@ -97,7 +97,7 @@ static inline void sgl_ring_set_radius(sgl_obj_t *obj, uint16_t radius_in, uint1
 {
     sgl_ring_t *ring = (sgl_ring_t*)obj;
     ring->radius_in = radius_in;
-    ring->radius_out = radius_out;
+    ring->radius_out = sgl_obj_fix_radius(obj, radius_out);
     sgl_obj_set_dirty(obj);
 }
 
