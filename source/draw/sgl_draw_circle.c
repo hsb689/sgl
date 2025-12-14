@@ -92,16 +92,14 @@ void sgl_draw_fill_circle(sgl_surf_t *surf, sgl_area_t *area, int16_t cx, int16_
  * @param radius Radius of the circle
  * @param pixmap Pixmap of image
  * @param alpha Alpha of the circle
- * @param px  center X coordinate of the pixmap
- * @param py  center Y coordinate of the pixmap
  * @return none
  */
-void sgl_draw_fill_circle_pixmap(sgl_surf_t *surf, sgl_area_t *area, int16_t cx, int16_t cy, int16_t radius, const sgl_pixmap_t *pixmap, uint8_t alpha, int16_t px, int16_t py)
+void sgl_draw_fill_circle_pixmap(sgl_surf_t *surf, sgl_area_t *area, int16_t cx, int16_t cy, int16_t radius, const sgl_pixmap_t *pixmap, uint8_t alpha)
 {
-    int y2 = 0, real_r2 = 0;
+    int y2 = 0, real_r2 = 0, s_x = cx - radius, s_y = cy - radius;
     int r2 = radius * radius;
     int r2_max = (radius + 1) * (radius + 1);
-    sgl_color_t *buf = NULL;
+    sgl_color_t *buf = NULL, *pbuf = NULL;
     sgl_area_t clip = SGL_AREA_MAX;
     uint8_t edge_alpha = 0;
 
@@ -117,13 +115,20 @@ void sgl_draw_fill_circle_pixmap(sgl_surf_t *surf, sgl_area_t *area, int16_t cx,
         return;
     }
 
+    uint32_t scale_x = (pixmap->width << 10) / (radius * 2);
+    uint32_t scale_y = (pixmap->height << 10) / (radius * 2);
+    uint32_t step_x = 0, step_y = 0;
+
     for (int y = clip.y1; y <= clip.y2; y++) {
         y2 = sgl_pow2(y - cy);
         buf = sgl_surf_get_buf(surf, clip.x1 - surf->x, y - surf->y);
-        sgl_color_t *pixmap_color = sgl_pixmap_get_buf(pixmap, px - (cx - clip.x1), py - (cy - y), clip.x2 - clip.x1 + 1);
+        step_y = (scale_y * (y - s_y)) >> 10;
 
-        for (int x = clip.x1; x <= clip.x2; x++, buf++, pixmap_color++) {
+        for (int x = clip.x1; x <= clip.x2; x++, buf++) {
             real_r2 = sgl_pow2(x - cx) + y2;
+
+            step_x = (scale_x * (x - s_x)) >> 10;
+            pbuf = sgl_pixmap_get_buf(pixmap, step_x, step_y, 10);
 
             if (real_r2 >= r2_max) {
                 if(x > cx)
@@ -132,10 +137,10 @@ void sgl_draw_fill_circle_pixmap(sgl_surf_t *surf, sgl_area_t *area, int16_t cx,
             }
             else if (real_r2 >= r2) {
                 edge_alpha = SGL_ALPHA_MAX - sgl_sqrt_error(real_r2);
-                *buf = (alpha == SGL_ALPHA_MAX ? sgl_color_mixer(*pixmap_color, *buf, edge_alpha) : sgl_color_mixer(sgl_color_mixer(*pixmap_color, *buf, edge_alpha), *buf, alpha));
+                *buf = (alpha == SGL_ALPHA_MAX ? sgl_color_mixer(*pbuf, *buf, edge_alpha) : sgl_color_mixer(sgl_color_mixer(*pbuf, *buf, edge_alpha), *buf, alpha));
             }
             else {
-                *buf = (alpha == SGL_ALPHA_MAX ? *pixmap_color : sgl_color_mixer(*pixmap_color, *buf, alpha));
+                *buf = (alpha == SGL_ALPHA_MAX ? *pbuf : sgl_color_mixer(*pbuf, *buf, alpha));
             }
         }
     }
@@ -226,6 +231,6 @@ void sgl_draw_circle(sgl_surf_t *surf, sgl_area_t *area, sgl_draw_circle_t *desc
         }
     }
     else {
-        sgl_draw_fill_circle_pixmap(surf, area, desc->cx, desc->cy, radius, desc->pixmap, alpha, desc->pixmap->width / 2, desc->pixmap->height / 2);
+        sgl_draw_fill_circle_pixmap(surf, area, desc->cx, desc->cy, radius, desc->pixmap, alpha);
     }
 }

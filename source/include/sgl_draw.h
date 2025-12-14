@@ -344,11 +344,9 @@ void sgl_draw_fill_circle(sgl_surf_t *surf, sgl_area_t *area, int16_t cx, int16_
  * @param radius Radius of the circle
  * @param pixmap Pixmap of image
  * @param alpha Alpha of the circle
- * @param px  center X coordinate of the pixmap
- * @param py  center Y coordinate of the pixmap
  * @return none
  */
-void sgl_draw_fill_circle_pixmap(sgl_surf_t *surf, sgl_area_t *area, int16_t cx, int16_t cy, int16_t radius, const sgl_pixmap_t *pixmap, uint8_t alpha, int16_t px, int16_t py);
+void sgl_draw_fill_circle_pixmap(sgl_surf_t *surf, sgl_area_t *area, int16_t cx, int16_t cy, int16_t radius, const sgl_pixmap_t *pixmap, uint8_t alpha);
 
 
 /**
