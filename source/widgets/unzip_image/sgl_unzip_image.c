@@ -139,7 +139,7 @@ static void sgl_draw_unzip_img_with_alpha(sgl_surf_t *surf, int16_t xs, int16_t 
             
             if (x >= intersection.x1 && x <= intersection.x2 && 
                 y >= intersection.y1 && y <= intersection.y2) {
-                sgl_color_t *buf = sgl_surf_get_buf(surf, x - surf->x, y - surf->y);
+                sgl_color_t *buf = sgl_surf_get_buf(surf, x - surf->x1, y - surf->y1);
                 *buf = sgl_color_mixer(dec.out, *buf, alpha);
                 // For monochrome images, can be used to change image color
                 // if (buf != NULL) {

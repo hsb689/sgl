@@ -45,10 +45,10 @@ static void draw_dashed_line(sgl_surf_t *surf, sgl_area_t *area, sgl_draw_line_t
     const int16_t dash_pattern = 5; // Length of each dash segment
 
     sgl_area_t clip_area = {
-        .x1 = surf->x,
-        .y1 = surf->y,
-        .x2 = surf->x + surf->w - 1,
-        .y2 = surf->y + surf->h - 1
+        .x1 = surf->x1,
+        .y1 = surf->y1,
+        .x2 = surf->x2,
+        .y2 = surf->y2
     };
 
     sgl_area_selfclip(&clip_area, area);
@@ -58,7 +58,7 @@ static void draw_dashed_line(sgl_surf_t *surf, sgl_area_t *area, sgl_draw_line_t
         if (dash_len < dash_pattern) {
             // Check if point is within clipping area
             if (x0 >= clip_area.x1 && x0 <= clip_area.x2 && y0 >= clip_area.y1 && y0 <= clip_area.y2) {
-                sgl_color_t *buf = sgl_surf_get_buf(surf, x0 - surf->x, y0 - surf->y);
+                sgl_color_t *buf = sgl_surf_get_buf(surf, x0 - surf->x1, y0 - surf->y1);
                 *buf = line->color;
             }
             dash_len++;
@@ -105,16 +105,16 @@ static void custom_draw_line(sgl_surf_t *surf, sgl_area_t *area, sgl_pos_t start
         int16_t e2;
         
         sgl_area_t clip_area = {
-            .x1 = surf->x,
-            .y1 = surf->y,
-            .x2 = surf->x + surf->w - 1,
-            .y2 = surf->y + surf->h - 1
+            .x1 = surf->x1,
+            .y1 = surf->y1,
+            .x2 = surf->x2,
+            .y2 = surf->y2
         };
         
         while (1) {
             // Check if point is within clipping area
             if (x0 >= clip_area.x1 && x0 <= clip_area.x2 && y0 >= clip_area.y1 && y0 <= clip_area.y2) {
-                sgl_color_t *buf = sgl_surf_get_buf(surf, x0 - surf->x, y0 - surf->y);
+                sgl_color_t *buf = sgl_surf_get_buf(surf, x0 - surf->x1, y0 - surf->y1);
                 *buf = color;
             }
             
@@ -141,10 +141,10 @@ static void custom_draw_line(sgl_surf_t *surf, sgl_area_t *area, sgl_pos_t start
     int16_t e2;
     
     sgl_area_t clip_area = {
-        .x1 = surf->x,
-        .y1 = surf->y,
-        .x2 = surf->x + surf->w - 1,
-        .y2 = surf->y + surf->h - 1
+        .x1 = surf->x1,
+        .y1 = surf->y1,
+        .x2 = surf->x2,
+        .y2 = surf->y2
     };
 
     sgl_area_selfclip(&clip_area, area);
@@ -168,7 +168,7 @@ static void custom_draw_line(sgl_surf_t *surf, sgl_area_t *area, sgl_pos_t start
             
             // Check if point is within clipping area
             if (px >= clip_area.x1 && px <= clip_area.x2 && py >= clip_area.y1 && py <= clip_area.y2) {
-                sgl_color_t *buf = sgl_surf_get_buf(surf, px - surf->x, py - surf->y);
+                sgl_color_t *buf = sgl_surf_get_buf(surf, px - surf->x1, py - surf->y1);
                 *buf = color;
             }
         }
@@ -193,8 +193,8 @@ static void scope_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_event_t *ev
 
     if(evt->type == SGL_EVENT_DRAW_MAIN) {
         // Skip drawing if object is completely outside screen bounds
-        if (obj->area.x2 < surf->x || obj->area.x1 >= surf->x + surf->w ||
-            obj->area.y2 < surf->y || obj->area.y1 >= surf->y + surf->h) {
+        if (obj->area.x2 < surf->x1 || obj->area.x1 >= surf->x2 ||
+            obj->area.y2 < surf->y1 || obj->area.y1 >= surf->y2) {
             return; // Object is fully off-screen; no need to draw
         }
 

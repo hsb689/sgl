@@ -223,21 +223,23 @@ typedef union {
 
 /**
  * @brief This structure defines a surface, which is a rectangular area of the screen.
+ * @x1:     x1 coordinate
+ * @y1:     y1 coordinate
+ * @x2:     x2 coordinate
+ * @y2:     y2 coordinate
  * @buffer: buffer pointer
- * @x:      x coordinate
- * @y:      y coordinate
- * @w:      width
- * @h:      height
+ * @size:   bytes of buffer
  * @pitch:  bytes per line
  * @h_max:  maximum height
  */
 typedef struct sgl_surf {
+    int16_t x1;
+    int16_t y1;
+    int16_t x2;
+    int16_t y2;
     sgl_color_t *buffer;
-    int16_t      x;
-    int16_t      y;
-    uint16_t     w;
-    int16_t      h;
     uint32_t     size;
+    uint32_t     pitch;
 } sgl_surf_t;
 
 
@@ -459,7 +461,7 @@ typedef struct sgl_device_fb {
     int16_t    yres;
     int16_t    xres_virtual;
     int16_t    yres_virtual;
-    void       (*flush_area)(int16_t x, int16_t y, int16_t w, int16_t h, sgl_color_t *src);
+    void       (*flush_area)(int16_t x1, int16_t y1, int16_t x2, int16_t y2, sgl_color_t *src);
 } sgl_device_fb_t;
 
 
@@ -520,15 +522,17 @@ int sgl_device_fb_register(sgl_device_fb_t *fb_dev);
  * @param src [in] source color
  * @return none
  */
-static inline void sgl_panel_flush_area(int16_t x, int16_t y, int16_t w, int16_t h, sgl_color_t *src)
+static inline void sgl_panel_flush_area(int16_t x1, int16_t y1, int16_t x2, int16_t y2, sgl_color_t *src)
 {
 #if CONFIG_SGL_COLOR16_SWAP
+    uint16_t w = x2 - x1 + 1;
+    uint16_t h = y2 - y1 + 1;
     uint16_t *dst = (uint16_t *)src;
     for (size_t i = 0; i < (size_t)(w * h); i++) {
         dst[i] = (dst[i] << 8) | (dst[i] >> 8);
     }
 #endif
-    sgl_ctx.fb_dev.flush_area(x, y, w, h, src);
+    sgl_ctx.fb_dev.flush_area(x1, y1, x2, y2, src);
 }
 
 
@@ -1568,27 +1572,6 @@ static inline sgl_color_t* sgl_pixmap_get_buf(const sgl_pixmap_t *pixmap, int16_
 
 
 /**
- * @brief check surf and other area is overlap
- * @param surf surfcare
- * @param area area b
- * @return true or false, true means overlap, false means not overlap
- * @note: this function is unsafe, you should check the surfcare and area is not NULL by yourself
- */
-static inline bool sgl_surf_area_is_overlap(sgl_surf_t *surf, sgl_area_t *area)
-{
-    SGL_ASSERT(surf != NULL && area != NULL);
-    int16_t h_pos = surf->y + surf->h - 1;
-    int16_t w_pos = surf->x + surf->w - 1;
-
-    if (area->y1 > h_pos || area->y2 < surf->y || area->x1 > w_pos || area->x2 < surf->x) {
-        return false;
-    }
-
-    return true;
-}
-
-
-/**
  * @brief check two area is overlap
  * @param area_a area a
  * @param area_b area b
@@ -1607,14 +1590,16 @@ static inline bool sgl_area_is_overlap(sgl_area_t *area_a, sgl_area_t *area_b)
 
 
 /**
- * @brief  Get area intersection between surface and area
- * @param surf: surface
- * @param area: area
- * @param clip: intersection area
- * @return true: intersect, otherwise false
- * @note: this function is unsafe, you should check the surf and area is not NULL by yourself
+ * @brief check surf and other area is overlap
+ * @param surf surfcare
+ * @param area area b
+ * @return true or false, true means overlap, false means not overlap
+ * @note: this function is unsafe, you should check the surfcare and area is not NULL by yourself
  */
-bool sgl_surf_clip(sgl_surf_t *surf, sgl_area_t *area, sgl_area_t *clip);
+static inline bool sgl_surf_area_is_overlap(sgl_surf_t *surf, sgl_area_t *area)
+{
+    return sgl_area_is_overlap((sgl_area_t*)surf, area);
+}
 
 
 /**
@@ -1626,6 +1611,20 @@ bool sgl_surf_clip(sgl_surf_t *surf, sgl_area_t *area, sgl_area_t *clip);
  * @note: this function is unsafe, you should check the area_a and area_b and clip is not NULL by yourself
  */
 bool sgl_area_clip(sgl_area_t *area_a, sgl_area_t *area_b, sgl_area_t *clip);
+
+
+/**
+ * @brief  Get area intersection between surface and area
+ * @param surf: surface
+ * @param area: area
+ * @param clip: intersection area
+ * @return true: intersect, otherwise false
+ * @note: this function is unsafe, you should check the surf and area is not NULL by yourself
+ */
+static inline bool sgl_surf_clip(sgl_surf_t *surf, sgl_area_t *area, sgl_area_t *clip)
+{
+    return sgl_area_clip((sgl_area_t*)surf, area, clip);
+}
 
 
 /**

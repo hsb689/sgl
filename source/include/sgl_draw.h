@@ -161,7 +161,7 @@ typedef struct sgl_draw_icon {
  */
 static inline void sgl_surf_set_pixel(sgl_surf_t *surf, int16_t x, int16_t y, sgl_color_t color) 
 {
-    surf->buffer[y * surf->w + x] = color;
+    surf->buffer[y * surf->pitch + x] = color;
 }
 
 
@@ -175,7 +175,7 @@ static inline void sgl_surf_set_pixel(sgl_surf_t *surf, int16_t x, int16_t y, sg
  */
 static inline sgl_color_t* sgl_surf_get_buf(sgl_surf_t *surf, int16_t x, int16_t y)
 {
-    return &surf->buffer[y * surf->w + x];
+    return &surf->buffer[y * surf->pitch + x];
 }
 
 
@@ -189,7 +189,7 @@ static inline sgl_color_t* sgl_surf_get_buf(sgl_surf_t *surf, int16_t x, int16_t
  */
 static inline sgl_color_t sgl_surf_get_pixel(sgl_surf_t *surf, int16_t x, int16_t y) 
 {
-    return surf->buffer[y * surf->w + x];
+    return surf->buffer[y * surf->pitch + x];
 }
 
 
@@ -204,7 +204,7 @@ static inline sgl_color_t sgl_surf_get_pixel(sgl_surf_t *surf, int16_t x, int16_
  */
 static inline void sgl_surf_hline(sgl_surf_t *surf, int16_t y, int16_t x1, int16_t x2, sgl_color_t color) 
 {
-    sgl_color_t *dst = surf->buffer + y * surf->w + x1;
+    sgl_color_t *dst = surf->buffer + y * surf->pitch + x1;
     for (int16_t i = x1; i <= x2; i++) {
         *dst = color;
         dst++;
@@ -223,10 +223,10 @@ static inline void sgl_surf_hline(sgl_surf_t *surf, int16_t y, int16_t x1, int16
  */
 static inline void sgl_surf_vline(sgl_surf_t *surf, int16_t x, int16_t y1, int16_t y2, sgl_color_t color) 
 {
-    sgl_color_t *dst = surf->buffer + y1 * surf->w + x;
+    sgl_color_t *dst = surf->buffer + y1 * surf->pitch + x;
     for (int16_t i = y1; i <= y2; i++) {
         *dst = color;
-        dst += surf->w;
+        dst += surf->pitch;
     }
 }
 

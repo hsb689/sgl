@@ -65,7 +65,7 @@ static void sgl_2dball_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_event_
 
         for (int y = clip.y1; y <= clip.y2; y++) {
             y2 = sgl_pow2(y - ball->cy);
-            buf = sgl_surf_get_buf(surf, clip.x1 - surf->x, y - surf->y);
+            buf = sgl_surf_get_buf(surf, clip.x1 - surf->x1, y - surf->y1);
 
             for (int x = clip.x1; x <= clip.x2; x++, buf++) {
                 real_r2 = sgl_pow2(x - ball->cx) + y2;

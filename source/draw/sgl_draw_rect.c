@@ -63,7 +63,7 @@ void sgl_draw_fill_rect(sgl_surf_t *surf, sgl_area_t *area, sgl_area_t *rect, in
     int r2_edge = sgl_pow2(radius + 1);
 
     for (int y = clip.y1; y <= clip.y2; y++) {
-        buf = sgl_surf_get_buf(surf, clip.x1 - surf->x, y - surf->y);
+        buf = sgl_surf_get_buf(surf, clip.x1 - surf->x1, y - surf->y1);
 
         if (radius == 0) {
             for (int x = clip.x1; x <= clip.x2; x++, buf++) {
@@ -157,7 +157,7 @@ void sgl_draw_fill_rect_with_border(sgl_surf_t *surf, sgl_area_t *area, sgl_area
     }
 
     for (int y = clip.y1; y <= clip.y2; y++) {
-        buf = sgl_surf_get_buf(surf, clip.x1 - surf->x, y - surf->y);
+        buf = sgl_surf_get_buf(surf, clip.x1 - surf->x1, y - surf->y1);
 
         if (radius == 0) {
             for (int x = clip.x1; x <= clip.x2; x++, buf++) {
@@ -262,7 +262,7 @@ void sgl_draw_fill_rect_pixmap(sgl_surf_t *surf, sgl_area_t *area, sgl_area_t *r
     uint32_t step_x = 0, step_y = 0;
 
     for (int y = clip.y1; y <= clip.y2; y++) {
-        buf = sgl_surf_get_buf(surf, clip.x1 - surf->x, y - surf->y);
+        buf = sgl_surf_get_buf(surf, clip.x1 - surf->x1, y - surf->y1);
         step_y = (scale_y * (y - rect->y1)) >> 10;
 
         if (radius == 0) {

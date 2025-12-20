@@ -63,7 +63,7 @@ void sgl_draw_icon( sgl_surf_t *surf, sgl_area_t *area, int16_t x, int16_t y, sg
 
     if (icon->bpp == 4) {
         for (int y = clip.y1; y <= clip.y2; y++) {
-            buf = sgl_surf_get_buf(surf, clip.x1 - surf->x, y - surf->y);
+            buf = sgl_surf_get_buf(surf, clip.x1 - surf->x1, y - surf->y1);
             rel_y = y - icon_rect.y1;
 
             for (int x = clip.x1; x <= clip.x2; x++) {
@@ -80,7 +80,7 @@ void sgl_draw_icon( sgl_surf_t *surf, sgl_area_t *area, int16_t x, int16_t y, sg
     }
     else if(icon->bpp == 8) {
         for (int y = clip.y1; y <= clip.y2; y++) {
-            buf = sgl_surf_get_buf(surf, clip.x1 - surf->x, y - surf->y);
+            buf = sgl_surf_get_buf(surf, clip.x1 - surf->x1, y - surf->y1);
             rel_y = y - icon_rect.y1;
 
             for (int x = clip.x1; x <= clip.x2; x++) {

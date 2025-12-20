@@ -221,6 +221,7 @@ void sgl_draw_character(sgl_surf_t *surf, sgl_area_t *area, int16_t x, int16_t y
     if (!sgl_surf_clip(surf, &text_rect, &clip)) {
         return;
     }
+
     if (!sgl_area_selfclip(&clip, area)) {
         return;
     }
@@ -229,7 +230,7 @@ void sgl_draw_character(sgl_surf_t *surf, sgl_area_t *area, int16_t x, int16_t y
     if (font->compress == 0) {
 #endif // (!CONFIG_SGL_FONT_COMPRESSED == 0)
         for (int y = clip.y1; y <= clip.y2; y++) {
-            buf = sgl_surf_get_buf(surf, clip.x1 - surf->x, y - surf->y);
+            buf = sgl_surf_get_buf(surf, clip.x1 - surf->x1, y - surf->y1);
             rel_y = y - text_rect.y1;
 
             for (int x = clip.x1; x <= clip.x2; x++) {
@@ -254,11 +255,11 @@ void sgl_draw_character(sgl_surf_t *surf, sgl_area_t *area, int16_t x, int16_t y
 #if (CONFIG_SGL_FONT_COMPRESSED)
     }  /* support compressed font */
     else {
-        uint8_t line_buf[128];
+        uint8_t line_buf[128] = {0};
         font_rle_init(dot, font->bpp);
 
         for (int y = clip.y1; y <= clip.y2; y++) {
-            buf = sgl_surf_get_buf(surf, clip.x1 - surf->x, y - surf->y);
+            buf = sgl_surf_get_buf(surf, clip.x1 - surf->x1, y - surf->y1);
             decompress_line(line_buf, font_w);
 
             for (int x = clip.x1; x <= clip.x2; x++) {

@@ -55,7 +55,7 @@ void sgl_draw_fill_hline(sgl_surf_t *surf, int16_t y, int16_t x1, int16_t x2, in
     }
 
     for (int y = clip.y1; y <= clip.y2; y++) {
-        buf = sgl_surf_get_buf(surf,  clip.x1 - surf->x, y - surf->y);
+        buf = sgl_surf_get_buf(surf,  clip.x1 - surf->x1, y - surf->y1);
         for (int x = clip.x1; x <= clip.x2; x++, buf++) {
             *buf = alpha == SGL_ALPHA_MAX ? color : sgl_color_mixer(color, *buf, alpha);
         }
@@ -90,11 +90,11 @@ void sgl_draw_fill_vline(sgl_surf_t *surf, int16_t x, int16_t y1, int16_t y2, in
     }
 
     for (int y = clip.y1; y <= clip.y2; y++) {
-        buf = sgl_surf_get_buf(surf,  clip.x1 - surf->x, y - surf->y);
+        buf = sgl_surf_get_buf(surf,  clip.x1 - surf->x1, y - surf->y1);
         for (int x = clip.x1; x <= clip.x2; x++, buf++) {
             *buf = (alpha == SGL_ALPHA_MAX ? color : sgl_color_mixer(color, *buf, alpha));
         }
-        buf += surf->w;
+        buf += surf->pitch;
     }
 }
 
@@ -121,6 +121,6 @@ void sgl_draw_line(sgl_surf_t *surf, sgl_draw_line_t *desc)
         sgl_draw_fill_vline(surf, x1, y1, y2, desc->width, desc->color, alpha);
     }
     else {
-        /* TODO: draw line */
+        //sgl_draw_slanting_line(surf, desc);
     }
 }
