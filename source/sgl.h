@@ -56,5 +56,6 @@
 #include "widgets/scroll/sgl_scroll.h"
 #include "widgets/dropdown/sgl_dropdown.h"
 #include "widgets/scope/sgl_scope.h"
+#include "widgets/ext_img/sgl_ext_img.h"
 
 #endif // __SGL_H__

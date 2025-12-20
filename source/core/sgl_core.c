@@ -116,6 +116,35 @@ static inline void sgl_dirty_area_init(void)
 
 
 /**
+ * @brief get pixmap format bits
+ * @param pixmap pointer to pixmap
+ * @return pixmap bits of per pixel
+ */
+uint8_t sgl_pixmal_get_bits(const sgl_pixmap_t *pixmap)
+{
+    SGL_ASSERT(pixmap != NULL);
+    uint8_t bits = 0;
+    switch (pixmap->format)
+    {
+    case SGL_PIXMAP_FMT_NONE:
+        bits = sizeof(sgl_color_t); break;
+    case SGL_PIXMAP_FMT_RLE_RGB565:
+        bits = 2; break;
+    case SGL_PIXMAP_FMT_RLE_RGB332:
+        bits = 1; break;
+    case SGL_PIXMAP_FMT_RLE_RGB888:
+        bits = 3; break;
+    case SGL_PIXMAP_FMT_RLE_RGBA8888:
+        bits = 4; break;
+    default:
+        SGL_LOG_ERROR("[ERROR] pixmap format error\n");
+        break;
+    }
+    return bits;
+}
+
+
+/**
  * @brief add object to parent
  * @param parent: pointer of parent object
  * @param obj: pointer of object
@@ -1552,7 +1581,7 @@ static inline void sgl_draw_task(sgl_area_t *dirty)
     sgl_obj_t  *head = &sgl_ctx.page->obj;
 
     /* check dirty area, ensure it is valid */
-    SGL_ASSERT(dirty != NULL && dirty->x1 >= 0 && dirty->y1 >= 0 && dirty->x2 >= dirty->x1 && dirty->y2 >= dirty->y1);
+    SGL_ASSERT(dirty != NULL && dirty->x1 >= 0 && dirty->y1 >= 0 && dirty->x2 < SGL_SCREEN_WIDTH && dirty->y2 < SGL_SCREEN_HEIGHT);
 
 #if (!CONFIG_SGL_USE_FULL_FB)
     uint16_t dirty_h = 0, draw_h = 0;

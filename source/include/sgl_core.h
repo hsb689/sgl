@@ -53,6 +53,14 @@ extern "C" {
 /* the ASCII offset of fonts */
 #define  SGL_TEXT_ASCII_OFFSET             (32)
 
+/* the pixmap format */
+#define  SGL_PIXMAP_FMT_NONE               (0)
+#define  SGL_PIXMAP_FMT_RLE_RGB565         (1)
+#define  SGL_PIXMAP_FMT_RLE_RGB332         (2)
+#define  SGL_PIXMAP_FMT_RLE_RGB888         (3)
+#define  SGL_PIXMAP_FMT_RLE_RGBA8888       (4)
+#define  SGL_PIXMAP_FMT_RLE_1              (4)
+#define  SGL_PIXMAP_FMT_MAX                (7)
 
 /**
 * @brief This enumeration type defines the alignment of controls in sgl,
@@ -258,16 +266,7 @@ typedef struct sgl_pixmap {
     uint32_t width : 12;
     uint32_t height : 12;
     uint32_t format : 8;
-
-#if (CONFIG_SGL_EXTERNAL_PIXMAP == 0)
     const uint8_t *bitmap;
-#else
-    void (*read)(void *buff, uint32_t pos, size_t size, void *data);
-    union {
-        const uint8_t *bitmap;
-        void          *data;
-    };
-#endif
 } sgl_pixmap_t;
 
 
@@ -605,6 +604,14 @@ static inline void sgl_log_stdout(const char *str)
         sgl_ctx.log_dev.log_puts(str);
     }
 }
+
+
+/**
+ * @brief get pixmap format bits
+ * @param pixmap pointer to pixmap
+ * @return pixmap bits
+ */
+uint8_t sgl_pixmal_get_bits(const sgl_pixmap_t *pixmap);
 
 
 /**
