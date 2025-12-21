@@ -55,8 +55,8 @@ extern "C" {
 
 /* the pixmap format */
 #define  SGL_PIXMAP_FMT_NONE               (0)
-#define  SGL_PIXMAP_FMT_RLE_RGB565         (1)
-#define  SGL_PIXMAP_FMT_RLE_RGB332         (2)
+#define  SGL_PIXMAP_FMT_RLE_RGB332         (1)
+#define  SGL_PIXMAP_FMT_RLE_RGB565         (2)
 #define  SGL_PIXMAP_FMT_RLE_RGB888         (3)
 #define  SGL_PIXMAP_FMT_RLE_RGBA8888       (4)
 #define  SGL_PIXMAP_FMT_RLE_1              (4)
@@ -1544,19 +1544,8 @@ static inline void sgl_area_init(sgl_area_t *area)
  */
 static inline sgl_color_t sgl_pixmap_get_pixel(const sgl_pixmap_t *pixmap, int16_t x, int16_t y)
 {
-    uint32_t pos;
-
     SGL_ASSERT(pixmap != NULL);
-    pos = y * pixmap->width + x;
-
-#if (CONFIG_SGL_EXTERNAL_PIXMAP)
-    if (pixmap->read) {
-        pixmap->read(sgl_ctx.pixmap_buff, pos * sizeof(sgl_color_t), sizeof(sgl_color_t), pixmap->data);
-        return *sgl_ctx.pixmap_buff;
-    }
-#endif
-
-    return ((sgl_color_t*)pixmap->bitmap)[pos];
+    return ((sgl_color_t*)pixmap->bitmap)[y * pixmap->width + x];
 }
 
 
@@ -1569,10 +1558,8 @@ static inline sgl_color_t sgl_pixmap_get_pixel(const sgl_pixmap_t *pixmap, int16
  */
 static inline sgl_color_t* sgl_pixmap_get_buf(const sgl_pixmap_t *pixmap, int16_t x, int16_t y)
 {
-    uint32_t pos;
     SGL_ASSERT(pixmap != NULL);
-    pos = y * pixmap->width + x;
-    return &((sgl_color_t*)pixmap->bitmap)[pos];
+    return &((sgl_color_t*)pixmap->bitmap)[y * pixmap->width + x];
 }
 
 
