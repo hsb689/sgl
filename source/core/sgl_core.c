@@ -678,15 +678,6 @@ void sgl_init(void)
     }
 #endif // !CONFIG_SGL_DIRTY_AREA_THRESHOLD
 
-#if (CONFIG_SGL_EXTERNAL_PIXMAP)
-    sgl_ctx.pixmap_buff = sgl_malloc(sgl_panel_resolution_width() * sizeof(sgl_color_t));
-    if (sgl_ctx.pixmap_buff == NULL) {
-        SGL_LOG_ERROR("sgl pixmap buff memory alloc failed");
-        SGL_ASSERT(0);
-        return;
-    }
-#endif
-
     /* initialize dirty area */
     sgl_dirty_area_init();
 

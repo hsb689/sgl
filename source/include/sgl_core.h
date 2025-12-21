@@ -484,9 +484,6 @@ typedef struct sgl_context {
 #else
     sgl_area_t           dirty;
 #endif
-#if (CONFIG_SGL_EXTERNAL_PIXMAP)
-    sgl_color_t          *pixmap_buff;
-#endif
 } sgl_context_t;
 
 
