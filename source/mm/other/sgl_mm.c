@@ -57,25 +57,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-/* Portable weak linkage attribute for different compilers */
-#if defined(__GNUC__) || defined(__clang__)
-  /* GCC and Clang */
-  #define SGL_WEAK __attribute__((weak))
-#elif defined(__ARMCC_VERSION)
-  /* ARM Compiler (Keil) */
-  #define SGL_WEAK __weak
-#elif defined(__IAR_SYSTEMS_ICC__)
-  /* IAR Compiler */
-  #define SGL_WEAK __weak
-#elif defined(_MSC_VER)
-  /* Microsoft Visual C++ (weak linkage via pragma) */
-  #define SGL_WEAK __declspec(selectany)
-#else
-  /* Fallback for unknown compilers */
-  #define SGL_WEAK
-  #warning "Weak linkage not supported for this compiler"
-#endif
-
 
 static sgl_mm_monitor_t mem = {
     .total_size = 0,
