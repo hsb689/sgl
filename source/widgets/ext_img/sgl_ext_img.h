@@ -85,7 +85,6 @@ typedef struct sgl_ext_img {
     sgl_color_t     color;
     uint16_t        remainder;
     uint32_t        index;
-    uint32_t        data_len;
 }sgl_ext_img_t;
 
 

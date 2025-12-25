@@ -39,7 +39,6 @@ static inline void ext_img_rle_init(sgl_ext_img_t *img)
         img->started = 1;
         img->index = 0;
         img->remainder = 0;
-        img->data_len = img->pixmap->height * img->pixmap->width * sgl_pixmal_get_bits(img->pixmap);
     }
 }
 
