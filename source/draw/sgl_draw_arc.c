@@ -121,7 +121,7 @@ void sgl_draw_fill_arc(sgl_surf_t *surf, sgl_area_t *area, sgl_draw_arc_t *desc)
     int32_t rate = (0xff00) / (in_r2 - in_r2_max);
     int32_t rate2 = (0xff00) / (out_r2_max - out_r2);
 
-    sgl_color_t *buf = NULL;
+    sgl_color_t *buf = NULL, *blend = NULL;
     int32_t dx, dy;
     uint8_t flag = 0xff, in_range;
     int32_t ds = 0, de = 0, sd = 0, ed = 0;
@@ -160,25 +160,26 @@ void sgl_draw_fill_arc(sgl_surf_t *surf, sgl_area_t *area, sgl_draw_arc_t *desc)
         ey = ey >> 7;
     }
 
+    buf = sgl_surf_get_buf(surf, clip.x1 - surf->x1, clip.y1 - surf->y1);
     for (int y = clip.y1; y <= clip.y2; y++) {
         dy = y - desc->cy;
         y2 = sgl_pow2(dy);
-        buf = sgl_surf_get_buf(surf, clip.x1 - surf->x1, y - surf->y1);
+        blend = buf;
 
-        for (int x = clip.x1; x <= clip.x2; x++, buf++) {
+        for (int x = clip.x1; x <= clip.x2; x++, blend++) {
             dx = x - desc->cx;
             real_r2 = sgl_pow2(x - desc->cx) + y2;
 
             if (real_r2 >= out_r2_max) {
                 if (x > desc->cx) {
-                    buf++;
+                    blend++;
                     break;
                 }
                 continue;
             }
             if (real_r2 < in_r2_max) {
                 if (x < desc->cx) {
-                    buf += ((desc->cx - x) * 2);
+                    blend += ((desc->cx - x) * 2);
                     x = desc->cx * 2 - x;
                 }
                 continue;
@@ -211,7 +212,7 @@ void sgl_draw_fill_arc(sgl_surf_t *surf, sgl_area_t *area, sgl_draw_arc_t *desc)
                         sd = sgl_xy_has_component(dx,dy, sx, sy) ? sgl_abs(ds) : 256;
                         ed = sgl_xy_has_component(dx,dy, ex, ey) ? sgl_abs(de) : 256;
                         dx =  sgl_min(sd, ed);
-                        tmp_color = (dx < SGL_ALPHA_MAX) ? sgl_color_mixer(desc->color, *buf, sgl_min(255 - dx, edge_alpha)) : *buf;
+                        tmp_color = (dx < SGL_ALPHA_MAX) ? sgl_color_mixer(desc->color, *blend, sgl_min(255 - dx, edge_alpha)) : *blend;
                         break;
 
                     case SGL_ARC_MODE_RING:
@@ -223,7 +224,7 @@ void sgl_draw_fill_arc(sgl_surf_t *surf, sgl_area_t *area, sgl_draw_arc_t *desc)
 
                     case SGL_ARC_MODE_NORMAL_SMOOTH:
                         dx = arc_get_dot(arc_dot, x, y);
-                        tmp_color = (dx < SGL_ALPHA_MAX) ? sgl_color_mixer(desc->color, *buf, dx) : desc->color;
+                        tmp_color = (dx < SGL_ALPHA_MAX) ? sgl_color_mixer(desc->color, *blend, dx) : desc->color;
                         break;
 
                     case SGL_ARC_MODE_RING_SMOOTH:
@@ -236,7 +237,8 @@ void sgl_draw_fill_arc(sgl_surf_t *surf, sgl_area_t *area, sgl_draw_arc_t *desc)
                 }
             }
 
-            *buf = desc->alpha == SGL_ALPHA_MAX ? sgl_color_mixer(tmp_color, *buf, edge_alpha) : sgl_color_mixer(sgl_color_mixer(tmp_color, *buf, edge_alpha), *buf, desc->alpha);
+            *blend = desc->alpha == SGL_ALPHA_MAX ? sgl_color_mixer(tmp_color, *blend, edge_alpha) : sgl_color_mixer(sgl_color_mixer(tmp_color, *blend, edge_alpha), *blend, desc->alpha);
         }
+        buf += surf->pitch;
     }
 }
