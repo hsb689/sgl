@@ -26,7 +26,7 @@
 #include <sgl_log.h>
 #include <sgl_draw.h>
 #include <sgl_math.h>
-
+#include <math.h>
 
 /**
  * @brief draw a horizontal line with alpha
@@ -98,79 +98,57 @@ void sgl_draw_fill_vline(sgl_surf_t *surf, int16_t x, int16_t y1, int16_t y2, in
     }
 }
 
-#include <math.h>//待添加SGL sqrtf函数，支持后取消使用
-typedef struct {
-    int32_t x1, y1, x2, y2; // 裁剪矩形
-} Scissor;
 /**
  * SDF draw anti-aliased line
  * @param thickness line thickness (in pixels)
  */
-void draw_line_sdf(sgl_surf_t *surf, int16_t x1, int16_t y1, int16_t x2, int16_t y2, 
-                   int16_t thickness, sgl_color_t color, Scissor scissor) {
-    
-    float radius = (float)thickness * 0.5f;
-    
-    // 1. Calculate bounding box of the line (with 1 pixel expansion for anti-aliasing)
-    int bb_x_min = (int)(fminf((float)x1, (float)x2) - radius - 1.0f);
-    int bb_y_min = (int)(fminf((float)y1, (float)y2) - radius - 1.0f);
-    int bb_x_max = (int)(fmaxf((float)x1, (float)x2) + radius + 1.0f);
-    int bb_y_max = (int)(fmaxf((float)y1, (float)y2) + radius + 1.0f);
+static int32_t sgl_capsule_sdf_optimized(int16_t px, int16_t py, int16_t ax, int16_t ay, int16_t bx, int16_t by)
+{
+	int64_t pax = px - ax, pay = py - ay, bax = bx - ax, bay = by - ay;
+	int64_t b_sqd = bax * bax + bay * bay;
+	int64_t h = (sgl_max(sgl_min((pax * bax + pay * bay), b_sqd), 0)) << 8;
+	int64_t dx = (pax << 8) - bax * h / b_sqd;
+	int64_t dy = (pay << 8) - bay * h / b_sqd;
 
-    // 2. Intersect with clipping region (Scissor)
-    int render_x_min = sgl_clamp(bb_x_min, scissor.x1, scissor.x2);
-    int render_y_min = sgl_clamp(bb_y_min, scissor.y1, scissor.y2);
-    int render_x_max = sgl_clamp(bb_x_max, scissor.x1, scissor.x2);
-    int render_y_max = sgl_clamp(bb_y_max, scissor.y1, scissor.y2);
+	return sqrt(dx * dx + dy * dy);
+}
 
-    // Line segment vector
-    float dx = (float)(x2 - x1);
-    float dy = (float)(y2 - y1);
-    // Use SGL's sqrt function for calculating line length
-    float length = (float)sqrtf((uint32_t)(dx*dx + dy*dy)); // Actual length of the line segment
-    
-    if (length < 0.0001f) return; // Avoid division by zero
+void draw_line_sdf(sgl_surf_t *surf, sgl_area_t *area, int16_t x1, int16_t y1, int16_t x2, int16_t y2,
+                                                  int16_t thickness, sgl_color_t color, uint8_t alpha)
+{
+	uint8_t c;
+	int64_t len;
+	sgl_area_t clip = SGL_AREA_MAX;
+	sgl_color_t *buf = NULL;
+	int16_t thick_half = (thickness >> 1);
+	sgl_area_t c_rect = {.x1 = x1 - thick_half, .x2 = x2 + thick_half, .y1 = y1 - thick_half,.y2 = y2 + thick_half};
 
-    // Unit direction vector
-    float ux = dx / length;
-    float uy = dy / length;
+	sgl_surf_clip_area_return(surf, area, &clip);
+	if (!sgl_area_selfclip(&clip, &c_rect)) {
+		return;
+	}
 
-    // 3. Iterate only within the clipped bounding box
-    for (int y = render_y_min; y <= render_y_max; y++) {
-        for (int x = render_x_min; x <= render_x_max; x++) {
-            
-            // Calculate vector from start point to current pixel
-            float vx = (float)x - x1;
-            float vy = (float)y - y1;
-            
-            // Calculate projection parameter t of the point on the line direction
-            float t = vx * ux + vy * uy;
-            
-            // Clamp t to [0, length] range to ensure the projected point is on the line segment
-            t = sgl_clamp(t, 0.0f, length);
-            
-            // Calculate projected point coordinates
-            float proj_x = x1 + t * ux;
-            float proj_y = y1 + t * uy;
-            
-            // Calculate shortest distance from point to line segment
-            float dist_x = (float)x - proj_x;
-            float dist_y = (float)y - proj_y;
-            float dist = (float)sqrtf((uint32_t)(dist_x * dist_x + dist_y * dist_y));
+	for (int y = clip.y1; y <= clip.y2; y++) {
+		buf = sgl_surf_get_buf(surf, clip.x1 - surf->x1, y - surf->y1);
 
-            // 4. Anti-aliasing calculation
-            // Alpha logic: completely opaque if distance < radius-0.5, completely transparent if distance > radius+0.5
-            float edge0 = radius - 0.5f;
-            float edge1 = radius + 0.5f;
-            float alpha_f = sgl_clamp((edge1 - dist) / (edge1 - edge0), 0.0f, 1.0f);
-            
-            if (alpha_f > 0.0f) {
-                uint8_t alpha = (uint8_t)(alpha_f * 255);
-                sgl_color_t *buf = sgl_surf_get_buf(surf, x - surf->x1, y - surf->y1);
-                *buf = (alpha == SGL_ALPHA_MAX ? color : sgl_color_mixer(color, *buf, alpha));
-            }
-        }
-    }
+		for (int x = clip.x1; x <= clip.x2; x++, buf++) {
+			len = sgl_capsule_sdf_optimized(x, y, x1, y1, x2, y2);
+
+			if (len <= (thick_half - 1) << 8) {
+				*buf = (alpha == SGL_ALPHA_MAX ? color : sgl_color_mixer(color, *buf, alpha));
+				continue;
+			}
+
+			if (len > ((thick_half - 1) << 8) && len < (thick_half << 8)) {
+				c = len - ((thick_half - 1) << 8);
+
+				if (alpha == SGL_ALPHA_MAX)
+					*buf = sgl_color_mixer(*buf, color, c);
+				else
+					*buf = sgl_color_mixer(sgl_color_mixer(*buf, color, c), *buf, alpha);
+			}
+		}
+	}
 }
 
 
@@ -180,30 +158,13 @@ void draw_line_sdf(sgl_surf_t *surf, int16_t x1, int16_t y1, int16_t x2, int16_t
  * @param desc line description
  * @return none
  */
-void sgl_draw_line(sgl_surf_t *surf, sgl_draw_line_t *desc)
+void sgl_draw_line(sgl_surf_t *surf, sgl_area_t *area, sgl_draw_line_t *desc)
 {
-    uint8_t alpha = desc->alpha;
+	uint8_t alpha = desc->alpha;
+	int16_t x1 = desc->start.x;
+	int16_t y1 = desc->start.y;
+	int16_t x2 = desc->end.x;
+	int16_t y2 = desc->end.y;
 
-    int16_t x1 = desc->start.x;
-    int16_t y1 = desc->start.y;
-    int16_t x2 = desc->end.x;
-    int16_t y2 = desc->end.y;
-
-    if (y1 == y2) {
-        sgl_draw_fill_hline(surf, y1, x1, x2, desc->width, desc->color, alpha);
-    }
-    else if (x1 == x2) {
-        sgl_draw_fill_vline(surf, x1, y1, y2, desc->width, desc->color, alpha);
-    }
-    else {
-        // 使用SDF算法绘制抗锯齿斜线
-        Scissor scissor = {
-            .x1 = surf->x1,
-            .y1 = surf->y1,
-            .x2 = surf->x2,
-            .y2 = surf->y2
-        };
-        
-        draw_line_sdf(surf, x1, y1, x2, y2, desc->width, desc->color, scissor);
-    }
+	draw_line_sdf(surf, area, x1, y1, x2, y2, desc->width, desc->color, alpha);
 }

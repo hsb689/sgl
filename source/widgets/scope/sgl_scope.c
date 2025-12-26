@@ -258,7 +258,7 @@ static void scope_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_event_t *ev
             draw_dashed_line(surf, &obj->area, &grid_line);
         } else {
             // Draw solid line
-            sgl_draw_line(surf, &grid_line);
+            sgl_draw_line(surf, &obj->area, &grid_line);
         }
         
         // Draw vertical center line
@@ -272,7 +272,7 @@ static void scope_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_event_t *ev
             draw_dashed_line(surf, &obj->area, &grid_line);
         } else {
             // Draw solid line
-            sgl_draw_line(surf, &grid_line);
+            sgl_draw_line(surf, &obj->area, &grid_line);
         }
         
         // Draw vertical grid lines (10 divisions)
@@ -289,7 +289,7 @@ static void scope_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_event_t *ev
                 draw_dashed_line(surf, &obj->area, &grid_line);
             } else {
                 // Draw solid line
-                sgl_draw_line(surf, &grid_line);
+                sgl_draw_line(surf, &obj->area, &grid_line);
             }
         }
         
@@ -306,7 +306,7 @@ static void scope_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_event_t *ev
                 draw_dashed_line(surf, &obj->area, &grid_line);
             } else {
                 // Draw solid line
-                sgl_draw_line(surf, &grid_line);
+                sgl_draw_line(surf, &obj->area, &grid_line);
             }
         }
 

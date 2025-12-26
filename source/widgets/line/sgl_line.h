@@ -87,33 +87,21 @@ static inline void sgl_line_set_alpha(sgl_obj_t *obj, uint8_t alpha)
  * @param y start y position
  * @return none
  */
-static inline void sgl_line_set_start_pos(sgl_obj_t *obj, int16_t x, int16_t y)
+static inline void sgl_line_set_pos(sgl_obj_t *obj, int16_t x1, int16_t y1, int16_t x2, int16_t y2)
 {
-    SGL_ASSERT(obj != NULL);
-    sgl_line_t *line = (sgl_line_t*)obj;
-    line->desc.start.x = obj->parent->coords.x1 + x;
-    line->desc.start.y = obj->parent->coords.y1 + y;
-    obj->coords.x1 = obj->parent->coords.x1 + x;
-    obj->coords.y1 = obj->parent->coords.y1 + y;
-    sgl_obj_set_dirty(obj);
-}
+	SGL_ASSERT(obj != NULL);
+	sgl_line_t *line = (sgl_line_t*)obj;
+	line->desc.start.x = obj->parent->coords.x1 + x1;
+	line->desc.start.y = obj->parent->coords.y1 + y1;
+	line->desc.end.x = line->desc.start.x + x2;
+	line->desc.end.y = line->desc.start.y + y2;
 
-/**
- * @brief set line end position
- * @param obj line object
- * @param x end x position
- * @param y end y position
- * @return none
- */
-static inline void sgl_line_set_end_pos(sgl_obj_t *obj, int16_t x, int16_t y)
-{
-    SGL_ASSERT(obj != NULL);
-    sgl_line_t *line = (sgl_line_t*)obj;
-    line->desc.end.x = obj->parent->coords.x1 + x;
-    line->desc.end.y = obj->parent->coords.y1 + y;
-    obj->coords.x2 = obj->parent->coords.x1 + x;
-    obj->coords.y2 = obj->parent->coords.y1 + y;
-    sgl_obj_set_dirty(obj);
+	/* default thinckness is 1 */
+	obj->coords.x1 = line->desc.start.x - 1;
+	obj->coords.y1 = line->desc.start.y - 1;
+	obj->coords.x2 = line->desc.end.x + 1;
+	obj->coords.y2 = line->desc.end.y + 1;
+	sgl_obj_set_dirty(obj);
 }
 
 /**
@@ -124,16 +112,15 @@ static inline void sgl_line_set_end_pos(sgl_obj_t *obj, int16_t x, int16_t y)
  */
 static inline void sgl_line_set_width(sgl_obj_t *obj, uint8_t width)
 {
-    SGL_ASSERT(obj != NULL);
-    sgl_line_t *line = (sgl_line_t*)obj;
-    line->desc.width = width;
-    if (line->desc.start.x == line->desc.end.x) {
-        obj->coords.x2 += width;
-    }
-    else if (line->desc.start.y == line->desc.end.y) {
-        obj->coords.y2 += width;
-    }
-    sgl_obj_set_dirty(obj);
+	SGL_ASSERT(obj != NULL);
+	sgl_line_t *line = (sgl_line_t*)obj;
+	line->desc.width = width << 1;
+
+	obj->coords.x1 = line->desc.start.x - width;
+	obj->coords.y1 = line->desc.start.y - width;
+	obj->coords.x2 = line->desc.end.x + width;
+	obj->coords.y2 = line->desc.end.y + width;
+	sgl_obj_set_dirty(obj);
 }
 
 
