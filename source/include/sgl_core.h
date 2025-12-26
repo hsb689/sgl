@@ -463,7 +463,6 @@ typedef struct sgl_context {
     volatile uint8_t     tick_ms;
     uint16_t             dirty_num;
     sgl_area_t           *dirty;
-    sgl_color_t          *blend;
 } sgl_context_t;
 
 
@@ -1512,7 +1511,39 @@ static inline void sgl_obj_delete_sync(sgl_obj_t *obj)
  * @param factor   : color mixer factor
  * @return sgl_color_t: mixed color
  */
-sgl_color_t sgl_color_mixer(sgl_color_t fg_color, sgl_color_t bg_color, uint8_t factor);
+static inline sgl_color_t sgl_color_mixer(sgl_color_t fg_color, sgl_color_t bg_color, uint8_t factor)
+{
+    sgl_color_t ret;
+#if (CONFIG_SGL_PANEL_PIXEL_DEPTH == SGL_COLOR_RGB332)
+
+    ret.ch.red   = bg_color.ch.red + ((fg_color.ch.red - bg_color.ch.red) * (factor >> 5) >> 3);
+    ret.ch.green = bg_color.ch.green + ((fg_color.ch.green - bg_color.ch.green) * (factor >> 5) >> 3);
+    ret.ch.blue  = bg_color.ch.blue + ((fg_color.ch.blue - bg_color.ch.blue) * (factor >> 6) >> 2);
+
+#elif (CONFIG_SGL_PANEL_PIXEL_DEPTH == SGL_COLOR_RGB565)
+
+    factor = (uint32_t)((uint32_t)factor + 4) >> 3;
+    uint32_t bg = (uint32_t)((uint32_t)bg_color.full | ((uint32_t)bg_color.full << 16)) & 0x07E0F81F; 
+    uint32_t fg = (uint32_t)((uint32_t)fg_color.full | ((uint32_t)fg_color.full << 16)) & 0x07E0F81F;
+    uint32_t result = ((((fg - bg) * factor) >> 5) + bg) & 0x7E0F81F;
+    ret.full = (uint16_t)((result >> 16) | result);
+
+#elif (CONFIG_SGL_PANEL_PIXEL_DEPTH == SGL_COLOR_RGB888)
+
+    ret.ch.red   = bg_color.ch.red + ((fg_color.ch.red - bg_color.ch.red) * factor >> 8);
+    ret.ch.green = bg_color.ch.green + ((fg_color.ch.green - bg_color.ch.green) * factor >> 8);
+    ret.ch.blue  = bg_color.ch.blue + ((fg_color.ch.blue - bg_color.ch.blue) * factor >> 8);
+
+#elif (CONFIG_SGL_PANEL_PIXEL_DEPTH == SGL_COLOR_ARGB8888)
+
+    ret.ch.alpha = bg_color.ch.alpha + ((fg_color.ch.alpha - bg_color.ch.alpha) * factor >> 8);
+    ret.ch.red   = bg_color.ch.red + ((fg_color.ch.red - bg_color.ch.red) * factor >> 8);
+    ret.ch.green = bg_color.ch.green + ((fg_color.ch.green - bg_color.ch.green) * factor >> 8);
+    ret.ch.blue  = bg_color.ch.blue + ((fg_color.ch.blue - bg_color.ch.blue) * factor >> 8);
+
+#endif
+    return ret;
+}
 
 
 /**

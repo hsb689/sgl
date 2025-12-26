@@ -144,7 +144,7 @@ typedef struct sgl_draw_icon {
  * @note if you want to check the area is overlap with surface, you can use this macro
  *       it will direct return if the area is not overlap with surface, otherwise, continue
  */
-#if (CONFIG_SGL_USE_FULL_FB)
+#if (CONFIG_SGL_USE_FB_CTL)
 #define sgl_surf_clip_area_return(surf, rect, clip)         do {SGL_UNUSED(rect);} while(0)
 #else
 #define sgl_surf_clip_area_return(surf, rect, clip)         if (!sgl_surf_clip(surf, rect, clip)) return

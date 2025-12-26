@@ -568,6 +568,7 @@ static sgl_page_t* sgl_page_create(void)
     page->surf.x2 = sgl_ctx.fb_dev.xres - 1;
     page->surf.y2 = sgl_ctx.fb_dev.yres - 1;
     page->surf.size = sgl_ctx.fb_dev.buffer_size;
+    page->surf.pitch = sgl_ctx.fb_dev.xres;
     page->color = SGL_THEME_DESKTOP;
 
     obj->parent = obj;
@@ -673,13 +674,6 @@ void sgl_init(void)
         return;
     }
 
-    sgl_ctx.blend = sgl_malloc(SGL_SCREEN_WIDTH * sizeof(sgl_surf_t));
-    if (sgl_ctx.blend == NULL) {
-        SGL_LOG_ERROR("sgl blend memory alloc failed");
-        SGL_ASSERT(0);
-        return;
-    }
-
     /* initialize dirty area */
     sgl_dirty_area_init();
 
@@ -707,102 +701,6 @@ void sgl_screen_load(sgl_obj_t *obj)
     /* initialize dirty area */
     sgl_dirty_area_init();
     sgl_obj_set_dirty(obj);
-}
-
-
-/**
- * @brief color mixer
- * @param fg_color : foreground color
- * @param bg_color : background color
- * @param factor   : color mixer factor
- * @return sgl_color_t: mixed color
- */
-sgl_color_t sgl_color_mixer(sgl_color_t fg_color, sgl_color_t bg_color, uint8_t factor)
-{
-    sgl_color_t ret;
-#if (CONFIG_SGL_PANEL_PIXEL_DEPTH == SGL_COLOR_RGB332)
-
-    ret.ch.red   = bg_color.ch.red + ((fg_color.ch.red - bg_color.ch.red) * (factor >> 5) >> 3);
-    ret.ch.green = bg_color.ch.green + ((fg_color.ch.green - bg_color.ch.green) * (factor >> 5) >> 3);
-    ret.ch.blue  = bg_color.ch.blue + ((fg_color.ch.blue - bg_color.ch.blue) * (factor >> 6) >> 2);
-
-#elif (CONFIG_SGL_PANEL_PIXEL_DEPTH == SGL_COLOR_RGB565)
-
-    factor = (uint32_t)((uint32_t)factor + 4) >> 3;
-    uint32_t bg = (uint32_t)((uint32_t)bg_color.full | ((uint32_t)bg_color.full << 16)) & 0x07E0F81F; 
-    uint32_t fg = (uint32_t)((uint32_t)fg_color.full | ((uint32_t)fg_color.full << 16)) & 0x07E0F81F;
-    uint32_t result = ((((fg - bg) * factor) >> 5) + bg) & 0x7E0F81F;
-    ret.full = (uint16_t)((result >> 16) | result);
-
-#elif (CONFIG_SGL_PANEL_PIXEL_DEPTH == SGL_COLOR_RGB888)
-
-    ret.ch.red   = bg_color.ch.red + ((fg_color.ch.red - bg_color.ch.red) * factor >> 8);
-    ret.ch.green = bg_color.ch.green + ((fg_color.ch.green - bg_color.ch.green) * factor >> 8);
-    ret.ch.blue  = bg_color.ch.blue + ((fg_color.ch.blue - bg_color.ch.blue) * factor >> 8);
-
-#elif (CONFIG_SGL_PANEL_PIXEL_DEPTH == SGL_COLOR_ARGB8888)
-
-    ret.ch.alpha = bg_color.ch.alpha + ((fg_color.ch.alpha - bg_color.ch.alpha) * factor >> 8);
-    ret.ch.red   = bg_color.ch.red + ((fg_color.ch.red - bg_color.ch.red) * factor >> 8);
-    ret.ch.green = bg_color.ch.green + ((fg_color.ch.green - bg_color.ch.green) * factor >> 8);
-    ret.ch.blue  = bg_color.ch.blue + ((fg_color.ch.blue - bg_color.ch.blue) * factor >> 8);
-
-#endif
-    return ret;
-}
-
-
-/**
- * @brief Blends foreground and background colors using a specified alpha blending factor, applied to multiple pixels.
- *
- * This function performs per-pixel linear interpolation between foreground and background colors over a buffer of `len` pixels:
- *     result = (fg_color * factor + bg_color * (255 - factor)) / 255
- * The blending factor `factor` ranges from 0 to 255:
- *   - 0 means fully transparent (output = background),
- *   - 255 means fully opaque (output = foreground).
- * 
- * @param[in,out] fg_color   Pointer to the foreground color(s) (input); receives blended output (in-place update)
- * @param[in]     bg_color   Pointer to the background color buffer.
- * @param[in]     factor     Blending factor: 0 = fully transparent, 255 = fully opaque
- * @param[in]     len        Number of color elements (pixels) to process
- */
-void sgl_color_blend(sgl_color_t *fg_color, sgl_color_t *bg_color, uint8_t factor, uint32_t len)
-{
-    sgl_color_t ret;
-    for (uint32_t i = 0; i < len; i++) {
-#if (CONFIG_SGL_PANEL_PIXEL_DEPTH == SGL_COLOR_RGB332)
-
-        ret.ch.red   = bg_color->ch.red + ((fg_color->ch.red - bg_color->ch.red) * (factor >> 5) >> 3);
-        ret.ch.green = bg_color->ch.green + ((fg_color->ch.green - bg_color->ch.green) * (factor >> 5) >> 3);
-        ret.ch.blue  = bg_color->ch.blue + ((fg_color->ch.blue - bg_color->ch.blue) * (factor >> 6) >> 2);
-        *fg_color++ = ret;
-
-#elif (CONFIG_SGL_PANEL_PIXEL_DEPTH == SGL_COLOR_RGB565)
-
-        factor = (uint32_t)((uint32_t)factor + 4) >> 3;
-        uint32_t bg = (uint32_t)((uint32_t)bg_color->full | ((uint32_t)bg_color->full << 16)) & 0x07E0F81F; 
-        uint32_t fg = (uint32_t)((uint32_t)fg_color->full | ((uint32_t)fg_color->full << 16)) & 0x07E0F81F;
-        uint32_t result = ((((fg - bg) * factor) >> 5) + bg) & 0x7E0F81F;
-        ret.full = (uint16_t)((result >> 16) | result);
-        *fg_color++ = ret;
-
-#elif (CONFIG_SGL_PANEL_PIXEL_DEPTH == SGL_COLOR_RGB888)
-
-        ret.ch.red   = bg_color->ch.red + ((fg_color->ch.red - bg_color->ch.red) * factor >> 8);
-        ret.ch.green = bg_color->ch.green + ((fg_color->ch.green - bg_color->ch.green) * factor >> 8);
-        ret.ch.blue  = bg_color->ch.blue + ((fg_color->ch.blue - bg_color->ch.blue) * factor >> 8);
-        *fg_color++ = ret;
-
-#elif (CONFIG_SGL_PANEL_PIXEL_DEPTH == SGL_COLOR_ARGB8888)
-
-        ret.ch.alpha = bg_color->ch.alpha + ((fg_color->ch.alpha - bg_color->ch.alpha) * factor >> 8);
-        ret.ch.red   = bg_color->ch.red + ((fg_color->ch.red - bg_color->ch.red) * factor >> 8);
-        ret.ch.green = bg_color->ch.green + ((fg_color->ch.green - bg_color->ch.green) * factor >> 8);
-        ret.ch.blue  = bg_color->ch.blue + ((fg_color->ch.blue - bg_color->ch.blue) * factor >> 8);
-        *fg_color++ = ret;
-
-#endif
-    }
 }
 
 
@@ -1553,7 +1451,7 @@ static inline void sgl_draw_task(sgl_area_t *dirty)
     /* check dirty area, ensure it is valid */
     SGL_ASSERT(dirty != NULL && dirty->x1 >= 0 && dirty->y1 >= 0 && dirty->x2 < SGL_SCREEN_WIDTH && dirty->y2 < SGL_SCREEN_HEIGHT);
 
-#if (!CONFIG_SGL_USE_FULL_FB)
+#if (!CONFIG_SGL_USE_FB_CTL)
     uint16_t dirty_h = 0, draw_h = 0;
     dirty_h = dirty->y2 - dirty->y1 + 1;
 
@@ -1576,13 +1474,7 @@ static inline void sgl_draw_task(sgl_area_t *dirty)
         sgl_surf_buffer_swap(surf);
     }
 #else
-    surf->x1 = dirty->x1;
-    surf->y1 = dirty->y1;
-    surf->x2 = dirty->x2;
-    surf->y2 = dirty->y2;
-
     SGL_LOG_TRACE("sgl_draw_task: dirty area  x1:%d y1:%d x2:%d y2:%d", dirty->x1, dirty->y1, dirty->x2, dirty->y2);
-
     draw_obj_slice(head, surf);
     sgl_surf_buffer_swap(surf);
 #endif
