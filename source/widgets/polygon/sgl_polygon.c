@@ -135,8 +135,7 @@ static void sgl_polygon_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_event
                 .alpha = polygon->alpha
             };
             
-            sgl_draw_line(surf, &line);
-
+            sgl_draw_line(surf, &obj->area, &line);
         }
     }
     
