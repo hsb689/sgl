@@ -120,7 +120,7 @@ void draw_line_sdf(sgl_surf_t *surf, sgl_area_t *area, int16_t x1, int16_t y1, i
 {
 	uint8_t c;
 	int64_t len;
-	sgl_area_t clip = SGL_AREA_MAX;
+	sgl_area_t clip = SGL_AREA_INVALID;
 	sgl_color_t *buf = NULL, *blend = NULL;
 	int16_t thick_half = (thickness >> 1);
 	sgl_area_t c_rect = {.x1 = x1 - thick_half, .x2 = x2 + thick_half, .y1 = y1 - thick_half,.y2 = y2 + thick_half};

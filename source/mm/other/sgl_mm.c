@@ -96,7 +96,7 @@ void sgl_mm_add_pool(void *mem_start, size_t len)
  * 
  * @return point to request memory address
 */
-SGL_WEAK void* sgl_malloc(size_t size)
+sgl_weak_fn void* sgl_malloc(size_t size)
 {
     void *p = malloc(size);
     memset(p, 0, size);
@@ -110,7 +110,7 @@ SGL_WEAK void* sgl_malloc(size_t size)
  * @param  p      the pointer of request size of memory
  * @param  size   request size of memory
  */
-SGL_WEAK void* sgl_realloc(void *p, size_t size)
+sgl_weak_fn void* sgl_realloc(void *p, size_t size)
 {
     return realloc(p, size);
 }
@@ -123,7 +123,7 @@ SGL_WEAK void* sgl_realloc(void *p, size_t size)
  * 
  * @return none
 */
-SGL_WEAK void sgl_free(void *p)
+sgl_weak_fn void sgl_free(void *p)
 {
     //mem.used_size -= ;
     free(p);
