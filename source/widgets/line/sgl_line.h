@@ -93,8 +93,8 @@ static inline void sgl_line_set_pos(sgl_obj_t *obj, int16_t x1, int16_t y1, int1
 	sgl_line_t *line = (sgl_line_t*)obj;
 	line->desc.start.x = obj->parent->coords.x1 + x1;
 	line->desc.start.y = obj->parent->coords.y1 + y1;
-	line->desc.end.x = line->desc.start.x + x2;
-	line->desc.end.y = line->desc.start.y + y2;
+	line->desc.end.x = obj->parent->coords.x1 + x2;
+	line->desc.end.y = obj->parent->coords.y1 + y2;
 
 	/* default thinckness is 1 */
 	obj->coords.x1 = line->desc.start.x - 1;
