@@ -64,20 +64,12 @@ void sgl_draw_fill_rect(sgl_surf_t *surf, sgl_area_t *area, sgl_area_t *rect, in
 
     buf = sgl_surf_get_buf(surf, clip.x1 - surf->x1, clip.y1 - surf->y1);
     if (radius == 0) {
-        if (alpha == SGL_ALPHA_MAX) {
-            for (int y = clip.y1; y <= clip.y2; y++) {
-                sgl_color_set(buf, color, clip.x2 - clip.x1 + 1);
-                buf += surf->pitch;
+        for (int y = clip.y1; y <= clip.y2; y++) {
+            blend = buf;
+            for (int x = clip.x1; x <= clip.x2; x++, blend++) {
+                *blend = alpha == SGL_ALPHA_MAX ? color : sgl_color_mixer(color, *blend, alpha);
             }
-        }
-        else {
-            for (int y = clip.y1; y <= clip.y2; y++) {
-                blend = buf;
-                for (int x = clip.x1; x <= clip.x2; x++, blend++) {
-                    *blend = sgl_color_mixer(*blend, color, alpha);
-                }
-                buf += surf->pitch;
-            }
+            buf += surf->pitch;
         }
     }
     else {

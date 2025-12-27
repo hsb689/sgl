@@ -39,7 +39,7 @@ static void sgl_2dball_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_event_
 
     if(evt->type == SGL_EVENT_DRAW_MAIN) {
         sgl_area_t clip;
-        sgl_color_t *buf = NULL;
+        sgl_color_t *buf = NULL, *blend = NULL;
 
         ball->cx = (ball->obj.coords.x1 + ball->obj.coords.x2) / 2;
         ball->cy = (ball->obj.coords.y1 + ball->obj.coords.y2) / 2;
@@ -63,11 +63,12 @@ static void sgl_2dball_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_event_
         int r2_edge = sgl_pow2(ball->radius + 1);
         int ds_alpha = SGL_ALPHA_MIN;
 
+        buf = sgl_surf_get_buf(surf, clip.x1 - surf->x1, clip.y1 - surf->y1);
         for (int y = clip.y1; y <= clip.y2; y++) {
             y2 = sgl_pow2(y - ball->cy);
-            buf = sgl_surf_get_buf(surf, clip.x1 - surf->x1, y - surf->y1);
+            blend = buf;
 
-            for (int x = clip.x1; x <= clip.x2; x++, buf++) {
+            for (int x = clip.x1; x <= clip.x2; x++, blend++) {
                 real_r2 = sgl_pow2(x - ball->cx) + y2;
                 ds_alpha = real_r2 * SGL_ALPHA_NUM / r2;
 
@@ -78,13 +79,14 @@ static void sgl_2dball_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_event_
                 }
                 else if (real_r2 >= r2) {
                     edge_alpha = SGL_ALPHA_MAX - sgl_sqrt_error(real_r2);
-                    sgl_color_t color_mix = sgl_color_mixer(ball->bg_color, *buf, edge_alpha);
-                    *buf = sgl_color_mixer(color_mix, *buf, ball->alpha);
+                    sgl_color_t color_mix = sgl_color_mixer(ball->bg_color, *blend, edge_alpha);
+                    *blend = sgl_color_mixer(color_mix, *blend, ball->alpha);
                 }
                 else {
-                    *buf = sgl_color_mixer(sgl_color_mixer(ball->bg_color, ball->color, ds_alpha), *buf, ball->alpha);
+                    *blend = sgl_color_mixer(sgl_color_mixer(ball->bg_color, ball->color, ds_alpha), *blend, ball->alpha);
                 }
             }
+            buf += surf->pitch;
         }
     }
     else if(evt->type == SGL_EVENT_DRAW_INIT) {
