@@ -107,7 +107,7 @@ static void sgl_ext_img_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_event
         if (!sgl_surf_clip(surf, &obj->area, &clip)) {
             return;
         }
-
+    
         if (ext_img->pixmap->format < SGL_PIXMAP_FMT_RLE_RGB332) {
 
             buf = sgl_surf_get_buf(surf, clip.x1 - surf->x1, clip.y1 - surf->y1);
@@ -172,6 +172,7 @@ static void sgl_ext_img_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_event
         else {
             /* RLE pixmap support */
             buf = sgl_surf_get_buf(surf, clip.x1 - surf->x1, (clip.y1 - surf->y1));
+            clip.y2 = sgl_min(clip.y2, area.y2);
             ext_img_rle_init(ext_img);
             for (int y = clip.y1; y <= clip.y2; y++) {
                 rle_decompress_line(ext_img, &area, &clip, buf);
