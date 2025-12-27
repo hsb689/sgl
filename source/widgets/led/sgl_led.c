@@ -37,10 +37,10 @@ static void sgl_led_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_event_t *
 {
     sgl_led_t *led = (sgl_led_t*)obj;
     sgl_color_t color = led->status ? led->color : led->bg_color;
+    sgl_color_t *buf = NULL, *blend = NULL;
 
     if(evt->type == SGL_EVENT_DRAW_MAIN) {
         sgl_area_t clip;
-        sgl_color_t *buf = NULL;
 
         led->cx = (led->obj.coords.x1 + led->obj.coords.x2) / 2;
         led->cy = (led->obj.coords.y1 + led->obj.coords.y2) / 2;
@@ -64,11 +64,12 @@ static void sgl_led_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_event_t *
         int r2_edge = sgl_pow2(obj->radius + 1);
         int ds_alpha = SGL_ALPHA_MIN;
 
+        buf = sgl_surf_get_buf(surf, clip.x1 - surf->x1, clip.y1 - surf->y1);
         for (int y = clip.y1; y <= clip.y2; y++) {
             y2 = sgl_pow2(y - led->cy);
-            buf = sgl_surf_get_buf(surf, clip.x1 - surf->x1, y - surf->y1);
+            blend = buf;
 
-            for (int x = clip.x1; x <= clip.x2; x++, buf++) {
+            for (int x = clip.x1; x <= clip.x2; x++, blend++) {
                 real_r2 = sgl_pow2(x - led->cx) + y2;
                 if (real_r2 >= r2_edge) {
                     if(x > led->cx)
@@ -77,15 +78,16 @@ static void sgl_led_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_event_t *
                 }
                 else if (real_r2 >= r2) {
                     edge_alpha = SGL_ALPHA_MAX - sgl_sqrt_error(real_r2);
-                    sgl_color_t color_mix = sgl_color_mixer(led->bg_color, *buf, edge_alpha);
-                    *buf = sgl_color_mixer(color_mix, *buf, led->alpha);
+                    sgl_color_t color_mix = sgl_color_mixer(led->bg_color, *blend, edge_alpha);
+                    *blend = sgl_color_mixer(color_mix, *blend, led->alpha);
                 }
                 else {
                     ds_alpha = real_r2 * SGL_ALPHA_NUM / r2;
                     ds_alpha = sgl_pow2(ds_alpha) / SGL_ALPHA_NUM ;
-                    *buf = sgl_color_mixer(sgl_color_mixer(led->bg_color, color, ds_alpha), *buf, led->alpha);
+                    *blend = sgl_color_mixer(sgl_color_mixer(led->bg_color, color, ds_alpha), *blend, led->alpha);
                 }
             }
+            buf += surf->pitch;
         }
     }
     else if (evt->type == SGL_EVENT_DRAW_INIT) {
