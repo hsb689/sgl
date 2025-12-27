@@ -102,7 +102,7 @@ static void sgl_ext_img_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_event
     };
 
     if(evt->type == SGL_EVENT_DRAW_MAIN) {
-        sgl_color_t *buf = NULL;
+        sgl_color_t *buf = NULL, *blend = NULL;
 
         if (!sgl_surf_clip(surf, &obj->area, &clip)) {
             return;
@@ -110,13 +110,14 @@ static void sgl_ext_img_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_event
 
         if (ext_img->pixmap->format < SGL_PIXMAP_FMT_RLE_RGB332) {
 
+            buf = sgl_surf_get_buf(surf, clip.x1 - surf->x1, clip.y1 - surf->y1);
             if (ext_img->read != NULL) {
                 uint8_t *pixmap_buf = (uint8_t*)sgl_malloc(pix_byte * (clip.x2 - clip.x1 + 1));
                 sgl_color_t tmp_color;
                 uint32_t offset = 0, line_ofs = 0;
 
                 for (int y = clip.y1; y <= clip.y2; y++) {
-                    buf = sgl_surf_get_buf(surf, clip.x1 - surf->x1, y - surf->y1);
+                    blend = buf;
                     offset = ((((y - area.y1) * ext_img->pixmap->width) + (clip.x1 - area.x1)) * pix_byte);
 
                     ext_img->read(bitmap + offset, pixmap_buf, pix_byte * (clip.x2 - clip.x1 + 1));
@@ -134,9 +135,10 @@ static void sgl_ext_img_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_event
                         }
 
                         line_ofs += pix_byte;
-                        *buf = ext_img->alpha == SGL_ALPHA_MAX ? tmp_color : sgl_color_mixer(tmp_color, *buf, ext_img->alpha);
-                        buf ++;
-                    };
+                        *blend = ext_img->alpha == SGL_ALPHA_MAX ? tmp_color : sgl_color_mixer(tmp_color, *blend, ext_img->alpha);
+                        blend ++;
+                    }
+                    buf += surf->pitch;
                 }
                 sgl_free(pixmap_buf);
             }
@@ -145,7 +147,7 @@ static void sgl_ext_img_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_event
                 uint32_t offset = 0;
 
                 for (int y = clip.y1; y <= clip.y2; y++) {
-                    buf = sgl_surf_get_buf(surf, clip.x1 - surf->x1, y - surf->y1);
+                    blend = buf;
                     offset = ((((y - area.y1) * ext_img->pixmap->width) + (clip.x1 - area.x1)) * pix_byte);
 
                     for (int x = clip.x1; x <= clip.x2; x++) {
@@ -160,23 +162,22 @@ static void sgl_ext_img_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_event
                         }
 
                         offset += pix_byte;
-                        *buf = ext_img->alpha == SGL_ALPHA_MAX ? tmp_color : sgl_color_mixer(tmp_color, *buf, ext_img->alpha);
-                        buf ++;
+                        *blend = ext_img->alpha == SGL_ALPHA_MAX ? tmp_color : sgl_color_mixer(tmp_color, *blend, ext_img->alpha);
+                        blend ++;
                     };
+                    buf += surf->pitch;
                 }
             }
         }
         else {
             /* RLE pixmap support */
+            buf = sgl_surf_get_buf(surf, clip.x1 - surf->x1, (clip.y1 - surf->y1));
             ext_img_rle_init(ext_img);
-            for (int y = area.y1; y <= clip.y1; y++) {
-                rle_decompress_line(ext_img, &area, &obj->area, NULL);
-            }
             for (int y = clip.y1; y <= clip.y2; y++) {
-                buf = sgl_surf_get_buf(surf, clip.x1 - surf->x1, y - surf->y1);
                 rle_decompress_line(ext_img, &area, &clip, buf);
+                buf += surf->pitch;
             }
-            if (surf->y2 >= clip.y2) {
+            if (surf->y2 >= area.y2) {
                 ext_img->started = 0;
             }
         }

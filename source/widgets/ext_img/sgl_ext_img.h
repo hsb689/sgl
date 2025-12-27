@@ -87,7 +87,6 @@ typedef struct sgl_ext_img {
     uint32_t        index;
 }sgl_ext_img_t;
 
-
 /**
  * @brief create an ext_img object
  * @param parent parent of the ext_img

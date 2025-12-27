@@ -170,5 +170,13 @@ void sgl_draw_line(sgl_surf_t *surf, sgl_area_t *area, sgl_draw_line_t *desc)
 	int16_t x2 = desc->end.x;
 	int16_t y2 = desc->end.y;
 
-	draw_line_sdf(surf, area, x1, y1, x2, y2, desc->width, desc->color, alpha);
+	if (x1 == x2) {
+		sgl_draw_fill_vline(surf, x1, y1, y2, desc->width, desc->color, alpha);
+	}
+	else if (y1 == y2) {
+		sgl_draw_fill_hline(surf, y1, x1, x2, desc->width, desc->color, alpha);
+	}
+	else {
+		draw_line_sdf(surf, area, x1, y1, x2, y2, desc->width, desc->color, alpha);
+	}
 }
