@@ -30,26 +30,18 @@
 /**
  * @brief draw a horizontal line with alpha
  * @param surf surface
- * @param y y coordinate
- * @param x1 x start coordinate
- * @param x2 x end coordinate
- * @param width line width
+ * @param area area that contains the line
  * @param color line color
  * @param alpha alpha of color
  * @return none
  */
-void sgl_draw_fill_hline(sgl_surf_t *surf, int16_t y, int16_t x1, int16_t x2, int16_t width, sgl_color_t color, uint8_t alpha)
+void sgl_draw_fill_hline(sgl_surf_t *surf, sgl_area_t *area, sgl_color_t color, uint8_t alpha)
 {
     sgl_area_t clip;
     sgl_color_t *buf = NULL, *blend = NULL;
-    sgl_area_t coords = {
-        .x1 = x1,
-        .y1 = y,
-        .x2 = x2,
-        .y2 = y + width - 1,
-    };
 
-    if (!sgl_surf_clip(surf, &coords, &clip)) {
+	SGL_LOG_INFO("sgl_draw_fill_hline AREA = %d, %d, %d, %d", area->x1, area->y1, area->x2, area->y2);
+    if (!sgl_surf_clip(surf, area, &clip)) {
         return;
     }
 
@@ -67,26 +59,16 @@ void sgl_draw_fill_hline(sgl_surf_t *surf, int16_t y, int16_t x1, int16_t x2, in
 /**
  * @brief draw a vertical line with alpha
  * @param surf surface
- * @param x x coordinate
- * @param y1 y start coordinate
- * @param y2 y end coordinate
- * @param width line width
+ * @param area area that contains the line
  * @param color line color
  * @param alpha alpha of color
  * @return none
  */
-void sgl_draw_fill_vline(sgl_surf_t *surf, int16_t x, int16_t y1, int16_t y2, int16_t width, sgl_color_t color, uint8_t alpha)
+void sgl_draw_fill_vline(sgl_surf_t *surf, sgl_area_t *area, sgl_color_t color, uint8_t alpha)
 {
     sgl_area_t clip;
     sgl_color_t *buf = NULL, *blend = NULL;
-    sgl_area_t coords = {
-        .x1 = x,
-        .y1 = y1,
-        .x2 = x + width - 1,
-        .y2 = y2,
-    };
-
-    if (!sgl_surf_clip(surf, &coords, &clip)) {
+    if (!sgl_surf_clip(surf, area, &clip)) {
         return;
     }
 
@@ -171,10 +153,10 @@ void sgl_draw_line(sgl_surf_t *surf, sgl_area_t *area, sgl_draw_line_t *desc)
 	int16_t y2 = desc->end.y;
 
 	if (x1 == x2) {
-		sgl_draw_fill_vline(surf, x1, y1, y2, desc->width, desc->color, alpha);
+		sgl_draw_fill_vline(surf, area, desc->color, alpha);
 	}
 	else if (y1 == y2) {
-		sgl_draw_fill_hline(surf, y1, x1, x2, desc->width, desc->color, alpha);
+		sgl_draw_fill_hline(surf, area, desc->color, alpha);
 	}
 	else {
 		draw_line_sdf(surf, area, x1, y1, x2, y2, desc->width, desc->color, alpha);
