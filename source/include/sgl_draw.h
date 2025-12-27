@@ -416,29 +416,23 @@ void sgl_draw_fill_ring(sgl_surf_t *surf, sgl_area_t *area, int16_t cx, int16_t 
 /**
  * @brief draw a horizontal line with alpha
  * @param surf surface
- * @param y y coordinate
- * @param x1 x start coordinate
- * @param x2 x end coordinate
- * @param width line width
+ * @param area area that contains the line
  * @param color line color
  * @param alpha alpha of color
  * @return none
  */
-void sgl_draw_fill_hline(sgl_surf_t *surf, int16_t y, int16_t x1, int16_t x2, int16_t width, sgl_color_t color, uint8_t alpha);
+void sgl_draw_fill_hline(sgl_surf_t *surf, sgl_area_t *area, sgl_color_t color, uint8_t alpha);
 
 
 /**
  * @brief draw a vertical line with alpha
  * @param surf surface
- * @param x x coordinate
- * @param y1 y start coordinate
- * @param y2 y end coordinate
- * @param width line width
+ * @param area area that contains the line
  * @param color line color
  * @param alpha alpha of color
  * @return none
  */
-void sgl_draw_fill_vline(sgl_surf_t *surf, int16_t x, int16_t y1, int16_t y2, int16_t width, sgl_color_t color, uint8_t alpha);
+void sgl_draw_fill_vline(sgl_surf_t *surf, sgl_area_t *area, sgl_color_t color, uint8_t alpha);
 
 
 /**

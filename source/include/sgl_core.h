@@ -39,7 +39,7 @@ extern "C" {
 
 
 /* the maximum depth of object*/
-#define  SGL_OBJ_DEPTH_MAX                 (16)
+#define  SGL_OBJ_DEPTH_MAX                 (32)
 /* the maximum number of drawing buffers */
 #define  SGL_DRAW_BUFFER_MAX               (2)
 /* define default animation tick ms */
@@ -1370,12 +1370,11 @@ static inline int16_t sgl_obj_get_border_width(sgl_obj_t *obj)
 static inline sgl_area_t sgl_obj_get_fill_rect(sgl_obj_t *obj)
 {
     SGL_ASSERT(obj != NULL);
-    sgl_area_t fill = {
-        obj->coords.x1 + obj->border,
-        obj->coords.y1 + obj->border,
-        obj->coords.x2 - obj->border,
-        obj->coords.y2 - obj->border
-    };
+    sgl_area_t fill = SGL_AREA_INVALID;
+    fill.x1 = sgl_max(obj->coords.x1 + obj->border, obj->area.x1);
+    fill.y1 = sgl_max(obj->coords.y1 + obj->border, obj->area.y1);
+    fill.x2 = sgl_min(obj->coords.x2 - obj->border, obj->area.x2);
+    fill.y2 = sgl_min(obj->coords.y2 - obj->border, obj->area.y2);
     return fill;
 }
 
