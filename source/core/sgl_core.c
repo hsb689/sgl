@@ -225,18 +225,17 @@ void sgl_obj_move_child_pos(sgl_obj_t *obj, int16_t ofs_x, int16_t ofs_y)
 
 
 /**
- * @brief Set object position
+ * @brief Set object absolute position
  * @param obj point to object
- * @param x: x position
- * @param y: y position
+ * @param abs_x: x absolute position
+ * @param abs_y: y absolute position
  * @return none
  */
-void sgl_obj_set_pos(sgl_obj_t *obj, int16_t x, int16_t y)
+void sgl_obj_set_abs_pos(sgl_obj_t *obj, int16_t abs_x, int16_t abs_y)
 {
     SGL_ASSERT(obj != NULL);
-
-    int16_t x_diff = (obj->parent->coords.x1 + x) - obj->coords.x1;
-    int16_t y_diff = (obj->parent->coords.y1 + y) - obj->coords.y1;
+    int16_t x_diff = abs_x - obj->coords.x1;
+    int16_t y_diff = abs_y - obj->coords.y1;
 
     obj->dirty = 1;
     obj->coords.x1 += x_diff;
@@ -1241,9 +1240,7 @@ void sgl_obj_set_pos_align(sgl_obj_t *obj, sgl_align_type_t type)
 
     obj_pos = sgl_get_align_pos(&p_size, &obj_size, type);
 
-    sgl_obj_set_pos(obj, p_pos.x + obj_pos.x,
-                         p_pos.y + obj_pos.y
-                    );
+    sgl_obj_set_abs_pos(obj, p_pos.x + obj_pos.x, p_pos.y + obj_pos.y);
 }
 
 

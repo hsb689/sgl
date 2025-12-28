@@ -1066,16 +1066,6 @@ static inline void sgl_obj_update_area(sgl_obj_t *obj)
 
 
 /**
- * @brief Set object position
- * @param obj point to object
- * @param x: x position
- * @param y: y position
- * @return none
- */
-void sgl_obj_set_pos(sgl_obj_t *obj, int16_t x, int16_t y);
-
-
-/**
  * @brief move object child position
  * @param obj point to object
  * @param ofs_x: x offset position
@@ -1120,24 +1110,6 @@ void sgl_obj_size_zoom(sgl_obj_t *obj, int16_t zoom);
 
 
 /**
- * @brief Get object position
- * @param obj point to object
- * @return sgl_pos_t: position of object
- * @note this function will return the top left corner position of the object relative to its parent
- */
-static inline sgl_pos_t sgl_obj_get_pos(sgl_obj_t *obj)
-{
-    SGL_ASSERT(obj != NULL);
-
-    sgl_pos_t pos;
-    pos.x = obj->coords.x1 - obj->parent->coords.x1;
-    pos.y = obj->coords.y1 - obj->parent->coords.y1;
-    return pos;
-}
-
-
-
-/**
  * @brief move object up a level layout
  * @param obj point to object
  * @return none
@@ -1174,50 +1146,91 @@ void sgl_obj_move_background(sgl_obj_t *obj);
 
 
 /**
- * @brief Set object x position
+ * @brief Set object absolute position
+ * @param obj point to object
+ * @param abs_x: x absolute position
+ * @param abs_y: y absolute position
+ * @return none
+ */
+void sgl_obj_set_abs_pos(sgl_obj_t *obj, int16_t abs_x, int16_t abs_y);
+
+
+/**
+ * @brief Set object relative position
+ * @param obj point to object
+ * @param x: x relative position
+ * @param y: y relative position
+ * @return none
+ * @note This x and y position is relative to the parent object
+ */
+static inline void sgl_obj_set_pos(sgl_obj_t *obj, int16_t x, int16_t y)
+{
+    sgl_obj_set_abs_pos(obj, obj->parent->coords.x1 + x, obj->parent->coords.y1 + y);
+}
+
+
+/**
+ * @brief Get object position
+ * @param obj point to object
+ * @return sgl_pos_t: position of object
+ * @note this function will return the top left corner position of the object relative to its parent
+ */
+static inline sgl_pos_t sgl_obj_get_pos(sgl_obj_t *obj)
+{
+    SGL_ASSERT(obj != NULL);
+
+    sgl_pos_t pos;
+    pos.x = obj->coords.x1 - obj->parent->coords.x1;
+    pos.y = obj->coords.y1 - obj->parent->coords.y1;
+    return pos;
+}
+
+
+/**
+ * @brief Set object x relative position
  * @param obj point to object
  * @param x x position
  * @return none
- * @note this function will set the x position of the object
+ * @note this function will set the x position of the object, it's relative to the parent object
  */
 static inline void sgl_obj_set_pos_x(sgl_obj_t *obj, int16_t x)
 {
-    sgl_obj_set_pos(obj, x, obj->coords.y1);
+    sgl_obj_set_abs_pos(obj, obj->parent->coords.x1 + x, obj->coords.y1);
 }
 
 
 /**
- * @brief Get object x position
+ * @brief Get object x relative position
  * @param obj point to object
- * @return x position
+ * @return x position, it's relative to the parent object
  */
 static inline size_t sgl_obj_get_pos_x(sgl_obj_t *obj)
 {
-    return obj->coords.x1;
+    return (obj->coords.x1 - obj->parent->coords.x1);
 }
 
 
 /**
- * @brief Set object y position
+ * @brief Set object y relative position
  * @param obj point to object
  * @param y y position
  * @return none
- * @note this function will set the y position of the object
+ * @note this function will set the y position of the object, it's relative to the parent object
  */
 static inline void sgl_obj_set_pos_y(sgl_obj_t *obj, int16_t y)
 {
-    sgl_obj_set_pos(obj, obj->coords.x1, y);
+    sgl_obj_set_abs_pos(obj, obj->coords.x1, obj->parent->coords.y1 + y);
 }
 
 
 /**
- * @brief Get object y position
+ * @brief Get object y relative position
  * @param obj point to object
- * @return y position
+ * @return y position, it's relative to the parent object
  */
 static inline int16_t sgl_obj_get_pos_y(sgl_obj_t *obj)
 {
-    return obj->coords.y1;
+    return obj->coords.y1 - obj->parent->coords.y1;
 }
 
 
