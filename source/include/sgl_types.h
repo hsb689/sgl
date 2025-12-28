@@ -122,55 +122,47 @@ extern "C" {
 #  define likely(x)                             __builtin_expect(!!(x), 1)
 #  define unlikely(x)                           __builtin_expect(!!(x), 0)
 #endif
+#define sgl_weak_fn                             __attribute__((weak))
+#define sgl_section(sec)                        __attribute__((section(#sec)))
 #elif defined(__clang__)   /* clang compiler */
 #ifndef likely
 #  define likely(x)                             __builtin_expect(!!(x), 1)
 #  define unlikely(x)                           __builtin_expect(!!(x), 0)
 #endif
+#define sgl_weak_fn                             __attribute__((weak))
+#define sgl_section(sec)                        __attribute__((section(#sec)))
 #elif defined(__CC_ARM)    /* RealView compiler (Keil ARMCC) */
 #ifndef likely
 #  define likely(x)                             __builtin_expect(!!(x), 1)
 #  define unlikely(x)                           __builtin_expect(!!(x), 0)
 #endif
+#define sgl_weak_fn                             __weak
+#define sgl_section(sec)                        __attribute__((section(#sec)))
 #elif defined(__ICCARM__)  /* IAR compiler    */
 #ifndef likely
 #  define likely(x)                             __iar_builtin_expect(!!(x), 1)
 #  define unlikely(x)                           __iar_builtin_expect(!!(x), 0)
 #endif
+#define sgl_weak_fn                             __weak
+#define sgl_section(sec)                        __section(#sec)
 #elif defined(_MSC_VER)    /* MSVC compiler   */
 #ifndef likely
 #  define likely(x)                             (x)
 #  define unlikely(x)                           (x)
 #endif
+#define sgl_weak_fn                             __declspec(selectany)
 #elif defined(__MINGW32__) /* MinGW compiler  */
 #ifndef likely
 #define likely(x)                               __builtin_expect(!!(x), 1)
 #define unlikely(x)                             __builtin_expect(!!(x), 0)
 #endif
+#define sgl_weak_fn                             __attribute__((weak))
 #else                      /* others compiler */
 #ifndef likely
 #  define likely(x)                             (x)
 #  define unlikely(x)                           (x)
 #endif
-#endif
-
-/* Portable weak linkage attribute for different compilers */
-#if defined(__GNUC__) || defined(__clang__)
-  /* GCC and Clang */
-  #define sgl_weak_fn                           __attribute__((weak))
-#elif defined(__ARMCC_VERSION)
-  /* ARM Compiler (Keil) */
-  #define sgl_weak_fn                           __weak
-#elif defined(__IAR_SYSTEMS_ICC__)
-  /* IAR Compiler */
-  #define sgl_weak_fn                           __weak
-#elif defined(_MSC_VER)
-  /* Microsoft Visual C++ (weak linkage via pragma) */
-  #define sgl_weak_fn                           __declspec(selectany)
-#else
-  /* Fallback for unknown compilers */
-  #define sgl_weak_fn
-  #warning "Weak linkage not supported for this compiler"
+#warning "Weak linkage not supported for this compiler"                    
 #endif
 
 
