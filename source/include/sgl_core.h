@@ -1156,6 +1156,23 @@ void sgl_obj_set_abs_pos(sgl_obj_t *obj, int16_t abs_x, int16_t abs_y);
 
 
 /**
+ * @brief Get object absolute position
+ * @param obj point to object
+ * @param abs_x: point to x absolute position
+ * @param abs_y: point to y absolute position
+ * @return none
+ */
+static inline sgl_pos_t sgl_obj_get_abs_pos(sgl_obj_t *obj)
+{
+    sgl_pos_t pos = {
+        .x = obj->coords.x1,
+        .y = obj->coords.y1
+    };
+    return pos;
+}
+
+
+/**
  * @brief Set object relative position
  * @param obj point to object
  * @param x: x relative position
