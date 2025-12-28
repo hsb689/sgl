@@ -253,7 +253,7 @@ static void scope_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_event_t *ev
         grid_line.start.y = y_center;
         grid_line.end.x = obj->coords.x2;
         grid_line.end.y = y_center;
-        
+
         if (scope->grid_style == 1) {
             // Draw dashed line
             draw_dashed_line(surf, &obj->area, &grid_line);
@@ -261,7 +261,7 @@ static void scope_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_event_t *ev
             // Draw solid line
             sgl_draw_line(surf, &obj->area, &grid_line);
         }
-        
+
         // Draw vertical center line
         grid_line.start.x = x_center;
         grid_line.start.y = obj->coords.y1;

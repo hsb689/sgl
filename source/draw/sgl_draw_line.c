@@ -31,19 +31,23 @@
  * @brief draw a horizontal line with alpha
  * @param surf surface
  * @param area area that contains the line
+ * @param y line y position
+ * @param x1 line start x position
+ * @param x2 line end x position
  * @param color line color
  * @param alpha alpha of color
  * @return none
  */
-void sgl_draw_fill_hline(sgl_surf_t *surf, sgl_area_t *area, sgl_color_t color, uint8_t alpha)
+void sgl_draw_fill_hline(sgl_surf_t *surf, sgl_area_t *area, int16_t y, int16_t x1, int16_t x2, uint8_t width, sgl_color_t color, uint8_t alpha)
 {
-    sgl_area_t clip;
-    sgl_color_t *buf = NULL, *blend = NULL;
+	sgl_color_t *buf = NULL, *blend = NULL;
+	int16_t thick_half = (width >> 1);
+	sgl_area_t c_rect = {.x1 = x1, .x2 = x2, .y1 = y - thick_half / 2,.y2 = y + thick_half / 2}, clip;
 
-	SGL_LOG_INFO("sgl_draw_fill_hline AREA = %d, %d, %d, %d", area->x1, area->y1, area->x2, area->y2);
-    if (!sgl_surf_clip(surf, area, &clip)) {
-        return;
-    }
+	sgl_surf_clip_area_return(surf, area, &clip);
+	if (!sgl_area_selfclip(&clip, &c_rect)) {
+		return;
+	}
 
     buf = sgl_surf_get_buf(surf,  clip.x1 - surf->x1, clip.y1 - surf->y1);
     for (int y = clip.y1; y <= clip.y2; y++) {
@@ -60,17 +64,23 @@ void sgl_draw_fill_hline(sgl_surf_t *surf, sgl_area_t *area, sgl_color_t color, 
  * @brief draw a vertical line with alpha
  * @param surf surface
  * @param area area that contains the line
+ * @param x x coordinate
+ * @param y1 y1 coordinate
+ * @param y2 y2 coordinate
  * @param color line color
  * @param alpha alpha of color
  * @return none
  */
-void sgl_draw_fill_vline(sgl_surf_t *surf, sgl_area_t *area, sgl_color_t color, uint8_t alpha)
+void sgl_draw_fill_vline(sgl_surf_t *surf, sgl_area_t *area, int16_t x, int16_t y1, int16_t y2, uint8_t width, sgl_color_t color, uint8_t alpha)
 {
-    sgl_area_t clip;
-    sgl_color_t *buf = NULL, *blend = NULL;
-    if (!sgl_surf_clip(surf, area, &clip)) {
-        return;
-    }
+	sgl_color_t *buf = NULL, *blend = NULL;
+	int16_t thick_half = (width >> 1);
+	sgl_area_t c_rect = {.x1 = x - thick_half / 2, .x2 = x + thick_half / 2, .y1 = y1,.y2 = y2}, clip;
+
+	sgl_surf_clip_area_return(surf, area, &clip);
+	if (!sgl_area_selfclip(&clip, &c_rect)) {
+		return;
+	}
 
     buf = sgl_surf_get_buf(surf,  clip.x1 - surf->x1, clip.y1 - surf->y1);
     for (int y = clip.y1; y <= clip.y2; y++) {
@@ -153,10 +163,10 @@ void sgl_draw_line(sgl_surf_t *surf, sgl_area_t *area, sgl_draw_line_t *desc)
 	int16_t y2 = desc->end.y;
 
 	if (x1 == x2) {
-		sgl_draw_fill_vline(surf, area, desc->color, alpha);
+		sgl_draw_fill_vline(surf, area, x1, y1, y2, desc->width, desc->color, alpha);
 	}
 	else if (y1 == y2) {
-		sgl_draw_fill_hline(surf, area, desc->color, alpha);
+		sgl_draw_fill_hline(surf, area, y1, x1, x2, desc->width, desc->color, alpha);
 	}
 	else {
 		draw_line_sdf(surf, area, x1, y1, x2, y2, desc->width, desc->color, alpha);

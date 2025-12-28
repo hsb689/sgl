@@ -106,13 +106,11 @@ static void sgl_msgbox_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_event_
         
         msgbox_draw_text(surf, &obj->area, &title_coords, msgbox->title_icon, msgbox->title_text, font, msgbox->title_color, msgbox->body_desc.alpha, 0);
 
-        sgl_area_t hline = {
-            .x1 = obj->coords.x1 + msgbox->body_desc.border,
-            .x2 = obj->coords.x2 - msgbox->body_desc.border,
-            .y1 = obj->coords.y1 + font_height + 4,
-            .y2 = obj->coords.y1 + font_height + 4,
-        };
-        sgl_draw_fill_hline(surf, &hline,
+        sgl_draw_fill_hline(surf, &obj->area,
+                            obj->coords.y1 + font_height + 4,
+                            obj->coords.x1 + msgbox->body_desc.border,
+                            obj->coords.x2 - msgbox->body_desc.border,
+                            msgbox->body_desc.border,
                             msgbox->body_desc.border_color,
                             msgbox->body_desc.alpha
                            );
