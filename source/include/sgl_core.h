@@ -1123,17 +1123,18 @@ void sgl_obj_size_zoom(sgl_obj_t *obj, int16_t zoom);
  * @brief Get object position
  * @param obj point to object
  * @return sgl_pos_t: position of object
- * @note this function will return the top left corner position of the object
+ * @note this function will return the top left corner position of the object relative to its parent
  */
 static inline sgl_pos_t sgl_obj_get_pos(sgl_obj_t *obj)
 {
     SGL_ASSERT(obj != NULL);
 
     sgl_pos_t pos;
-    pos.x = obj->coords.x1;
-    pos.y = obj->coords.y1;
+    pos.x = obj->coords.x1 - obj->parent->coords.x1;
+    pos.y = obj->coords.y1 - obj->parent->coords.y1;
     return pos;
 }
+
 
 
 /**
