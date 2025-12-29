@@ -46,7 +46,6 @@ typedef struct sgl_msgbox {
 
     const char       *title_text;
     sgl_color_t      title_color;
-    const sgl_icon_pixmap_t *title_icon;
 
     const char       *msg_text;
     sgl_color_t      msg_color;
@@ -58,9 +57,6 @@ typedef struct sgl_msgbox {
     sgl_color_t      close_color;
     const char       *apply_text;
     const char       *close_text;
-    const sgl_icon_pixmap_t *apply_icon;
-    const sgl_icon_pixmap_t *close_icon;
-
 }sgl_msgbox_t;
 
 
@@ -190,19 +186,6 @@ static inline void sgl_msgbox_set_title_text_color(sgl_obj_t *obj, sgl_color_t c
 }
 
 /**
- * @brief set message box title icon
- * @param obj message box object
- * @param icon message box title icon
- * @return none
- */
-static inline void sgl_msgbox_set_title_icon(sgl_obj_t *obj, const sgl_icon_pixmap_t *icon)
-{
-    sgl_msgbox_t *msgbox = (sgl_msgbox_t *)obj;
-    msgbox->title_icon = icon;
-    sgl_obj_set_dirty(obj);
-}
-
-/**
  * @brief set message box message text
  * @param obj message box object
  * @param text message box message text
@@ -255,19 +238,6 @@ static inline void sgl_msgbox_set_apply_text(sgl_obj_t *obj, const char *text)
 }
 
 /**
- * @brief set message box apply button icon
- * @param obj message box object
- * @param icon message box apply button icon
- * @return none
- */
-static inline void sgl_msgbox_set_apply_icon(sgl_obj_t *obj, const sgl_icon_pixmap_t *icon)
-{
-    sgl_msgbox_t *msgbox = (sgl_msgbox_t *)obj;
-    msgbox->apply_icon = icon;
-    sgl_obj_set_dirty(obj);
-}
-
-/**
  * @brief set message box apply button text color
  * @param obj message box object
  * @param color message box apply button text color
@@ -303,19 +273,6 @@ static inline void sgl_msgbox_set_close_text(sgl_obj_t *obj, const char *text)
 {
     sgl_msgbox_t *msgbox = (sgl_msgbox_t *)obj;
     msgbox->close_text = text;
-    sgl_obj_set_dirty(obj);
-}
-
-/**
- * @brief set message box close button icon
- * @param obj message box object
- * @param icon message box close button icon
- * @return none
- */
-static inline void sgl_msgbox_set_close_icon(sgl_obj_t *obj, const sgl_icon_pixmap_t *icon)
-{
-    sgl_msgbox_t *msgbox = (sgl_msgbox_t *)obj;
-    msgbox->close_icon = icon;
     sgl_obj_set_dirty(obj);
 }
 
