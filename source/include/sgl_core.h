@@ -233,10 +233,10 @@ typedef union {
  * @h_max:  maximum height
  */
 typedef struct sgl_surf {
-    int16_t x1;
-    int16_t y1;
-    int16_t x2;
-    int16_t y2;
+    int16_t      x1;
+    int16_t      y1;
+    int16_t      x2;
+    int16_t      y2;
     sgl_color_t *buffer;
     uint32_t     size;
     uint32_t     pitch;
@@ -290,8 +290,8 @@ typedef struct sgl_font_table {
     const uint16_t adv_w;
     const uint16_t box_h;
     const uint16_t box_w;
-    const int8_t  ofs_x;
-    const int8_t  ofs_y;
+    const int8_t   ofs_x;
+    const int8_t   ofs_y;
 } sgl_font_table_t;
 
 
@@ -414,13 +414,13 @@ typedef struct sgl_obj {
  *   slot       - Array of pointers to child sgl_obj_t objects managed by this page.
  *   slot_count - The number of valid child object pointers currently in the 'slot' array.
  *   color      - The default color used for rendering operations on this page.
- *   bg_img     - Pointer to the background pixmap; NULL if no background image is set.
+ *   pixmap     - Pointer to the background pixmap; NULL if no background image is set.
  */
 typedef struct sgl_page {
     sgl_obj_t          obj;
     sgl_surf_t         surf;
     sgl_color_t        color;
-    const sgl_pixmap_t *bg_img;
+    const sgl_pixmap_t *pixmap;
 } sgl_page_t;
 
 
