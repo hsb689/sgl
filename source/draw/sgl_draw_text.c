@@ -167,7 +167,9 @@ static inline void decompress_line(uint8_t *out, int32_t w)
                 rle->state = RLE_STATE_SINGLE;
             }
         }
-        out[i] = ret;
+        if (out != NULL) {
+            out[i] = ret;
+        }
     }
 }
 
@@ -264,18 +266,22 @@ void sgl_draw_character(sgl_surf_t *surf, sgl_area_t *area, int16_t x, int16_t y
         uint8_t line_buf[128] = {0};
         font_rle_init(dot, font->bpp);
 
+        for (int y = text_rect.y1; y < clip.y1; y++) {
+            decompress_line(NULL, font_w);
+        }
+
         for (int y = clip.y1; y <= clip.y2; y++) {
             blend = buf;
             decompress_line(line_buf, font_w);
 
             for (int x = clip.x1; x <= clip.x2; x++) {
                 if (font->bpp == 4) {
-                    color_mix = sgl_color_mixer(color, *blend, opa4_table[line_buf[x - clip.x1]]);
+                    color_mix = sgl_color_mixer(color, *blend, opa4_table[line_buf[x - text_rect.x1]]);
                 }
                 else if (font->bpp == 2) {
-                    color_mix = sgl_color_mixer(color, *blend, opa2_table[line_buf[x - clip.x1]]);
+                    color_mix = sgl_color_mixer(color, *blend, opa2_table[line_buf[x - text_rect.x1]]);
                 }
-                *blend = sgl_color_mixer(color_mix, *buf, alpha);
+                *blend = sgl_color_mixer(color_mix, *blend, alpha);
                 blend++;
             }
             buf += surf->pitch;

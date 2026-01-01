@@ -121,7 +121,7 @@ static void sgl_ext_img_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_event
                     offset = ((((y - area.y1) * ext_img->pixmap->width) + (clip.x1 - area.x1)) * pix_byte);
 
                     ext_img->read(bitmap + offset, pixmap_buf, pix_byte * (clip.x2 - clip.x1 + 1));
-                    line_ofs = (clip.x1 - area.x1);
+                    line_ofs = 0;
 
                     for (int x = clip.x1; x <= clip.x2; x++) {
                         if (ext_img->pixmap->format == SGL_PIXMAP_FMT_RGB332) {

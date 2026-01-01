@@ -87,22 +87,7 @@ static inline void sgl_line_set_alpha(sgl_obj_t *obj, uint8_t alpha)
  * @param y start y position
  * @return none
  */
-static inline void sgl_line_set_pos(sgl_obj_t *obj, int16_t x1, int16_t y1, int16_t x2, int16_t y2)
-{
-	SGL_ASSERT(obj != NULL);
-	sgl_line_t *line = (sgl_line_t*)obj;
-	line->desc.start.x = obj->parent->coords.x1 + x1;
-	line->desc.start.y = obj->parent->coords.y1 + y1;
-	line->desc.end.x = obj->parent->coords.x1 + x2;
-	line->desc.end.y = obj->parent->coords.y1 + y2;
-
-	/* default thinckness is 1 */
-	obj->coords.x1 = line->desc.start.x - 1;
-	obj->coords.y1 = line->desc.start.y - 1;
-	obj->coords.x2 = line->desc.end.x + 1;
-	obj->coords.y2 = line->desc.end.y + 1;
-	sgl_obj_set_dirty(obj);
-}
+void sgl_line_set_pos(sgl_obj_t *obj, int16_t x1, int16_t y1, int16_t x2, int16_t y2);
 
 /**
  * @brief set line width

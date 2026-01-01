@@ -32,23 +32,11 @@
 #define  SGL_MSGBOX_STATUS_EXIT                 (1 << 2)
 
 
-static void msgbox_draw_text(sgl_surf_t *surf, sgl_area_t *area, sgl_rect_t *coords, const sgl_icon_pixmap_t *icon, const char *text, 
-                             const sgl_font_t *font, sgl_color_t color, uint8_t alpha, uint8_t y_offset)
+static void msgbox_draw_text(sgl_surf_t *surf, sgl_area_t *area, sgl_rect_t *coords, const char *text, const sgl_font_t *font, sgl_color_t color, uint8_t alpha, uint8_t y_offset)
 {
     sgl_pos_t align_pos;
-    int32_t text_x = 0, icon_y = 0;
-
-    if (icon) {
-        text_x = icon->width + 2;
-    }
-
-    align_pos = sgl_get_text_pos(coords, font, text, text_x, SGL_ALIGN_CENTER);
-
-    if (icon) {
-        icon_y = ((coords->y2 - coords->y1) - (icon->height)) / 2 + 1;
-        sgl_draw_icon(surf, area, align_pos.x, coords->y1 + icon_y + y_offset, color, alpha, icon);
-    }
-    sgl_draw_string(surf, area, align_pos.x + text_x, align_pos.y + y_offset, text, color, alpha, font);
+    align_pos = sgl_get_text_pos(coords, font, text, 0, SGL_ALIGN_CENTER);
+    sgl_draw_string(surf, area, align_pos.x, align_pos.y + y_offset, text, color, alpha, font);
 }
 
 
@@ -103,8 +91,8 @@ static void sgl_msgbox_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_event_
         }
 
         sgl_draw_rect(surf, &obj->area, &obj->coords, &msgbox->body_desc);
-        
-        msgbox_draw_text(surf, &obj->area, &title_coords, msgbox->title_icon, msgbox->title_text, font, msgbox->title_color, msgbox->body_desc.alpha, 0);
+   
+        msgbox_draw_text(surf, &obj->area, &title_coords, msgbox->title_text, font, msgbox->title_color, msgbox->body_desc.alpha, 0);
 
         sgl_draw_fill_hline(surf, &obj->area,
                             obj->coords.y1 + font_height + 4,
@@ -128,8 +116,8 @@ static void sgl_msgbox_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_event_
 
         sgl_draw_fill_rect(surf, &button_coords, &apply_coords, obj->radius, msgbox->apply_color, msgbox->body_desc.alpha);
         sgl_draw_fill_rect(surf, &button_coords, &close_coords, obj->radius, msgbox->close_color, msgbox->body_desc.alpha);
-        msgbox_draw_text(surf, &obj->area, &apply_coords, msgbox->apply_icon, msgbox->apply_text, font, msgbox->btn_text_color, msgbox->body_desc.alpha, font_height / 2);
-        msgbox_draw_text(surf, &obj->area, &close_coords, msgbox->close_icon, msgbox->close_text, font, msgbox->btn_text_color, msgbox->body_desc.alpha, font_height / 2);
+        msgbox_draw_text(surf, &obj->area, &apply_coords, msgbox->apply_text, font, msgbox->btn_text_color, msgbox->body_desc.alpha, font_height / 2);
+        msgbox_draw_text(surf, &obj->area, &close_coords, msgbox->close_text, font, msgbox->btn_text_color, msgbox->body_desc.alpha, font_height / 2);
     
         if(msgbox->status & SGL_MSGBOX_STATUS_APPLY) {
             msgbox->apply_color = tmp_color;
@@ -200,8 +188,9 @@ sgl_obj_t* sgl_msgbox_create(sgl_obj_t* parent)
 
     msgbox->font = NULL;
     msgbox->msg_color = SGL_THEME_TEXT_COLOR;
+    msgbox->title_text = "Message Box";
     msgbox->msg_line_margin = 1;
-    msgbox->msg_text = "Message Box";
+    msgbox->msg_text = "NULL";
 
     msgbox->apply_color = sgl_color_mixer(SGL_THEME_COLOR, SGL_THEME_TEXT_COLOR, 200);
     msgbox->close_color = sgl_color_mixer(SGL_THEME_COLOR, SGL_THEME_TEXT_COLOR, 200);

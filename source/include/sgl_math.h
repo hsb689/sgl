@@ -55,6 +55,9 @@ extern "C" {
 #define sgl_is_even(x)                    (((x) & 1) == 0)
 #define sgl_is_odd(x)                     ((x) & 1)
 
+#define sgl_swap(a, b)                    do { (*a) ^= (*b); (*b) ^= (*a); (*a) ^= (*b); } while (0)
+
+
 /**
  * @brief Calculate the sine of an angle
  * @param angle: Angle in degrees such 0-359

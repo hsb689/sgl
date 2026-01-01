@@ -49,6 +49,8 @@ sgl_context_t sgl_ctx = {
     },
     .page = NULL,
     .tick_ms = 0,
+    .fb_swap = 0,
+    .fb_ready = 1,
 };
 
 
@@ -225,18 +227,17 @@ void sgl_obj_move_child_pos(sgl_obj_t *obj, int16_t ofs_x, int16_t ofs_y)
 
 
 /**
- * @brief Set object position
+ * @brief Set object absolute position
  * @param obj point to object
- * @param x: x position
- * @param y: y position
+ * @param abs_x: x absolute position
+ * @param abs_y: y absolute position
  * @return none
  */
-void sgl_obj_set_pos(sgl_obj_t *obj, int16_t x, int16_t y)
+void sgl_obj_set_abs_pos(sgl_obj_t *obj, int16_t abs_x, int16_t abs_y)
 {
     SGL_ASSERT(obj != NULL);
-
-    int16_t x_diff = (obj->parent->coords.x1 + x) - obj->coords.x1;
-    int16_t y_diff = (obj->parent->coords.y1 + y) - obj->coords.y1;
+    int16_t x_diff = abs_x - obj->coords.x1;
+    int16_t y_diff = abs_y - obj->coords.y1;
 
     obj->dirty = 1;
     obj->coords.x1 += x_diff;
@@ -493,14 +494,14 @@ void sgl_obj_print_name(sgl_obj_t *obj)
 static void sgl_page_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_event_t *evt)
 {
     sgl_page_t *page = (sgl_page_t *)obj;
-    const sgl_pixmap_t *pixmap = page->bg_img;
+    const sgl_pixmap_t *pixmap = page->pixmap;
 
     if (evt->type == SGL_EVENT_DRAW_MAIN) {
         if (pixmap == NULL) {
             sgl_draw_fill_rect(surf, &obj->area, &obj->coords, 0, page->color, SGL_ALPHA_MAX);
         }
         else {
-            sgl_draw_fill_rect_pixmap(surf, &obj->area, &obj->coords, 0, page->bg_img, SGL_ALPHA_MAX);
+            sgl_draw_fill_rect_pixmap(surf, &obj->area, &obj->coords, 0, pixmap, SGL_ALPHA_MAX);
         }
     }
     else {
@@ -534,7 +535,7 @@ void sgl_page_set_color(sgl_obj_t* obj, sgl_color_t color)
 void sgl_page_set_pixmap(sgl_obj_t* obj, const sgl_pixmap_t *pixmap)
 {
     sgl_page_t* page = (sgl_page_t*)obj;
-    page->bg_img = pixmap;
+    page->pixmap = pixmap;
     sgl_obj_set_dirty(obj);
 }
 
@@ -1241,9 +1242,7 @@ void sgl_obj_set_pos_align(sgl_obj_t *obj, sgl_align_type_t type)
 
     obj_pos = sgl_get_align_pos(&p_size, &obj_size, type);
 
-    sgl_obj_set_pos(obj, p_pos.x + obj_pos.x,
-                         p_pos.y + obj_pos.y
-                    );
+    sgl_obj_set_abs_pos(obj, p_pos.x + obj_pos.x, p_pos.y + obj_pos.y);
 }
 
 
@@ -1323,6 +1322,7 @@ void sgl_obj_set_pos_align_ref(sgl_obj_t *ref, sgl_obj_t *obj, sgl_align_type_t 
 static inline void draw_obj_slice(sgl_obj_t *obj, sgl_surf_t *surf)
 {
     int top = 0;
+    bool flush_flag = false;
 	sgl_event_t evt;
 	sgl_obj_t *stack[SGL_OBJ_DEPTH_MAX];
 
@@ -1353,7 +1353,8 @@ static inline void draw_obj_slice(sgl_obj_t *obj, sgl_surf_t *surf)
 	}
 
     /* flush dirty area into screen */
-    sgl_panel_flush_area(surf->x1, surf->y1, surf->x2, surf->y2, surf->buffer);
+    flush_flag = sgl_panel_flush_area(surf->x1, surf->y1, surf->x2, surf->y2, surf->buffer);
+    sgl_ctx.fb_ready = (sgl_ctx.fb_ready & (1 << sgl_ctx.fb_swap)) | (((uint8_t)flush_flag) << (sgl_ctx.fb_swap ^ 1));
 }
 
 
@@ -1462,7 +1463,7 @@ static inline void sgl_draw_task(sgl_area_t *dirty)
     surf->pitch = surf->x2 - surf->x1 + 1;
     dirty_h = sgl_min(surf->size / surf->pitch, (uint32_t)(dirty->y2 - dirty->y1 + 1));
 
-    SGL_LOG_TRACE("sgl_draw_task: dirty area  x1:%d y1:%d x2:%d y2:%d", dirty->x1, dirty->y1, dirty->x2, dirty->y2);
+    SGL_LOG_TRACE("[fb:%d]sgl_draw_task: dirty area  x1:%d y1:%d x2:%d y2:%d", sgl_ctx.fb_swap, dirty->x1, dirty->y1, dirty->x2, dirty->y2);
 
     while (surf->y1 <= dirty->y2) {
         draw_h = sgl_min(dirty->y2 - surf->y1 + 1, dirty_h);
@@ -1475,7 +1476,7 @@ static inline void sgl_draw_task(sgl_area_t *dirty)
         sgl_surf_buffer_swap(surf);
     }
 #else
-    SGL_LOG_TRACE("sgl_draw_task: dirty area  x1:%d y1:%d x2:%d y2:%d", dirty->x1, dirty->y1, dirty->x2, dirty->y2);
+    SGL_LOG_TRACE("[fb:%d]sgl_draw_task: dirty area  x1:%d y1:%d x2:%d y2:%d", sgl_ctx.fb_swap, dirty->x1, dirty->y1, dirty->x2, dirty->y2);
     draw_obj_slice(head, surf);
     sgl_surf_buffer_swap(surf);
 #endif
@@ -1490,6 +1491,12 @@ static inline void sgl_draw_task(sgl_area_t *dirty)
  */
 void sgl_task_handle_sync(void)
 {
+    /* if framebufffer is not ready, return directly */
+    const uint8_t fb_ready_mask = 1 << sgl_ctx.fb_swap;
+    if (unlikely((sgl_ctx.fb_ready & fb_ready_mask) == 0)) {
+        return;
+    }
+
     /* event task */
     sgl_event_task();
 
@@ -1501,8 +1508,11 @@ void sgl_task_handle_sync(void)
     /* calculate dirty area, if no dirty area, return directly */
     sgl_dirty_area_calculate(&sgl_ctx.page->obj);
 
-    /* draw task  */
-    for (int i = 0; i < sgl_ctx.dirty_num; i++) {
+    /**
+     * draw task for complete frame
+     * dirty area number must less than SGL_DIRTY_AREA_MAX
+     */
+    for (uint8_t i = 0; i < sgl_ctx.dirty_num; i++) {
         sgl_draw_task(&sgl_ctx.dirty[i]);
     }
 

@@ -39,7 +39,7 @@ extern "C" {
 
 
 /* the maximum depth of object*/
-#define  SGL_OBJ_DEPTH_MAX                 (32)
+#define  SGL_OBJ_DEPTH_MAX                 (16)
 /* the maximum number of drawing buffers */
 #define  SGL_DRAW_BUFFER_MAX               (2)
 /* define default animation tick ms */
@@ -233,10 +233,10 @@ typedef union {
  * @h_max:  maximum height
  */
 typedef struct sgl_surf {
-    int16_t x1;
-    int16_t y1;
-    int16_t x2;
-    int16_t y2;
+    int16_t      x1;
+    int16_t      y1;
+    int16_t      x2;
+    int16_t      y2;
     sgl_color_t *buffer;
     uint32_t     size;
     uint32_t     pitch;
@@ -290,8 +290,8 @@ typedef struct sgl_font_table {
     const uint16_t adv_w;
     const uint16_t box_h;
     const uint16_t box_w;
-    const int8_t  ofs_x;
-    const int8_t  ofs_y;
+    const int8_t   ofs_x;
+    const int8_t   ofs_y;
 } sgl_font_table_t;
 
 
@@ -414,13 +414,13 @@ typedef struct sgl_obj {
  *   slot       - Array of pointers to child sgl_obj_t objects managed by this page.
  *   slot_count - The number of valid child object pointers currently in the 'slot' array.
  *   color      - The default color used for rendering operations on this page.
- *   bg_img     - Pointer to the background pixmap; NULL if no background image is set.
+ *   pixmap     - Pointer to the background pixmap; NULL if no background image is set.
  */
 typedef struct sgl_page {
     sgl_obj_t          obj;
     sgl_surf_t         surf;
     sgl_color_t        color;
-    const sgl_pixmap_t *bg_img;
+    const sgl_pixmap_t *pixmap;
 } sgl_page_t;
 
 
@@ -432,7 +432,7 @@ typedef struct sgl_page {
  * @yres: y resolution
  * @xres_virtual: x virtual resolution
  * @yres_virtual: y virtual resolution
- * @flush_area: flush area callback function pointer
+ * @flush_area: flush area callback function pointer, return the finished flag
  */
 typedef struct sgl_device_fb {
     void      *buffer[SGL_DRAW_BUFFER_MAX];
@@ -441,7 +441,7 @@ typedef struct sgl_device_fb {
     int16_t    yres;
     int16_t    xres_virtual;
     int16_t    yres_virtual;
-    void       (*flush_area)(int16_t x1, int16_t y1, int16_t x2, int16_t y2, sgl_color_t *src);
+    bool       (*flush_area)(int16_t x1, int16_t y1, int16_t x2, int16_t y2, sgl_color_t *src);
 } sgl_device_fb_t;
 
 
@@ -454,12 +454,17 @@ typedef struct sgl_device_log {
 } sgl_device_log_t;
 
 
-/* current context, page pointer, and dirty area */
+/**
+ * current context, page pointer, and dirty area
+ * fb_swap: 0 for fb_dev.buffer[0], 1 for fb_dev.buffer[1]
+ * fb_ready: bit 0: fb_dev.buffer[0] is ready, bit 1: fb_dev.buffer[1] is ready
+ */
 typedef struct sgl_context {
     sgl_page_t           *page;
     sgl_device_fb_t      fb_dev;
     sgl_device_log_t     log_dev;
-    uint8_t              fb_swap;
+    uint8_t              fb_swap : 4;
+    uint8_t              fb_ready : 2;
     volatile uint8_t     tick_ms;
     uint16_t             dirty_num;
     sgl_area_t           *dirty;
@@ -493,9 +498,9 @@ int sgl_device_fb_register(sgl_device_fb_t *fb_dev);
  * @param w [in] width
  * @param h [in] height
  * @param src [in] source color
- * @return none
+ * @return bool, true if flush is finished, false if is not finished
  */
-static inline void sgl_panel_flush_area(int16_t x1, int16_t y1, int16_t x2, int16_t y2, sgl_color_t *src)
+static inline bool sgl_panel_flush_area(int16_t x1, int16_t y1, int16_t x2, int16_t y2, sgl_color_t *src)
 {
 #if CONFIG_SGL_COLOR16_SWAP
     uint16_t w = x2 - x1 + 1;
@@ -505,7 +510,7 @@ static inline void sgl_panel_flush_area(int16_t x1, int16_t y1, int16_t x2, int1
         dst[i] = (dst[i] << 8) | (dst[i] >> 8);
     }
 #endif
-    sgl_ctx.fb_dev.flush_area(x1, y1, x2, y2, src);
+    return sgl_ctx.fb_dev.flush_area(x1, y1, x2, y2, src);
 }
 
 
@@ -1066,16 +1071,6 @@ static inline void sgl_obj_update_area(sgl_obj_t *obj)
 
 
 /**
- * @brief Set object position
- * @param obj point to object
- * @param x: x position
- * @param y: y position
- * @return none
- */
-void sgl_obj_set_pos(sgl_obj_t *obj, int16_t x, int16_t y);
-
-
-/**
  * @brief move object child position
  * @param obj point to object
  * @param ofs_x: x offset position
@@ -1120,24 +1115,6 @@ void sgl_obj_size_zoom(sgl_obj_t *obj, int16_t zoom);
 
 
 /**
- * @brief Get object position
- * @param obj point to object
- * @return sgl_pos_t: position of object
- * @note this function will return the top left corner position of the object relative to its parent
- */
-static inline sgl_pos_t sgl_obj_get_pos(sgl_obj_t *obj)
-{
-    SGL_ASSERT(obj != NULL);
-
-    sgl_pos_t pos;
-    pos.x = obj->coords.x1 - obj->parent->coords.x1;
-    pos.y = obj->coords.y1 - obj->parent->coords.y1;
-    return pos;
-}
-
-
-
-/**
  * @brief move object up a level layout
  * @param obj point to object
  * @return none
@@ -1174,50 +1151,108 @@ void sgl_obj_move_background(sgl_obj_t *obj);
 
 
 /**
- * @brief Set object x position
+ * @brief Set object absolute position
+ * @param obj point to object
+ * @param abs_x: x absolute position
+ * @param abs_y: y absolute position
+ * @return none
+ */
+void sgl_obj_set_abs_pos(sgl_obj_t *obj, int16_t abs_x, int16_t abs_y);
+
+
+/**
+ * @brief Get object absolute position
+ * @param obj point to object
+ * @param abs_x: point to x absolute position
+ * @param abs_y: point to y absolute position
+ * @return none
+ */
+static inline sgl_pos_t sgl_obj_get_abs_pos(sgl_obj_t *obj)
+{
+    sgl_pos_t pos = {
+        .x = obj->coords.x1,
+        .y = obj->coords.y1
+    };
+    return pos;
+}
+
+
+/**
+ * @brief Set object relative position
+ * @param obj point to object
+ * @param x: x relative position
+ * @param y: y relative position
+ * @return none
+ * @note This x and y position is relative to the parent object
+ */
+static inline void sgl_obj_set_pos(sgl_obj_t *obj, int16_t x, int16_t y)
+{
+    sgl_obj_set_abs_pos(obj, obj->parent->coords.x1 + x, obj->parent->coords.y1 + y);
+}
+
+
+/**
+ * @brief Get object position
+ * @param obj point to object
+ * @return sgl_pos_t: position of object
+ * @note this function will return the top left corner position of the object relative to its parent
+ */
+static inline sgl_pos_t sgl_obj_get_pos(sgl_obj_t *obj)
+{
+    SGL_ASSERT(obj != NULL);
+
+    sgl_pos_t pos;
+    pos.x = obj->coords.x1 - obj->parent->coords.x1;
+    pos.y = obj->coords.y1 - obj->parent->coords.y1;
+    return pos;
+}
+
+
+/**
+ * @brief Set object x relative position
  * @param obj point to object
  * @param x x position
  * @return none
- * @note this function will set the x position of the object
+ * @note this function will set the x position of the object, it's relative to the parent object
  */
 static inline void sgl_obj_set_pos_x(sgl_obj_t *obj, int16_t x)
 {
-    sgl_obj_set_pos(obj, x, obj->coords.y1);
+    sgl_obj_set_abs_pos(obj, obj->parent->coords.x1 + x, obj->coords.y1);
 }
 
 
 /**
- * @brief Get object x position
+ * @brief Get object x relative position
  * @param obj point to object
- * @return x position
+ * @return x position, it's relative to the parent object
  */
 static inline size_t sgl_obj_get_pos_x(sgl_obj_t *obj)
 {
-    return obj->coords.x1;
+    return (obj->coords.x1 - obj->parent->coords.x1);
 }
 
 
 /**
- * @brief Set object y position
+ * @brief Set object y relative position
  * @param obj point to object
  * @param y y position
  * @return none
- * @note this function will set the y position of the object
+ * @note this function will set the y position of the object, it's relative to the parent object
  */
 static inline void sgl_obj_set_pos_y(sgl_obj_t *obj, int16_t y)
 {
-    sgl_obj_set_pos(obj, obj->coords.x1, y);
+    sgl_obj_set_abs_pos(obj, obj->coords.x1, obj->parent->coords.y1 + y);
 }
 
 
 /**
- * @brief Get object y position
+ * @brief Get object y relative position
  * @param obj point to object
- * @return y position
+ * @return y position, it's relative to the parent object
  */
 static inline int16_t sgl_obj_get_pos_y(sgl_obj_t *obj)
 {
-    return obj->coords.y1;
+    return obj->coords.y1 - obj->parent->coords.y1;
 }
 
 
