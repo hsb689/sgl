@@ -52,7 +52,6 @@ void sgl_draw_fill_hline(sgl_surf_t *surf, sgl_area_t *area, int16_t y, int16_t 
 	if (!sgl_area_selfclip(&clip, &c_rect)) {
 		return;
 	}
-	clip = c_rect;
 
     buf = sgl_surf_get_buf(surf,  clip.x1 - surf->x1, clip.y1 - surf->y1);
     for (int y = clip.y1; y <= clip.y2; y++) {
