@@ -803,11 +803,16 @@ static inline size_t sgl_obj_get_child_count(sgl_obj_t *obj)
 
 
 /**
- * @brief merge area with current dirty area
- * @param merge [in] merge area
+ * @brief merge an area into global dirty area
+ * 
+ * This function calculates how much rectangle 'a' would need to grow in each direction (left, right, top, bottom)
+ * to fully enclose both 'a' and 'b'. The result is the sum of the expansions along all four sides.
+ * Note: This is not the increase in area, th is a lightweight heuristic for merge cost in bounding-box algorithms.
+ * 
+ * @param area [in] Pointer to the area
  * @return none
  */
-void sgl_obj_dirty_merge(sgl_obj_t *obj);
+void sgl_dirty_area_push(sgl_area_t *area);
 
 
 /**
@@ -918,7 +923,7 @@ static inline void sgl_obj_set_hidden(sgl_obj_t *obj)
 {
     SGL_ASSERT(obj != NULL);
     obj->hide = 1;
-    sgl_obj_dirty_merge(obj);
+    sgl_dirty_area_push(&obj->area);
 }
 
 
@@ -931,7 +936,7 @@ static inline void sgl_obj_set_visible(sgl_obj_t *obj)
 {
     SGL_ASSERT(obj != NULL);
     obj->hide = 0;
-    sgl_obj_dirty_merge(obj);
+    sgl_dirty_area_push(&obj->area);
 }
 
 
@@ -1061,12 +1066,12 @@ static inline bool sgl_obj_is_movable(sgl_obj_t *obj)
 
 /**
  * @brief update object area
- * @param obj point to object
+ * @param area point to area that need update
  * @return none, this function will force update object area
  */
-static inline void sgl_obj_update_area(sgl_obj_t *obj)
+static inline void sgl_obj_update_area(sgl_area_t *area)
 {
-    sgl_obj_dirty_merge(obj);
+    sgl_dirty_area_push(area);
 }
 
 

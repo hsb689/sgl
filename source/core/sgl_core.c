@@ -788,33 +788,33 @@ static inline bool sgl_merge_determines(sgl_area_t* a, sgl_area_t* b)
 
 
 /**
- * @brief merge object area into global dirty area
+ * @brief merge an area into global dirty area
  * 
  * This function calculates how much rectangle 'a' would need to grow in each direction (left, right, top, bottom)
  * to fully enclose both 'a' and 'b'. The result is the sum of the expansions along all four sides.
  * Note: This is not the increase in area, th is a lightweight heuristic for merge cost in bounding-box algorithms.
  * 
- * @param obj [in] Pointer to the object
+ * @param area [in] Pointer to the area
  * @return none
  */
-void sgl_obj_dirty_merge(sgl_obj_t *obj)
+void sgl_dirty_area_push(sgl_area_t *area)
 {
     SGL_ASSERT(obj != NULL);
     int32_t best_idx = -1, min_growth = INT32_MAX, growth = INT32_MAX;
     /* skip invalid area */
-    if (obj->area.x1 > obj->area.x2 || obj->area.y1 > obj->area.y2) {
+    if (area->x1 > area->x2 || area->y1 > area->y2) {
         return;
     }
 
     if (sgl_ctx.dirty_num == 0) {
-        sgl_ctx.dirty[0] = obj->area;
+        sgl_ctx.dirty[0] = *area;
         sgl_ctx.dirty_num = 1;
         return;
     }
 
     for (uint8_t i = 0; i < sgl_ctx.dirty_num; i++) {
-        if (sgl_merge_determines(&sgl_ctx.dirty[i], &obj->area)) {
-            growth = sgl_area_growth(&sgl_ctx.dirty[i], &obj->area);
+        if (sgl_merge_determines(&sgl_ctx.dirty[i], area)) {
+            growth = sgl_area_growth(&sgl_ctx.dirty[i], area);
             if (growth < min_growth) {
                 min_growth = growth;
                 best_idx = i;
@@ -824,16 +824,16 @@ void sgl_obj_dirty_merge(sgl_obj_t *obj)
 
     if (best_idx >= 0) {
         /* merge object area into best_idx dirty area */
-        sgl_area_selfmerge(&sgl_ctx.dirty[best_idx], &obj->area);
+        sgl_area_selfmerge(&sgl_ctx.dirty[best_idx], area);
         return;
     }
 
     if (sgl_ctx.dirty_num < SGL_DIRTY_AREA_NUM_MAX) {
         /* add new dirty area */
-        sgl_ctx.dirty[sgl_ctx.dirty_num++] = obj->area;
+        sgl_ctx.dirty[sgl_ctx.dirty_num++] = *area;
     } else {
         /* merge object area into last dirty area */
-        sgl_area_selfmerge(&sgl_ctx.dirty[SGL_DIRTY_AREA_NUM_MAX - 1], &obj->area);
+        sgl_area_selfmerge(&sgl_ctx.dirty[SGL_DIRTY_AREA_NUM_MAX - 1], area);
     }
 }
 
@@ -917,7 +917,7 @@ void sgl_obj_delete(sgl_obj_t *obj)
 {
     if (obj == NULL || obj == sgl_screen_act()) {
         obj = sgl_screen_act();
-        sgl_obj_dirty_merge(obj);
+        sgl_dirty_area_push(&obj->area);
         if (obj->child) {
             sgl_obj_free(obj->child);
         }
@@ -1388,7 +1388,7 @@ static inline void sgl_dirty_area_calculate(sgl_obj_t *obj)
         /* check if obj is destroyed */
         if (unlikely(sgl_obj_is_destroyed(obj))) {
             /* merge destroy area */
-            sgl_obj_dirty_merge(obj);
+            sgl_dirty_area_push(&obj->area);
 
             /* remove obj from parent */
             sgl_obj_remove(obj);
@@ -1416,7 +1416,7 @@ static inline void sgl_dirty_area_calculate(sgl_obj_t *obj)
         /* check child dirty and merge all dirty area */
         if (sgl_obj_is_dirty(obj)) {
             /* merge dirty area */
-            sgl_obj_dirty_merge(obj);
+            sgl_dirty_area_push(&obj->area);
 
             sgl_area_t fill_area = sgl_obj_get_fill_rect(obj->parent);
             /* update obj area */
@@ -1426,7 +1426,7 @@ static inline void sgl_dirty_area_calculate(sgl_obj_t *obj)
             }
 
             /* merge dirty area */
-            sgl_obj_dirty_merge(obj);
+            sgl_dirty_area_push(&obj->area);
 
             /* clear dirty flag */
             sgl_obj_clear_dirty(obj);
