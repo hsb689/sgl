@@ -25,7 +25,7 @@
 - Frame buffer controller support, direct write to frame buffer controller, zero copy
 - Color depth support: `8bit`, `16bit`, `24bit`, `32bit`
 - Modernized font extraction tool
-- `SGL`'s own `UI` designer, graphical drag-and-drop interface drawing with one-click code generation
+- `SGL UI designer` tool, graphical drag-and-drop interface drawing with one-click code generation
 
 ### Minimum Hardware Requirements
 | Flash Size | RAM Size |
