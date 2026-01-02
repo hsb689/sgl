@@ -41,8 +41,8 @@
 void sgl_draw_fill_hline(sgl_surf_t *surf, sgl_area_t *area, int16_t y, int16_t x1, int16_t x2, uint8_t width, sgl_color_t color, uint8_t alpha)
 {
 	sgl_color_t *buf = NULL, *blend = NULL;
-	int16_t thick_half = (width >> 1);
-	sgl_area_t c_rect = {.x1 = x1, .x2 = x2, .y1 = y - thick_half / 2,.y2 = y + thick_half / 2}, clip = SGL_AREA_MAX;
+	SGL_LOG_INFO("sgl_draw_fill_hline WIDTH: %d", width);
+	sgl_area_t c_rect = {.x1 = x1, .x2 = x2, .y1 = y - (width - 1) / 2, .y2 = y + width / 2}, clip = SGL_AREA_MAX;
 
 	if (c_rect.x1 > c_rect.x2) {
 		sgl_swap(&c_rect.x1, &c_rect.x2);
@@ -78,8 +78,7 @@ void sgl_draw_fill_hline(sgl_surf_t *surf, sgl_area_t *area, int16_t y, int16_t 
 void sgl_draw_fill_vline(sgl_surf_t *surf, sgl_area_t *area, int16_t x, int16_t y1, int16_t y2, uint8_t width, sgl_color_t color, uint8_t alpha)
 {
 	sgl_color_t *buf = NULL, *blend = NULL;
-	int16_t thick_half = (width >> 1);
-	sgl_area_t c_rect = {.x1 = x - thick_half / 2, .x2 = x + thick_half / 2, .y1 = y1,.y2 = y2}, clip = SGL_AREA_MAX;
+	sgl_area_t c_rect = {.x1 = x - (width - 1) / 2, .x2 = x + width / 2, .y1 = y1,.y2 = y2}, clip = SGL_AREA_MAX;
 
 	if (c_rect.y1 > c_rect.y2) {
 		sgl_swap(&c_rect.y1, &c_rect.y2);
@@ -178,10 +177,10 @@ void sgl_draw_line(sgl_surf_t *surf, sgl_area_t *area, sgl_draw_line_t *desc)
 	int16_t y2 = desc->end.y;
 
 	if (x1 == x2) {
-		sgl_draw_fill_vline(surf, area, x1, y1, y2, desc->width, desc->color, alpha);
+		sgl_draw_fill_vline(surf, area, x1, y1, y2, desc->width / 2, desc->color, alpha);
 	}
 	else if (y1 == y2) {
-		sgl_draw_fill_hline(surf, area, y1, x1, x2, desc->width, desc->color, alpha);
+		sgl_draw_fill_hline(surf, area, y1, x1, x2, desc->width / 2, desc->color, alpha);
 	}
 	else {
 		draw_line_sdf(surf, area, x1, y1, x2, y2, desc->width, desc->color, alpha);
