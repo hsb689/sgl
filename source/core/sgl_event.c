@@ -337,7 +337,7 @@ void sgl_event_task(void)
             }
 
             SGL_ASSERT(obj->construct_fn);
-            sgl_obj_set_dirty(obj);
+            //sgl_obj_set_dirty(obj);
             evt.param = obj->event_data;
             obj->construct_fn(NULL, obj, &evt);
         }

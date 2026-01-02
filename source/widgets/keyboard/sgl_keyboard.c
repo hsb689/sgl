@@ -488,9 +488,11 @@ static void sgl_keyboard_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_even
         if(obj->event_fn) {
             obj->event_fn(evt);
         }
+        sgl_obj_set_dirty(obj);
     }
     else if(evt->type == SGL_EVENT_RELEASED) {
         keyboard->key_index = KEYBOARD_KEY_INVALID;
+        sgl_obj_set_dirty(obj);
     }
     else if(evt->type == SGL_EVENT_DRAW_INIT) {
         keyboard->opcode = 0;
@@ -512,6 +514,7 @@ static void sgl_keyboard_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_even
         if (keyboard->key_index >= KEYBOARD_BTN_NUM) {
             keyboard->key_index = 0;
         }
+        sgl_obj_set_dirty(obj);
     }
 }
 

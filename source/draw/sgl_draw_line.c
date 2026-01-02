@@ -41,7 +41,6 @@
 void sgl_draw_fill_hline(sgl_surf_t *surf, sgl_area_t *area, int16_t y, int16_t x1, int16_t x2, uint8_t width, sgl_color_t color, uint8_t alpha)
 {
 	sgl_color_t *buf = NULL, *blend = NULL;
-	SGL_LOG_INFO("sgl_draw_fill_hline WIDTH: %d", width);
 	sgl_area_t c_rect = {.x1 = x1, .x2 = x2, .y1 = y - (width - 1) / 2, .y2 = y + width / 2}, clip = SGL_AREA_MAX;
 
 	if (c_rect.x1 > c_rect.x2) {

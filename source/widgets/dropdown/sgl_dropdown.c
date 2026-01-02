@@ -143,11 +143,8 @@ static void sgl_dropdown_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_even
             obj->coords.y2 += dropdown->expand_h;
         }
 
-        sgl_obj_update_area(&obj->area);
+        sgl_obj_set_dirty(obj);
         dropdown->expend_start = dropdown->head;
-    }
-    else if (evt->type == SGL_EVENT_RELEASED) {
-
     }
     else if (evt->type == SGL_EVENT_DRAW_INIT) {
         dropdown->option_h = obj->coords.y2 - obj->coords.y1 + 1;

@@ -208,13 +208,13 @@ static void sgl_numberkbd_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_eve
             numberkbd->opcode = (uint8_t)kbd_digits[btn_row][btn_col];
         }
         else {
-            sgl_obj_clear_dirty(obj);
             return;
         }
 
         if(obj->event_fn) {
             obj->event_fn(evt);
         }
+        sgl_obj_set_dirty(obj);
     }
     else if(evt->type == SGL_EVENT_RELEASED) {
         if(numberkbd->opcode == 0) {
@@ -222,6 +222,7 @@ static void sgl_numberkbd_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_eve
             return;
         }
         numberkbd->opcode = 0;
+        sgl_obj_set_dirty(obj);
     }
     else if(evt->type == SGL_EVENT_DRAW_INIT) {
         int16_t new_width = box_w * NUMBERKBD_BTN_COL + (NUMBERKBD_BTN_COL + 1) * numberkbd->margin;

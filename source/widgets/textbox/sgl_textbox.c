@@ -92,9 +92,11 @@ static void sgl_textbox_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_event
     }
     else if (evt->type == SGL_EVENT_PRESSED) {
         textbox->scroll_enable = 1;
+        sgl_obj_set_dirty(obj);
     }
     else if (evt->type == SGL_EVENT_RELEASED) {
         textbox->scroll_enable = 0;
+        sgl_obj_set_dirty(obj);
     }
     else if (evt->type == SGL_EVENT_FOCUSED) {
         textbox->bg.border ++;
