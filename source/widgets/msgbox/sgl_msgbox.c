@@ -138,10 +138,6 @@ static void sgl_msgbox_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_event_
         else {
             return;
         }
-
-        if(obj->event_fn) {
-            obj->event_fn(evt);
-        }
     }
     else if(evt->type == SGL_EVENT_RELEASED) {
         if(evt->pos.y > (obj->coords.y2 - font_height - 2) && evt->pos.x < ((obj->coords.x1 + obj->coords.x2) / 2)) {

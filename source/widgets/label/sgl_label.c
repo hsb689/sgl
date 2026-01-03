@@ -65,11 +65,6 @@ static void sgl_label_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_event_t
 
         sgl_draw_string(surf, &obj->area, align_pos.x + text_x + label->offset_x, align_pos.y + label->offset_y, label->text, label->color, label->alpha, label->font);
     }
-    else if (evt->type == SGL_EVENT_PRESSED || evt->type == SGL_EVENT_RELEASED) {
-        if(obj->event_fn) {
-            obj->event_fn(evt);
-        }
-    }
 }
 
 

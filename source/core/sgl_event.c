@@ -339,6 +339,11 @@ void sgl_event_task(void)
             SGL_ASSERT(obj->construct_fn);
             evt.param = obj->event_data;
             obj->construct_fn(NULL, obj, &evt);
+
+            /* call user event function */
+            if(obj->event_fn) {
+                obj->event_fn(&evt);
+            }
         }
         else {
             SGL_LOG_TRACE("pos is out of object or no event_lost, skip event");

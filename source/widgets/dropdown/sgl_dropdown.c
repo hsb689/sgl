@@ -149,10 +149,6 @@ static void sgl_dropdown_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_even
     else if (evt->type == SGL_EVENT_DRAW_INIT) {
         dropdown->option_h = obj->coords.y2 - obj->coords.y1 + 1;
     }
-
-    if(obj->event_fn) {
-        obj->event_fn(evt);
-    }
 }
 
 

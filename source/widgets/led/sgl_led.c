@@ -95,11 +95,6 @@ static void sgl_led_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_event_t *
             sgl_obj_fix_radius(obj, SGL_POS_MAX);
         }
     }
-    else if (evt->type == SGL_EVENT_PRESSED || evt->type == SGL_EVENT_RELEASED) {
-        if (obj->event_fn) {
-            obj->event_fn(evt);
-        }
-    }
 }
 
 

@@ -60,10 +60,6 @@ static void sgl_switch_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_event_
     }
     else if(evt->type == SGL_EVENT_PRESSED) {
         p_switch->status = !p_switch->status;
-
-        if(obj->event_fn) {
-            obj->event_fn(evt);
-        }
         sgl_obj_set_dirty(obj);
     }
 }

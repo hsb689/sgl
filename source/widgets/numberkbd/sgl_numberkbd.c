@@ -211,9 +211,6 @@ static void sgl_numberkbd_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_eve
             return;
         }
 
-        if(obj->event_fn) {
-            obj->event_fn(evt);
-        }
         sgl_obj_set_dirty(obj);
     }
     else if(evt->type == SGL_EVENT_RELEASED) {

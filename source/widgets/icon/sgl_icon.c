@@ -49,16 +49,6 @@ static void sgl_icon_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_event_t 
         icon_pos = sgl_get_icon_pos(&obj->area, icon->icon, 0, (sgl_align_type_t)icon->align);
         sgl_draw_icon(surf, &obj->area, icon_pos.x, icon_pos.y, icon->color, icon->alpha, icon->icon);
     }
-    else if(evt->type == SGL_EVENT_PRESSED) {
-        if(obj->event_fn) {
-            obj->event_fn(evt);
-        }
-    }
-    else if(evt->type == SGL_EVENT_RELEASED) {
-        if(obj->event_fn) {
-            obj->event_fn(evt);
-        }
-    }
 }
 
 

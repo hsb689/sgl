@@ -141,9 +141,6 @@ static void sgl_checkbox_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_even
     }
     else if(evt->type == SGL_EVENT_PRESSED) {
         checkbox->status = !checkbox->status;
-        if(obj->event_fn) {
-            obj->event_fn(evt);
-        }
         sgl_obj_set_dirty(obj);
     }
     else if(evt->type == SGL_EVENT_DRAW_INIT) {

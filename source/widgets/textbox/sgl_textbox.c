@@ -104,10 +104,6 @@ static void sgl_textbox_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_event
     else if (evt->type == SGL_EVENT_UNFOCUSED) {
         textbox->bg.border --;
     }
-
-    if(obj->event_fn) {
-        obj->event_fn(evt);
-    }
 }
 
 

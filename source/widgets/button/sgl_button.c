@@ -71,19 +71,11 @@ static void sgl_button_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_event_
         if(sgl_obj_is_flexible(obj)) {
             sgl_obj_size_zoom(obj, 2);
         }
-
-        if(obj->event_fn) {
-            obj->event_fn(evt);
-        }
         sgl_obj_set_dirty(obj);
     }
     else if(evt->type == SGL_EVENT_RELEASED) {
         if(sgl_obj_is_flexible(obj)) {
             sgl_obj_size_zoom(obj, -2);
-        }
-
-        if(obj->event_fn) {
-            obj->event_fn(evt);
         }
         sgl_obj_set_dirty(obj);
     }

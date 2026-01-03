@@ -55,11 +55,6 @@ static void sgl_circle_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_event_
             circle->desc.radius = (circle->obj.coords.y2 - circle->obj.coords.y1) / 2;
         }
     }
-    else if (evt->type == SGL_EVENT_PRESSED || evt->type == SGL_EVENT_RELEASED) {
-        if(obj->event_fn) {
-            obj->event_fn(evt);
-        }
-    }
 }
 
 

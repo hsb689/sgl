@@ -51,10 +51,6 @@ static void sgl_ring_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_event_t 
             ring->radius_in = ring->radius_out - 2;
         }
     }
-
-    if(obj->event_fn) {
-        obj->event_fn(evt);
-    }
 }
 
 
