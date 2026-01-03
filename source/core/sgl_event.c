@@ -2,9 +2,9 @@
  *
  * MIT License
  *
- * Copyright(c) 2023-present All contributors of SGL  
- * Email: 1477153217@qq.com
- * 
+ * Copyright(c) 2023-present All contributors of SGL
+ * Document reference link: https://sgl-docs.readthedocs.io
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
