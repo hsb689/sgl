@@ -570,7 +570,7 @@ static sgl_page_t* sgl_page_create(void)
     page->surf.x2 = sgl_ctx.fb_dev.xres - 1;
     page->surf.y2 = sgl_ctx.fb_dev.yres - 1;
     page->surf.size = sgl_ctx.fb_dev.buffer_size;
-    page->surf.pitch = sgl_ctx.fb_dev.xres;
+    page->surf.w = sgl_ctx.fb_dev.xres;
     page->color = SGL_THEME_DESKTOP;
 
     obj->parent = obj;
@@ -1458,19 +1458,19 @@ static inline void sgl_draw_task(sgl_area_t *dirty)
     SGL_ASSERT(dirty != NULL && dirty->x1 >= 0 && dirty->y1 >= 0 && dirty->x2 < SGL_SCREEN_WIDTH && dirty->y2 < SGL_SCREEN_HEIGHT);
 
 #if (!CONFIG_SGL_USE_FB_VRAM)
-    uint16_t dirty_h = 0, draw_h = 0;
-    dirty_h = dirty->y2 - dirty->y1 + 1;
+    uint16_t draw_h = 0;
+    surf->h = dirty->y2 - dirty->y1 + 1;
 
     surf->x1 = dirty->x1;
     surf->y1 = dirty->y1;
     surf->x2 = dirty->x2;
-    surf->pitch = surf->x2 - surf->x1 + 1;
-    dirty_h = sgl_min(surf->size / surf->pitch, (uint32_t)(dirty->y2 - dirty->y1 + 1));
+    surf->w = surf->x2 - surf->x1 + 1;
+    surf->h = sgl_min(surf->size / surf->w, (uint32_t)(dirty->y2 - dirty->y1 + 1));
 
     SGL_LOG_TRACE("[fb:%d]sgl_draw_task: dirty area  x1:%d y1:%d x2:%d y2:%d", sgl_ctx.fb_swap, dirty->x1, dirty->y1, dirty->x2, dirty->y2);
 
     while (surf->y1 <= dirty->y2) {
-        draw_h = sgl_min(dirty->y2 - surf->y1 + 1, dirty_h);
+        draw_h = sgl_min(dirty->y2 - surf->y1 + 1, surf->h);
 
         surf->y2 = surf->y1 + draw_h - 1;
         draw_obj_slice(head, surf);

@@ -138,7 +138,7 @@ static void sgl_ext_img_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_event
                         *blend = ext_img->alpha == SGL_ALPHA_MAX ? tmp_color : sgl_color_mixer(tmp_color, *blend, ext_img->alpha);
                         blend ++;
                     }
-                    buf += surf->pitch;
+                    buf += surf->w;
                 }
                 sgl_free(pixmap_buf);
             }
@@ -165,7 +165,7 @@ static void sgl_ext_img_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_event
                         *blend = ext_img->alpha == SGL_ALPHA_MAX ? tmp_color : sgl_color_mixer(tmp_color, *blend, ext_img->alpha);
                         blend ++;
                     };
-                    buf += surf->pitch;
+                    buf += surf->w;
                 }
             }
         }
@@ -176,7 +176,7 @@ static void sgl_ext_img_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_event
             ext_img_rle_init(ext_img);
             for (int y = clip.y1; y <= clip.y2; y++) {
                 rle_decompress_line(ext_img, &area, &clip, buf);
-                buf += surf->pitch;
+                buf += surf->w;
             }
             if (surf->y2 >= area.y2) {
                 ext_img->started = 0;

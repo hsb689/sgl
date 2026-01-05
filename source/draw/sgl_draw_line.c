@@ -58,7 +58,7 @@ void sgl_draw_fill_hline(sgl_surf_t *surf, sgl_area_t *area, int16_t y, int16_t 
         for (int x = clip.x1; x <= clip.x2; x++, blend++) {
             *blend = alpha == SGL_ALPHA_MAX ? color : sgl_color_mixer(color, *blend, alpha);
         }
-		buf += surf->pitch;
+		buf += surf->w;
     }
 }
 
@@ -94,7 +94,7 @@ void sgl_draw_fill_vline(sgl_surf_t *surf, sgl_area_t *area, int16_t x, int16_t 
         for (int x = clip.x1; x <= clip.x2; x++, blend++) {
             *blend = (alpha == SGL_ALPHA_MAX ? color : sgl_color_mixer(color, *blend, alpha));
         }
-        buf += surf->pitch;
+        buf += surf->w;
     }
 }
 
@@ -156,7 +156,7 @@ void draw_line_sdf(sgl_surf_t *surf, sgl_area_t *area, int16_t x1, int16_t y1, i
 					*blend = sgl_color_mixer(sgl_color_mixer(*blend, color, c), *blend, alpha);
 			}
 		}
-		buf += surf->pitch;
+		buf += surf->w;
 	}
 }
 

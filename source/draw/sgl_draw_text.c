@@ -249,7 +249,7 @@ void sgl_draw_character(sgl_surf_t *surf, sgl_area_t *area, int16_t x, int16_t y
                 *blend = sgl_color_mixer(color_mix, *blend, alpha);
                 blend++;
             }
-            buf += surf->pitch;
+            buf += surf->w;
         }
 #if (CONFIG_SGL_FONT_COMPRESSED)
     }  /* support compressed font */
@@ -275,7 +275,7 @@ void sgl_draw_character(sgl_surf_t *surf, sgl_area_t *area, int16_t x, int16_t y
                 *blend = sgl_color_mixer(color_mix, *blend, alpha);
                 blend++;
             }
-            buf += surf->pitch;
+            buf += surf->w;
         }
     }
 #endif

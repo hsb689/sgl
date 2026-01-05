@@ -21,7 +21,7 @@
 #define    CONFIG_SGL_BOOT_ANIMATION          1
 #define    CONFIG_SGL_HEAP_ALGO               lwmem
 #define    CONFIG_SGL_FL_INDEX_MAX            20
-#define    CONFIG_SGL_HEAP_MEMORY_SIZE        10240
+#define    CONFIG_SGL_HEAP_MEMORY_SIZE        1000000
 #define    CONFIG_SGL_FONT_SONG23             1
 #define    CONFIG_SGL_FONT_CONSOLAS14         1
 #define    CONFIG_SGL_FONT_CONSOLAS23         1

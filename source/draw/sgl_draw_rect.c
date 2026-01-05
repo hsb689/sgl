@@ -69,7 +69,7 @@ void sgl_draw_fill_rect(sgl_surf_t *surf, sgl_area_t *area, sgl_area_t *rect, in
             for (int x = clip.x1; x <= clip.x2; x++, blend++) {
                 *blend = alpha == SGL_ALPHA_MAX ? color : sgl_color_mixer(color, *blend, alpha);
             }
-            buf += surf->pitch;
+            buf += surf->w;
         }
     }
     else {
@@ -104,7 +104,7 @@ void sgl_draw_fill_rect(sgl_surf_t *surf, sgl_area_t *area, sgl_area_t *rect, in
                     }
                 }
             }
-            buf += surf->pitch;
+            buf += surf->w;
         }
     }
 }
@@ -168,7 +168,7 @@ void sgl_draw_fill_rect_with_border(sgl_surf_t *surf, sgl_area_t *area, sgl_area
                     *blend = alpha == SGL_ALPHA_MAX ? border_color : sgl_color_mixer(border_color, *blend, alpha);
                 }
             }
-            buf += surf->pitch;
+            buf += surf->w;
         }
     }
     else {
@@ -222,7 +222,7 @@ void sgl_draw_fill_rect_with_border(sgl_surf_t *surf, sgl_area_t *area, sgl_area
                     }
                 }
             }
-            buf += surf->pitch;
+            buf += surf->w;
         }
     }
 }
@@ -276,7 +276,7 @@ void sgl_draw_fill_rect_pixmap(sgl_surf_t *surf, sgl_area_t *area, sgl_area_t *r
                 pbuf = sgl_pixmap_get_buf(pixmap, step_x, step_y);
                 *blend = (alpha == SGL_ALPHA_MAX ? *pbuf : sgl_color_mixer(*pbuf, *blend, alpha));
             }
-            buf += surf->pitch;
+            buf += surf->w;
         }
     }
     else {
@@ -317,7 +317,7 @@ void sgl_draw_fill_rect_pixmap(sgl_surf_t *surf, sgl_area_t *area, sgl_area_t *r
                     }
                 }
             }
-            buf += surf->pitch;
+            buf += surf->w;
         }
     }
 }

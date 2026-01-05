@@ -229,8 +229,8 @@ typedef union {
  * @y2:     y2 coordinate
  * @buffer: buffer pointer
  * @size:   bytes of buffer
- * @pitch:  bytes per line
- * @h_max:  maximum height
+ * @w:      surf width
+ * @h:      surf height
  */
 typedef struct sgl_surf {
     int16_t      x1;
@@ -239,7 +239,8 @@ typedef struct sgl_surf {
     int16_t      y2;
     sgl_color_t *buffer;
     uint32_t     size;
-    uint32_t     pitch;
+    uint16_t     w;
+    uint16_t     h;
 } sgl_surf_t;
 
 

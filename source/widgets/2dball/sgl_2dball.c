@@ -86,7 +86,7 @@ static void sgl_2dball_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_event_
                     *blend = sgl_color_mixer(sgl_color_mixer(ball->bg_color, ball->color, ds_alpha), *blend, ball->alpha);
                 }
             }
-            buf += surf->pitch;
+            buf += surf->w;
         }
     }
     else if(evt->type == SGL_EVENT_DRAW_INIT) {

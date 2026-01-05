@@ -87,7 +87,7 @@ static void sgl_led_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_event_t *
                     *blend = sgl_color_mixer(sgl_color_mixer(led->bg_color, color, ds_alpha), *blend, led->alpha);
                 }
             }
-            buf += surf->pitch;
+            buf += surf->w;
         }
     }
     else if (evt->type == SGL_EVENT_DRAW_INIT) {

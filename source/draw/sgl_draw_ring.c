@@ -101,6 +101,6 @@ void sgl_draw_fill_ring(sgl_surf_t *surf, sgl_area_t *area, int16_t cx, int16_t 
                 }
             }
         }
-        buf += surf->pitch;
+        buf += surf->w;
     }
 }
