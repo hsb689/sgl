@@ -85,7 +85,7 @@ static void sgl_dropdown_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_even
     icon_y = obj->coords.y1 + (icon_h - dropdown_icon.height) / 2;
 
     if (evt->type == SGL_EVENT_DRAW_MAIN) {
-        sgl_draw_rect(surf, &body_area, &body_area, &dropdown->body_desc);
+        sgl_draw_rect(surf, &obj->area, &body_area, &dropdown->body_desc);
         if (dropdown->is_open) {
             sgl_draw_icon(surf, &icon_area, icon_area.x1, icon_y + 2, dropdown->text_color, dropdown->body_desc.alpha, &dropdown_icon);
         }
@@ -147,7 +147,7 @@ static void sgl_dropdown_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_even
         dropdown->expend_start = dropdown->head;
     }
     else if (evt->type == SGL_EVENT_DRAW_INIT) {
-        dropdown->option_h = obj->coords.y2 - obj->coords.y1 + 1;
+        dropdown->option_h = obj->coords.y2 - obj->coords.y1;
     }
 }
 
