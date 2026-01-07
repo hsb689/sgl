@@ -456,17 +456,16 @@ typedef struct sgl_device_log {
 /**
  * current context, page pointer, and dirty area
  * fb_swap: 0 for fb_dev.buffer[0], 1 for fb_dev.buffer[1]
- * fb_statue: bit 0: fb_dev.buffer[0] is ready, bit 1: fb_dev.buffer[1] is ready
+ * fb_status: bit 0: fb_dev.buffer[0] is ready, bit 1: fb_dev.buffer[1] is ready
  */
 typedef struct sgl_context {
     sgl_page_t           *page;
     sgl_device_fb_t      fb_dev;
     sgl_device_log_t     log_dev;
     uint8_t              fb_swap;
-    uint8_t              fb_statue;
-    volatile uint16_t    tick_ms;
-    uint16_t             dirty_num;
-    uint16_t             dirty_idx;
+    volatile uint8_t     fb_status;
+    volatile uint8_t     tick_ms;
+    uint8_t              dirty_num;
     sgl_area_t           *dirty;
 } sgl_context_t;
 
@@ -521,19 +520,18 @@ static inline void sgl_panel_flush_area(int16_t x1, int16_t y1, int16_t x2, int1
  */
 static inline void sgl_panel_flush_ready(void)
 {
-    sgl_ctx.fb_statue = (sgl_ctx.fb_statue & (1 << sgl_ctx.fb_swap)) | ((1 << (sgl_ctx.fb_swap ^ 1)));
+    sgl_ctx.fb_status = (sgl_ctx.fb_status & (1 << sgl_ctx.fb_swap)) | ((1 << (sgl_ctx.fb_swap ^ 1)));
 }
 
 
 /**
- * @brief check if panel flush is ready
+ * @brief check if panel need to wait ready
  * @param none
  * @return none
- * @note this function check if panel flush is ready
  */
-static inline bool sgl_panel_flush_is_ready(void)
+static inline bool sgl_panel_flush_wait_ready(void)
 {
-    return (sgl_ctx.fb_statue & 0x3) != 0;
+    return sgl_ctx.fb_status == 0;
 }
 
 

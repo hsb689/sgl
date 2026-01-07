@@ -48,9 +48,8 @@ sgl_context_t sgl_ctx = {
     .page = NULL,
     .tick_ms = 0,
     .fb_swap = 0,
-    .fb_statue = 3,
+    .fb_status = 3,
     .dirty_num = 0,
-    .dirty_idx = 0,
 };
 
 
@@ -649,7 +648,6 @@ sgl_obj_t* sgl_obj_create(sgl_obj_t *parent)
 static inline void sgl_dirty_area_init(void)
 {
     sgl_ctx.dirty_num = 0;
-    sgl_ctx.dirty_idx = 0;
 }
 
 
@@ -1453,13 +1451,14 @@ static inline void sgl_draw_task(sgl_context_t *ctx)
     sgl_obj_t  *head = &ctx->page->obj;
     sgl_area_t *dirty = NULL;
 
-#if (!CONFIG_SGL_USE_FB_VRAM)
     /* dirty area number must less than SGL_DIRTY_AREA_MAX */
-    for (; ctx->dirty_idx < ctx->dirty_num; ctx->dirty_idx++) {
-        dirty = &ctx->dirty[ctx->dirty_idx];
+    for (int i = 0; i < ctx->dirty_num; i++) {
+        dirty = &ctx->dirty[i];
 
         /* check dirty area, ensure it is valid */
         SGL_ASSERT(dirty != NULL && dirty->x1 >= 0 && dirty->y1 >= 0 && dirty->x2 < SGL_SCREEN_WIDTH && dirty->y2 < SGL_SCREEN_HEIGHT);
+
+#if (!CONFIG_SGL_USE_FB_VRAM)
 
         uint16_t draw_h = 0;
         surf->h = dirty->y2 - dirty->y1 + 1;
@@ -1476,34 +1475,28 @@ static inline void sgl_draw_task(sgl_context_t *ctx)
             draw_h = sgl_min(dirty->y2 - surf->y1 + 1, surf->h);
 
             surf->y2 = surf->y1 + draw_h - 1;
-            ctx->fb_statue = (ctx->fb_statue & (1 << ctx->fb_swap));
+            ctx->fb_status = (ctx->fb_status & (1 << ctx->fb_swap));
 
             draw_obj_slice(head, surf);
             surf->y1 += draw_h;
 
-            if (!sgl_panel_flush_is_ready()) {
-                ctx->fb_statue |= SGL_FLUSH_REMAINING;
-                return;
-            }
+            /* wait flush ready */
+            while (sgl_panel_flush_wait_ready());
 
             /* swap the double buffer */
             sgl_surf_buffer_swap(surf);
         }
-    }
-    ctx->fb_statue &= (~SGL_FLUSH_REMAINING);
 #else
-    /* dirty area number must less than SGL_DIRTY_AREA_MAX */
-    for (; ctx->dirty_idx < ctx->dirty_num; ctx->dirty_idx++) {
-        dirty = &ctx->dirty[ctx->dirty_idx];
-
         /* check dirty area, ensure it is valid */
         SGL_ASSERT(dirty != NULL && dirty->x1 >= 0 && dirty->y1 >= 0 && dirty->x2 < SGL_SCREEN_WIDTH && dirty->y2 < SGL_SCREEN_HEIGHT);
 
         SGL_LOG_TRACE("[fb:%d]sgl_draw_task: dirty area  x1:%d y1:%d x2:%d y2:%d", sgl_ctx.fb_swap, dirty->x1, dirty->y1, dirty->x2, dirty->y2);
         draw_obj_slice(head, surf);
         sgl_surf_buffer_swap(surf);
-    }
 #endif
+    }
+    /* clear dirty area */
+    ctx->dirty_num = 0;
 }
 
 
@@ -1515,14 +1508,6 @@ static inline void sgl_draw_task(sgl_context_t *ctx)
  */
 void sgl_task_handle_sync(void)
 {
-    /* if framebufffer is not ready, return directly */
-    if (unlikely(!sgl_panel_flush_is_ready())) {
-        return;
-    }
-    else if (sgl_ctx.fb_statue & SGL_FLUSH_REMAINING) {
-        sgl_draw_task(&sgl_ctx);
-    }
-
     /* event task */
     sgl_event_task();
 
@@ -1536,7 +1521,4 @@ void sgl_task_handle_sync(void)
 
     /* draw all object into screen */
     sgl_draw_task(&sgl_ctx);
-
-    /* clear dirty area */
-    sgl_dirty_area_init();
 }
