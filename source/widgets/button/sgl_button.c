@@ -45,26 +45,15 @@ static void sgl_button_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_event_
 {
     sgl_button_t *button = (sgl_button_t*)obj;
     sgl_pos_t   align_pos;
-    int text_x = 0, icon_y = 0;
 
     if(evt->type == SGL_EVENT_DRAW_MAIN) {
         sgl_draw_rect(surf, &obj->area, &obj->coords, &button->rect);
 
         if(button->text) {
             SGL_ASSERT(button->font != NULL);
+            align_pos = sgl_get_text_pos(&obj->coords, button->font, button->text, 0, (sgl_align_type_t)button->align);
 
-            if (button->icon) {
-                text_x = button->icon->width + 2;
-            }
-
-            align_pos = sgl_get_text_pos(&obj->coords, button->font, button->text, text_x, (sgl_align_type_t)button->align);
-
-            if (button->icon) {
-                icon_y = ((obj->coords.y2 - obj->coords.y1) - (button->icon->height)) / 2;
-                sgl_draw_icon(surf, &obj->area, align_pos.x, obj->coords.y1 + icon_y, button->text_color, button->rect.alpha, button->icon);
-            }
-
-            sgl_draw_string(surf, &obj->area, align_pos.x + text_x, align_pos.y, button->text, button->text_color, button->rect.alpha, button->font);
+            sgl_draw_string(surf, &obj->area, align_pos.x, align_pos.y, button->text, button->text_color, button->rect.alpha, button->font);
         }
     }
     else if(evt->type == SGL_EVENT_PRESSED) {

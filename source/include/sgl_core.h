@@ -54,6 +54,10 @@ extern "C" {
 #define  SGL_TEXT_ASCII_OFFSET             (32)
 
 
+#define SGL_FLUSH_NORMAL                   (0)
+#define SGL_FLUSH_REMAINING                (1 << 4)
+
+
 /**
 * @brief This enumeration type defines the alignment of controls in sgl,
 *        i.e. coordinate positions
@@ -265,13 +269,11 @@ typedef struct sgl_pixmap {
  * @brief This structure defines an icon, with a bitmap pointing to the
  * @width: pixmap width
  * @height: pixmap height
- * @bpp: bitmap pixel deepth
  * @bitmap: point to icon bitmap
  */
 typedef struct sgl_icon_pixmap {
-    uint32_t       width : 12;
-    uint32_t       height : 12;
-    uint32_t       bpp : 8;
+    uint16_t       width;
+    uint16_t       height;
     const uint8_t *bitmap;
 } sgl_icon_pixmap_t;
 
@@ -454,16 +456,17 @@ typedef struct sgl_device_log {
 /**
  * current context, page pointer, and dirty area
  * fb_swap: 0 for fb_dev.buffer[0], 1 for fb_dev.buffer[1]
- * fb_ready: bit 0: fb_dev.buffer[0] is ready, bit 1: fb_dev.buffer[1] is ready
+ * fb_statue: bit 0: fb_dev.buffer[0] is ready, bit 1: fb_dev.buffer[1] is ready
  */
 typedef struct sgl_context {
     sgl_page_t           *page;
     sgl_device_fb_t      fb_dev;
     sgl_device_log_t     log_dev;
     uint8_t              fb_swap;
-    uint8_t              fb_ready;
-    volatile uint8_t     tick_ms;
-    uint8_t              dirty_num;
+    uint8_t              fb_statue;
+    volatile uint16_t    tick_ms;
+    uint16_t             dirty_num;
+    uint16_t             dirty_idx;
     sgl_area_t           *dirty;
 } sgl_context_t;
 
@@ -518,7 +521,19 @@ static inline void sgl_panel_flush_area(int16_t x1, int16_t y1, int16_t x2, int1
  */
 static inline void sgl_panel_flush_ready(void)
 {
-    sgl_ctx.fb_ready = (sgl_ctx.fb_ready & (1 << sgl_ctx.fb_swap)) | ((1 << (sgl_ctx.fb_swap ^ 1)));
+    sgl_ctx.fb_statue = (sgl_ctx.fb_statue & (1 << sgl_ctx.fb_swap)) | ((1 << (sgl_ctx.fb_swap ^ 1)));
+}
+
+
+/**
+ * @brief check if panel flush is ready
+ * @param none
+ * @return none
+ * @note this function check if panel flush is ready
+ */
+static inline bool sgl_panel_flush_is_ready(void)
+{
+    return (sgl_ctx.fb_statue & 0x3) != 0;
 }
 
 
