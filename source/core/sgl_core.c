@@ -335,7 +335,7 @@ void sgl_obj_move_down(sgl_obj_t *obj)
  * @return none
  * @note Only move among sibling objects
  */
-void sgl_obj_move_foreground(sgl_obj_t *obj)
+void sgl_obj_move_top(sgl_obj_t *obj)
 {
     SGL_ASSERT(obj != NULL && obj->parent != NULL);
 
@@ -382,7 +382,7 @@ void sgl_obj_move_foreground(sgl_obj_t *obj)
  * @return none
  * @note Only move among sibling objects
  */
-void sgl_obj_move_background(sgl_obj_t *obj)
+void sgl_obj_move_bottom(sgl_obj_t *obj)
 {
     SGL_ASSERT(obj != NULL);
     sgl_obj_t *parent = obj->parent;

@@ -398,22 +398,19 @@ typedef struct sgl_obj {
 
 
 /**
- * @brief Represents a page or layer object containing graphical content, child object slots, and background information.
+ * @brief Represents a page object in the SGL graphics system.
  *
- * This structure defines a renderable page unit. It is itself a graphical object (sgl_obj_t)
- * with basic properties like position and size. It owns a drawing surface (surf) for pixel
- * storage and rendering operations. The structure manages a collection of child objects
- * (such as widgets or graphical elements) through the 'slot' array and 'slot_count'.
- * It also holds a default color for rendering operations and an optional pointer to a
- * background image (bg_img) that can be displayed behind the page content.
+ * An sgl_page_t encapsulates a complete, renderable UI page or screen.
+ * It combines a base graphical object, a drawing surface, a background color,
+ * and an optional background pixmap. Pages serve as top-level containers
+ * for UI elements and can be managed by a page manager or display stack.
  *
- * Fields:
- *   obj        - The base graphical object, inheriting core properties and state.
- *   surf       - The drawing surface associated with this page, used for pixel operations.
- *   slot       - Array of pointers to child sgl_obj_t objects managed by this page.
- *   slot_count - The number of valid child object pointers currently in the 'slot' array.
- *   color      - The default color used for rendering operations on this page.
- *   pixmap     - Pointer to the background pixmap; NULL if no background image is set.
+ * Members:
+ * - obj      : Base object (inherits sgl_obj_t), providing position, size, visibility, etc.
+ * - surf     : Drawing surface associated with this page; defines the target buffer or area for rendering.
+ * - color    : Default background color used when no pixmap is set.
+ * - pixmap   : Optional pointer to a background pixmap. If non-NULL, it typically overrides 'color'
+ *              as the background content during rendering (behavior depends on flush/render logic).
  */
 typedef struct sgl_page {
     sgl_obj_t          obj;
@@ -424,9 +421,9 @@ typedef struct sgl_page {
 
 
 /**
- * @brief sgl framebuffer info struct
+ * @brief sgl framebuffer information struct
  * @buffer: framebuffer, this specify the memory address of the framebuffer
- * @framebuffer_size: framebuffer size
+ * @buffer_size: framebuffer size
  * @xres: x resolution
  * @yres: y resolution
  * @flush_area: flush area callback function pointer, return the finished flag
@@ -442,11 +439,12 @@ typedef struct sgl_fbinfo {
 
 /**
  * @brief sgl framebuffer device struct
- * @buffer: framebuffer, this specify the memory address of the framebuffer
- * @framebuffer_size: framebuffer size
- * @xres: x resolution
- * @yres: y resolution
- * @flush_area: flush area callback function pointer, return the finished flag
+ * @fbinfo: framebuffer information, that specify the memory address of the framebuffer and resolution
+ * @dirty_num: dirty area number
+ * @fb_swap: framebuffer swap flag
+ * @fb_status: framebuffer status flag
+ * @dirty: dirty area pool
+ * @page: current page
  */
 typedef struct sgl_fbdev {
     sgl_fbinfo_t      fbinfo;
@@ -461,6 +459,7 @@ typedef struct sgl_fbdev {
 /**
  * @brief sgl log print device struct
  * @logdev: log print callback function pointer
+ * @tick_ms: tick milliseconds
  */
 typedef struct sgl_system {
     void                 (*logdev)(const char *str);
@@ -1177,7 +1176,7 @@ void sgl_obj_move_down(sgl_obj_t *obj);
  * @return none
  * @note Only move among sibling objects
  */
-void sgl_obj_move_foreground(sgl_obj_t *obj);
+void sgl_obj_move_top(sgl_obj_t *obj);
 
 
 /**
@@ -1186,7 +1185,7 @@ void sgl_obj_move_foreground(sgl_obj_t *obj);
  * @return none
  * @note Only move among sibling objects
  */
-void sgl_obj_move_background(sgl_obj_t *obj);
+void sgl_obj_move_bottom(sgl_obj_t *obj);
 
 
 /**
