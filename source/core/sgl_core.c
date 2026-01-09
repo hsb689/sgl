@@ -1430,6 +1430,7 @@ static inline void sgl_draw_task(sgl_fbdev_t *fbdev)
     /* dirty area number must less than SGL_DIRTY_AREA_MAX */
     for (int i = 0; i < fbdev->dirty_num; i++) {
         dirty = &fbdev->dirty[i];
+        surf->area = dirty;
 
         /* check dirty area, ensure it is valid */
         SGL_ASSERT(dirty != NULL && dirty->x1 >= 0 && dirty->y1 >= 0 && dirty->x2 < SGL_SCREEN_WIDTH && dirty->y2 < SGL_SCREEN_HEIGHT);

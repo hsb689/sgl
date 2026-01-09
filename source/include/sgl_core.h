@@ -231,6 +231,7 @@ typedef union {
  * @size:   bytes of buffer
  * @w:      surf width
  * @h:      surf height
+ * @area:   pointer to dirty area
  */
 typedef struct sgl_surf {
     int16_t      x1;
@@ -241,6 +242,7 @@ typedef struct sgl_surf {
     uint32_t     size;
     uint16_t     w;
     uint16_t     h;
+    sgl_area_t   *area;
 } sgl_surf_t;
 
 
