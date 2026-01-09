@@ -1799,9 +1799,11 @@ static inline void sgl_area_selfmerge(sgl_area_t *merge, sgl_area_t *area)
 /**
  * @brief sgl global initialization
  * @param none
- * @return none
+ * @return int, 0 means success, others means failed
+ * @note You should call this function before using sgl and you should call this function after register framebuffer device.
+ *       This function is unsafe, you should check the return value by yourself.
  */
-void sgl_init(void);
+int sgl_init(void);
 
 
 /**

@@ -638,11 +638,13 @@ static inline void sgl_dirty_area_init(void)
 /**
  * @brief sgl global initialization
  * @param none
- * @return none
+ * @return int, 0 means success, others means failed
  * @note you should call this function before using sgl and you should call this function after register framebuffer device
  */
-void sgl_init(void)
+int sgl_init(void)
 {
+    sgl_obj_t *obj = NULL;
+
     /* init memory pool */
     sgl_mm_init(sgl_mem_pool, sizeof(sgl_mem_pool));
 
@@ -653,10 +655,14 @@ void sgl_init(void)
     sgl_dirty_area_init();
 
     /* create a screen object for drawing */
-    sgl_obj_create(NULL);
+    obj = sgl_obj_create(NULL);
+    if (obj == NULL) {
+        SGL_LOG_ERROR("sgl_init: create screen object failed");
+        return -1;
+    }
 
     /* create event queue */
-    sgl_event_queue_init();
+    return sgl_event_queue_init();
 }
 
 
