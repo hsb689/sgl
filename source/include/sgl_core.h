@@ -372,29 +372,29 @@ typedef struct sgl_font {
  *        Only present if CONFIG_SGL_OBJ_USE_NAME is defined.
  */
 typedef struct sgl_obj {
-    sgl_area_t         area;
-    sgl_area_t         coords;
-    void               (*event_fn)(sgl_event_t *e);
-    size_t             event_data;
-    void               (*construct_fn)(sgl_surf_t *surf, struct sgl_obj *obj, sgl_event_t *event);
-    struct sgl_obj     *parent;
-    struct sgl_obj     *child;
-    struct sgl_obj     *sibling;
-    uint8_t            destroyed : 1;
-    uint8_t            dirty : 1;
-    uint8_t            hide : 1;
-    uint8_t            needinit : 1;
-    uint8_t            layout : 2;
-    uint8_t            clickable : 1;
-    uint8_t            movable : 1;
-    uint8_t            border;
-    uint16_t           flexible : 1;
-    uint16_t           focus : 1;
-    uint16_t           pressed : 1;
-    uint16_t           page : 1;
-    uint16_t           radius : 12;
+    sgl_area_t      area;
+    sgl_area_t      coords;
+    void            (*event_fn)(sgl_event_t *e);
+    size_t          event_data;
+    void            (*construct_fn)(sgl_surf_t *surf, struct sgl_obj *obj, sgl_event_t *event);
+    struct sgl_obj  *parent;
+    struct sgl_obj  *child;
+    struct sgl_obj  *sibling;
+    uint8_t         destroyed : 1;
+    uint8_t         dirty : 1;
+    uint8_t         hide : 1;
+    uint8_t         needinit : 1;
+    uint8_t         layout : 2;
+    uint8_t         clickable : 1;
+    uint8_t         movable : 1;
+    uint8_t         border;
+    uint16_t        flexible : 1;
+    uint16_t        focus : 1;
+    uint16_t        pressed : 1;
+    uint16_t        page : 1;
+    uint16_t        radius : 12;
 #if CONFIG_SGL_OBJ_USE_NAME
-    const char         *name;
+    const char      *name;
 #endif
 } sgl_obj_t;
 
@@ -431,11 +431,11 @@ typedef struct sgl_page {
  * @flush_area: flush area callback function pointer, return the finished flag
  */
 typedef struct sgl_fbinfo {
-    void                *buffer[SGL_DRAW_BUFFER_MAX];
-    uint32_t             buffer_size;
-    int16_t              xres;
-    int16_t              yres;
-    void                 (*flush_area)(sgl_area_t *area, sgl_color_t *src);
+    void      *buffer[SGL_DRAW_BUFFER_MAX];
+    uint32_t   buffer_size;
+    int16_t    xres;
+    int16_t    yres;
+    void       (*flush_area)(sgl_area_t *area, sgl_color_t *src);
 } sgl_fbinfo_t;
 
 
@@ -464,9 +464,9 @@ typedef struct sgl_fbdev {
  * @tick_ms: tick milliseconds
  */
 typedef struct sgl_system {
-    void                 (*logdev)(const char *str);
-    sgl_fbdev_t          fbdev;
-    volatile uint32_t    tick_ms;
+    void               (*logdev)(const char *str);
+    sgl_fbdev_t        fbdev;
+    volatile uint32_t  tick_ms;
 } sgl_system_t;
 
 
