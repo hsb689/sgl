@@ -82,6 +82,7 @@ static void sgl_textbox_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_event
         if((textbox->text_height + textbox->y_offset) > height ) {
            textbox->y_offset -= evt->distance;
         }
+        sgl_obj_set_dirty(obj);
     }
     else if(evt->type == SGL_EVENT_MOVE_DOWN) {
         textbox->text_height = sgl_font_get_string_height(width, textbox->text, textbox->font, textbox->line_margin);
@@ -89,6 +90,7 @@ static void sgl_textbox_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_event
         if(textbox->y_offset < 0) {
             textbox->y_offset += evt->distance;
         }
+        sgl_obj_set_dirty(obj);
     }
     else if (evt->type == SGL_EVENT_PRESSED) {
         textbox->scroll_enable = 1;
