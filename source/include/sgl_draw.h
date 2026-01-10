@@ -346,7 +346,7 @@ void sgl_draw_circle(sgl_surf_t *surf, sgl_area_t *area, sgl_draw_circle_t *desc
  * @param icon   icon pixmap
  * @param alpha  alpha of icon
  */
-void sgl_draw_icon( sgl_surf_t *surf, sgl_area_t *area, sgl_area_t *coords, const sgl_icon_pixmap_t *icon, uint8_t alpha);
+void sgl_draw_icon( sgl_surf_t *surf, sgl_area_t *area, int16_t x, int16_t y, sgl_color_t color, uint8_t alpha, const sgl_icon_pixmap_t *icon);
 
 
 /**

@@ -36,35 +36,42 @@
  * @param icon   icon pixmap
  * @param alpha  alpha of icon
  */
-void sgl_draw_icon( sgl_surf_t *surf, sgl_area_t *area, sgl_area_t *coords, const sgl_icon_pixmap_t *icon, uint8_t alpha)
+void sgl_draw_icon( sgl_surf_t *surf, sgl_area_t *area, int16_t x, int16_t y, sgl_color_t color, uint8_t alpha, const sgl_icon_pixmap_t *icon)
 {
+    const uint8_t *dot = icon->bitmap;
     sgl_area_t clip = SGL_AREA_MAX;
-    sgl_color_t *buf = NULL, *blend = NULL, color;
-    uint16_t w = coords->x2 - coords->x1 + 1;
-    uint16_t h = coords->y2 - coords->y1 + 1;
-    uint8_t pbuf = 0;
+    sgl_color_t *buf = NULL;
+    int rel_x, rel_y, byte_x, dot_index;
+    uint8_t alpha_dot;
+
+    sgl_area_t icon_rect = {
+        .x1 = x,
+        .x2 = x + icon->width - 1,
+        .y1 = y,
+        .y2 = y + icon->height - 1,
+    };
+
+    if (!sgl_surf_clip(surf, &icon_rect, &clip)) {
+        return;
+    }
 
     if (!sgl_area_selfclip(&clip, area)) {
         return;
     }
 
-    uint32_t scale_x = ((icon->width << 10) / w);
-    uint32_t scale_y = ((icon->height << 10) / h);
-    uint32_t step_x = 0, step_y = 0;
-
-    buf = sgl_surf_get_buf(surf, clip.x1 - surf->x1, clip.y1 - surf->y1);
-
     for (int y = clip.y1; y <= clip.y2; y++) {
-        blend = buf;
-        step_y = (scale_y * (y - coords->y1)) >> 10;
-        for (int x = clip.x1; x <= clip.x2; x++, blend++) {
-            step_x = (scale_x * (x - coords->x1)) >> 10;
-            pbuf = icon->bitmap[step_x + step_y * icon->width];
-            if (pbuf & 0x80) {
-                color = sgl_rgb322_to_color(pbuf);
-                *blend = (alpha == SGL_ALPHA_MAX ? color : sgl_color_mixer(color, *blend, alpha));
-            }
+        buf = sgl_surf_get_buf(surf, clip.x1 - surf->x1, y - surf->y1);
+        rel_y = y - icon_rect.y1;
+
+        for (int x = clip.x1; x <= clip.x2; x++) {
+            rel_x = x - icon_rect.x1;
+
+            byte_x = rel_x >> 1;
+            dot_index = byte_x + (rel_y * (icon->width >> 1));
+            alpha_dot = (rel_x & 1) ? dot[dot_index] & 0xF : (dot[dot_index] >> 4);
+            alpha_dot = alpha_dot | (alpha_dot << 4);
+            *buf = (alpha == SGL_ALPHA_MAX ? sgl_color_mixer(color, *buf, alpha_dot) : sgl_color_mixer(sgl_color_mixer(color, *buf, alpha_dot), *buf, alpha));
+            buf++;
         }
-        buf += surf->w;
     }
 }
