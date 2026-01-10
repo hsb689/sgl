@@ -494,6 +494,11 @@ int sgl_fbdev_register(sgl_fbinfo_t *fbinfo);
 /**
  * @brief framebuffer device flush function
  * @param area [in] area of flush, that is x1, y1, x2, y2: area of flush
+ *                  area contains the coordinates of the area to be flushed
+ *                  - x1: x coordinate of the top left corner of the area
+ *                  - y1: y coordinate of the top left corner of the area
+ *                  - x2: x coordinate of the bottom right corner of the area
+ *                  - y2: y coordinate of the bottom right corner of the area
  * @param src [in] source color
  */
 static inline void sgl_fbdev_flush_area(sgl_area_t *area, sgl_color_t *src)
