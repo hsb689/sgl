@@ -67,8 +67,6 @@ typedef struct sgl_draw_rect {
  * @alpha: alpha
  */
 typedef struct sgl_draw_line {
-    sgl_pos_t        start;
-    sgl_pos_t        end;
     sgl_color_t      color;
     int16_t          width;
     uint8_t          alpha;
@@ -440,12 +438,31 @@ void sgl_draw_fill_vline(sgl_surf_t *surf, sgl_area_t *area, int16_t x, int16_t 
 
 
 /**
+ * @brief draw a slanted line with alpha
+ * @param surf surface
+ * @param area area that contains the line
+ * @param x1 line start x position
+ * @param y1 line start y position
+ * @param x2 line end x position
+ * @param y2 line end y position
+ * @param thickness line width
+ * @param color line color
+ * @param alpha alpha of color
+ * @return none
+ * @note This algorithm is SDF algorithm
+ */
+void draw_line_fill_slanted(sgl_surf_t *surf, sgl_area_t *area, int16_t x1, int16_t y1, int16_t x2, int16_t y2, int16_t thickness, sgl_color_t color, uint8_t alpha);
+
+
+/**
  * @brief draw a line
  * @param surf surface
+ * @param area area that contains the line
+ * @param coords line coords
  * @param desc line description
  * @return none
  */
-void sgl_draw_line(sgl_surf_t *surf, sgl_area_t *area, sgl_draw_line_t *desc);
+void sgl_draw_line(sgl_surf_t *surf, sgl_area_t *area, sgl_area_t *coords, sgl_draw_line_t *desc);
 
 
 /**

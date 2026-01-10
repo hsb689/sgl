@@ -113,8 +113,22 @@ static int32_t sgl_capsule_sdf_optimized(int16_t px, int16_t py, int16_t ax, int
 	return sgl_sqrt(dx * dx + dy * dy);
 }
 
-void draw_line_sdf(sgl_surf_t *surf, sgl_area_t *area, int16_t x1, int16_t y1, int16_t x2, int16_t y2,
-                                                  int16_t thickness, sgl_color_t color, uint8_t alpha)
+
+/**
+ * @brief draw a slanted line with alpha
+ * @param surf surface
+ * @param area area that contains the line
+ * @param x1 line start x position
+ * @param y1 line start y position
+ * @param x2 line end x position
+ * @param y2 line end y position
+ * @param thickness line width
+ * @param color line color
+ * @param alpha alpha of color
+ * @return none
+ * @note This algorithm is SDF algorithm
+ */
+void draw_line_fill_slanted(sgl_surf_t *surf, sgl_area_t *area, int16_t x1, int16_t y1, int16_t x2, int16_t y2, int16_t thickness, sgl_color_t color, uint8_t alpha)
 {
 	uint8_t c;
 	int64_t len;
@@ -164,16 +178,18 @@ void draw_line_sdf(sgl_surf_t *surf, sgl_area_t *area, int16_t x1, int16_t y1, i
 /**
  * @brief draw a line
  * @param surf surface
+ * @param area area that contains the line
+ * @param coords line coords
  * @param desc line description
  * @return none
  */
-void sgl_draw_line(sgl_surf_t *surf, sgl_area_t *area, sgl_draw_line_t *desc)
+void sgl_draw_line(sgl_surf_t *surf, sgl_area_t *area, sgl_area_t *coords, sgl_draw_line_t *desc)
 {
 	uint8_t alpha = desc->alpha;
-	int16_t x1 = desc->start.x;
-	int16_t y1 = desc->start.y;
-	int16_t x2 = desc->end.x;
-	int16_t y2 = desc->end.y;
+	int16_t x1 = coords->x1;
+	int16_t y1 = coords->y1;
+	int16_t x2 = coords->x2;
+	int16_t y2 = coords->y2;
 
 	if (x1 == x2) {
 		sgl_draw_fill_vline(surf, area, x1, y1, y2, desc->width / 2, desc->color, alpha);
@@ -182,6 +198,6 @@ void sgl_draw_line(sgl_surf_t *surf, sgl_area_t *area, sgl_draw_line_t *desc)
 		sgl_draw_fill_hline(surf, area, y1, x1, x2, desc->width / 2, desc->color, alpha);
 	}
 	else {
-		draw_line_sdf(surf, area, x1, y1, x2, y2, desc->width, desc->color, alpha);
+		draw_line_fill_slanted(surf, area, x1, y1, x2, y2, desc->width, desc->color, alpha);
 	}
 }

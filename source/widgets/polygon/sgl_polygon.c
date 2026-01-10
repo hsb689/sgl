@@ -126,19 +126,11 @@ static void sgl_polygon_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_event
                                polygon->vertices[i].y + obj->parent->coords.y1};
             sgl_pos_t end = {polygon->vertices[(i + 1) % polygon->vertex_count].x + obj->parent->coords.x1, 
                              polygon->vertices[(i + 1) % polygon->vertex_count].y + obj->parent->coords.y1};
-            
-            sgl_draw_line_t line = {
-                .start = start,
-                .end = end,
-                .color = polygon->border_color,
-                .width = polygon->border_width,
-                .alpha = polygon->alpha
-            };
-            
-            sgl_draw_line(surf, &obj->area, &line);
+
+            draw_line_fill_slanted(surf, &obj->area, start.x, start.y, end.x, end.y, polygon->border_width, polygon->border_color, polygon->alpha);
         }
     }
-    
+
     // Draw text
     if (polygon->text && polygon->font) {
         // Calculate center point of polygon
