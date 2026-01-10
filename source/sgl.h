@@ -58,5 +58,6 @@
 #include "widgets/scope/sgl_scope.h"
 #include "widgets/ext_img/sgl_ext_img.h"
 #include "widgets/polygon/sgl_polygon.h"
+#include "widgets/box/sgl_box.h"
 
 #endif // __SGL_H__
