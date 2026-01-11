@@ -80,6 +80,9 @@ typedef struct sgl_ext_img {
     const sgl_pixmap_t *pixmap;
     void            (*read)(const uint8_t *addr, uint8_t *out, uint32_t len_bytes);
     uint8_t         alpha;
+    uint8_t         bitmap_num;
+    uint8_t         bitmap_idx;
+    uint8_t         bitmap_auto;
     /* RLE compress context */
     sgl_color_t     color;
     uint16_t        remainder;
@@ -128,6 +131,34 @@ static inline void sgl_ext_img_set_alpha(sgl_obj_t *obj, uint8_t alpha)
     SGL_ASSERT(obj != NULL);
     ((sgl_ext_img_t*)obj)->alpha = alpha;
     sgl_obj_set_dirty(obj);
+}
+
+/**
+ * @brief set ext_img bitmap number
+ * @param obj ext_img object
+ * @param num ext_img bitmap number
+ * @param auto_refresh ext_img bitmap auto refresh
+ * @return none
+ * @note if auto_refresh is true, the ext_img will refresh automatically after bitmap flush conplete
+ */
+static inline void sgl_ext_img_set_bitmap_num(sgl_obj_t *obj, uint8_t num, bool auto_refresh)
+{
+    SGL_ASSERT(obj != NULL);
+    ((sgl_ext_img_t*)obj)->bitmap_num = num;
+    ((sgl_ext_img_t*)obj)->bitmap_auto = auto_refresh ? 1 : 0;
+}
+
+/**
+ * @brief set ext_img next bitmap
+ * @param obj ext_img object
+ * @return none
+ */
+static inline void sgl_ext_img_set_next_bitmap(sgl_obj_t *obj)
+{
+    SGL_ASSERT(obj != NULL);
+    sgl_ext_img_t *ext_img = (sgl_ext_img_t*)obj;
+    uint8_t index = ext_img->index + 1;
+    ext_img->bitmap_idx = (index < ext_img->bitmap_num ? index : 0);
 }
 
 #endif // !__SGL_EXT_IMG_H__

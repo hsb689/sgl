@@ -49,13 +49,13 @@ typedef struct sgl_box {
     int32_t         x_offset;           // X轴偏移
     int32_t         y_offset;           // Y轴偏移
     sgl_draw_rect_t scroll;
-    uint32_t         scroll_enable: 1;
-    uint32_t         show_v_scrollbar: 1;  // 是否显示垂直滚动条
-    uint32_t         show_h_scrollbar: 1;  // 是否显示水平滚动条
-    int16_t          elastic_scroll_up;    // 向上滚动的最大偏移量
-    int16_t          elastic_scroll_down;  // 向下滚动的最大偏移量 
-    int16_t          elastic_scroll_left;  // 向左滚动的最大偏移量 
-    int16_t          elastic_scroll_right; // 向右滚动的最大偏移量 
+    uint32_t        scroll_enable: 1;
+    uint32_t        show_v_scrollbar: 1;  // 是否显示垂直滚动条
+    uint32_t        show_h_scrollbar: 1;  // 是否显示水平滚动条
+    int16_t         elastic_scroll_up;    // 向上滚动的最大偏移量
+    int16_t         elastic_scroll_down;  // 向下滚动的最大偏移量 
+    int16_t         elastic_scroll_left;  // 向左滚动的最大偏移量 
+    int16_t         elastic_scroll_right; // 向右滚动的最大偏移量 
 }sgl_box_t;
 
 
