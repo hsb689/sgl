@@ -1262,36 +1262,36 @@ void sgl_obj_set_pos_align_ref(sgl_obj_t *ref, sgl_obj_t *obj, sgl_align_type_t 
     case SGL_ALIGN_VERT_MID:
         obj->coords.x1 = ref->coords.x1 + (ref_w - obj_w) / 2;
         obj->coords.x2 = obj->coords.x1 + obj_w - 1;
-        break;
+    break;
 
     case SGL_ALIGN_VERT_LEFT:
         obj->coords.x1 = ref->coords.x1;
         obj->coords.x2 = obj->coords.x1 + obj_w - 1;
-        break;
+    break;
 
     case SGL_ALIGN_VERT_RIGHT:
         obj->coords.x1 = ref->coords.x2 - obj_w;
         obj->coords.x2 = obj->coords.x1 + obj_w - 1;
-        break;
+    break;
 
     case SGL_ALIGN_HORIZ_MID:
         obj->coords.y1 = ref->coords.y1 + (ref_h - obj_h) / 2;
         obj->coords.y2 = obj->coords.y1 + obj_h - 1;
-        break;
+    break;
 
     case SGL_ALIGN_HORIZ_TOP:
         obj->coords.y1 = ref->coords.y1;
         obj->coords.y2 = obj->coords.y1 + obj_h - 1;
-        break;
+    break;
 
     case SGL_ALIGN_HORIZ_BOT:
         obj->coords.y1 = ref->coords.y2 - obj_h;
         obj->coords.y2 = obj->coords.y1 + obj_h - 1;
-        break;
+    break;
 
     default:
         SGL_LOG_WARN("invalid align type");
-        break;
+    break;
     }
 }
 

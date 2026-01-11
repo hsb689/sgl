@@ -319,22 +319,22 @@ typedef struct sgl_font_unicode {
 * @table: point to struct sgl_font_table
 * @font_table_size: size of struct sgl_font_table
 * @font_height: height of font
-* @bpp: The anti aliasing level of the font
-* @compress: compress flag, 0: no compress, 1: compress
 * @unicode: point to struct sgl_font_unicode struct
 * @unicode_num: number of unicode parts
 * @base_line: base line of font
+* @bpp: The anti aliasing level of the font, only support 2, 4
+* @compress: compress flag, 0: no compress, 1: compress
 */
 typedef struct sgl_font {
     const uint8_t  *bitmap;
     const sgl_font_table_t  *table;
     const uint16_t  font_table_size;
-    const uint16_t  font_height : 12;
-    const uint16_t  bpp : 3;          // AA depth, only support 2, 4
-    const uint16_t  compress : 1;     // compress flag
+    const uint16_t  font_height;
     const sgl_font_unicode_t *unicode;
     const uint32_t  unicode_num;
-    const int32_t   base_line;
+    const int16_t   base_line;
+    const uint8_t   bpp;
+    const uint8_t   compress;
 } sgl_font_t;
 
 
@@ -1447,6 +1447,7 @@ static inline int16_t sgl_obj_get_border_width(sgl_obj_t *obj)
  * @brief Get object fill rectangle
  * @param obj point to object
  * @return object fill rectangle
+ * @note This function is used to obtain the inner area of an object, i.e., the region excluding its borders.
  */
 static inline sgl_area_t sgl_obj_get_fill_rect(sgl_obj_t *obj)
 {
@@ -1649,9 +1650,9 @@ void sgl_color_blend(sgl_color_t *fg_color, sgl_color_t *bg_color, uint8_t facto
  * Writes the specified `color` value to `len` consecutive elements starting at `dest`.
  * This is equivalent to a memset-like operation but for color values (typically 32-bit RGBA).
  *
- * @param dest[out]  Pointer to the start of the destination color buffer.
- * @param color[in]  The color value to fill with.
- * @param len[]in    Number of color elements to write (not bytes).
+ * @param[out] dest   Pointer to the start of the destination color buffer.
+ * @param[in]  color  The color value to fill with.
+ * @param[in]  len    Number of color elements to write (not bytes).
  */
 static inline void sgl_color_set(sgl_color_t *dest, sgl_color_t color, uint32_t len)
 {

@@ -45,7 +45,7 @@ extern "C" {
 #if CONFIG_SGL_DEBUG
 
 /**
- * @brief ebraid log printing function, used to print debugging information. Note that this function 
+ * @brief sgl log printing function, used to print debugging information. Note that this function 
  *        should only be called in debugging mode, otherwise it may affect system real-time 
  *        performance due to long execution time
  * 
@@ -58,7 +58,7 @@ void sgl_log(const char *level, const char * format, ...);
 
 
 /**
- * @brief ebraid assert handler, used to handle assertions
+ * @brief sgl assert handler, used to handle assertions
  * 
  * @param file:  file name
  * @param func:  function name
