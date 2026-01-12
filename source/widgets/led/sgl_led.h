@@ -3,7 +3,7 @@
  * MIT License
  *
  * Copyright(c) 2023-present All contributors of SGL  
- * Document reference link: https://sgl-docs.readthedocs.io
+ * Document reference link: docs directory
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -45,8 +45,9 @@ typedef struct sgl_led {
     int16_t         cy;
     uint8_t         alpha;
     bool            status;
-    sgl_color_t     color;
-    sgl_color_t     bg_color;
+    sgl_color_t     on_color;
+    sgl_color_t     off_color;
+    sgl_color_t     border_color;
 
 }sgl_led_t;
 
@@ -65,38 +66,39 @@ sgl_obj_t* sgl_led_create(sgl_obj_t* parent);
  * @param color color of the led
  * @return none
  */
-static inline void sgl_led_set_color(sgl_obj_t *obj, sgl_color_t color)
+static inline void sgl_led_set_on_color(sgl_obj_t *obj, sgl_color_t color)
 {
     sgl_led_t *led = (sgl_led_t *)obj;
-    led->color = color;
+    led->on_color = color;
     sgl_obj_set_dirty(obj);
 }
 
-/**
- * @brief set the radius of the led
- * @param obj led object
- * @param radius radius of the led
- * @return none
- */
-static inline void sgl_led_set_radius(sgl_obj_t *obj, uint8_t radius)
-{
-    sgl_obj_fix_radius(obj, radius);
-    sgl_obj_set_dirty(obj);
-}
 
 /**
- * @brief set the background color of the led
+ * @brief set the off color of the led
  * @param obj led object
- * @param color background color of the led
+ * @param color off color of the led
  * @return none
  */
-static inline void sgl_led_set_bg_color(sgl_obj_t *obj, sgl_color_t color)
+static inline void sgl_led_set_off_color(sgl_obj_t *obj, sgl_color_t color)
 {
     sgl_led_t *led = (sgl_led_t *)obj;
-    led->bg_color = color;
+    led->off_color = color;
     sgl_obj_set_dirty(obj);
 }
+/**
+ * @brief Set the border color of the led
+ * @param obj led object
+ * @param color border color of the led
+ * @return none
+ */
+static inline void sgl_led_set_border_color(sgl_obj_t *obj, sgl_color_t color)
+{
 
+    sgl_led_t *led = (sgl_led_t *)obj;
+    led->border_color = color;
+    sgl_obj_set_dirty(obj);
+}
 /**
  * @brief set the alpha of the led
  * @param obj led object
