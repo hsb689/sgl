@@ -3,7 +3,7 @@
  * MIT License
  *
  * Copyright(c) 2023-present All contributors of SGL  
- * Document reference link: https://sgl-docs.readthedocs.io
+ * Document reference link: docs directory
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -36,7 +36,7 @@
 static void sgl_led_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_event_t *evt)
 {
     sgl_led_t *led = (sgl_led_t*)obj;
-    sgl_color_t color = led->status ? led->color : led->bg_color;
+    sgl_color_t color = led->status ? led->on_color : led->off_color;
     sgl_color_t *buf = NULL, *blend = NULL;
 
     if(evt->type == SGL_EVENT_DRAW_MAIN) {
@@ -78,21 +78,26 @@ static void sgl_led_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_event_t *
                 }
                 else if (real_r2 >= r2) {
                     edge_alpha = SGL_ALPHA_MAX - sgl_sqrt_error(real_r2);
-                    sgl_color_t color_mix = sgl_color_mixer(led->bg_color, *blend, edge_alpha);
+                    sgl_color_t color_mix = sgl_color_mixer(led->border_color, *blend, edge_alpha);
                     *blend = sgl_color_mixer(color_mix, *blend, led->alpha);
                 }
                 else {
                     ds_alpha = real_r2 * SGL_ALPHA_NUM / r2;
                     ds_alpha = sgl_pow2(ds_alpha) / SGL_ALPHA_NUM ;
-                    *blend = sgl_color_mixer(sgl_color_mixer(led->bg_color, color, ds_alpha), *blend, led->alpha);
+                    *blend = sgl_color_mixer(sgl_color_mixer(led->border_color, color, ds_alpha), *blend, led->alpha);//SGL_THEME_BG_COLOR
                 }
             }
-            buf += surf->w;
+            buf += surf->pitch;
         }
     }
     else if (evt->type == SGL_EVENT_DRAW_INIT) {
         if (obj->radius == SGL_RADIUS_INVALID) {
             sgl_obj_fix_radius(obj, SGL_POS_MAX);
+        }
+    }
+    else if (evt->type == SGL_EVENT_PRESSED || evt->type == SGL_EVENT_RELEASED) {
+        if (obj->event_fn) {
+            obj->event_fn(evt);
         }
     }
 }
@@ -121,8 +126,9 @@ sgl_obj_t* sgl_led_create(sgl_obj_t* parent)
     obj->needinit = 1;
 
     led->alpha = SGL_ALPHA_MAX;
-    led->color = SGL_THEME_COLOR;
-    led->bg_color = SGL_THEME_BG_COLOR;
+    led->on_color = SGL_THEME_COLOR;
+    led->off_color = SGL_THEME_BG_COLOR;
+    led->border_color = SGL_THEME_BG_COLOR;
     led->cx = -1;
     led->cy = -1;
     obj->radius = SGL_RADIUS_INVALID;
