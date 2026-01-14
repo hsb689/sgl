@@ -46,7 +46,6 @@ typedef struct sgl_button {
     sgl_draw_rect_t         rect;
     const char              *text;
     const sgl_font_t        *font;
-    const sgl_icon_pixmap_t *icon;
     sgl_color_t             text_color;
     uint8_t                 align;
 }sgl_button_t;
@@ -188,19 +187,6 @@ static inline void sgl_button_set_font(sgl_obj_t *obj, const sgl_font_t *font)
 {
     sgl_button_t *button = (sgl_button_t*)obj;
     button->font = font; 
-    sgl_obj_set_dirty(obj);
-}
-
-/**
- * @brief set button icon
- * @param obj: object pointer
- * @param icon: icon pointer
- * @return none
- */
-static inline void sgl_button_set_icon(sgl_obj_t *obj, const sgl_icon_pixmap_t *icon)
-{
-    sgl_button_t *button = (sgl_button_t*)obj;
-    button->icon = icon; 
     sgl_obj_set_dirty(obj);
 }
 

@@ -106,7 +106,6 @@ sgl_obj_t* sgl_button_create(sgl_obj_t* parent)
     button->text = NULL;
     button->text_color = SGL_THEME_TEXT_COLOR;
     button->font = NULL;
-    button->icon = NULL;
     button->align = SGL_ALIGN_CENTER;
 
     return obj;
