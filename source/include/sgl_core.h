@@ -488,7 +488,24 @@ typedef struct sgl_system {
  * @param obj: The parent object whose children are being iterated.
  * @param child: The current child object being processed.
  */
-#define  sgl_obj_foreach_child(obj, child)                  for ((child) = (obj)->child; (child) != NULL; (child) = (child)->sibling)
+#define  sgl_obj_for_each_child(obj, child)                 for ((child) = (obj)->child; (child) != NULL; (child) = (child)->sibling)
+
+
+/**
+ * @brief for each child object of parent
+ * @param _child: pointer of child object
+ * @param parent: pointer of parent object
+ */
+#define  sgl_obj_for_each_child(_child, parent)             for (_child = parent->child; _child != NULL; _child = _child->sibling)
+
+
+/**
+ * @brief for each child object of parent safely
+ * @param _child: pointer of child object
+ * @param parent: pointer of parent object
+ */
+#define sgl_obj_for_each_child_safe(_child, n, parent)      for (_child = parent->child, n = (_child ? _child->sibling : NULL); _child != NULL; \
+                                                                 _child = n, n = (_child ? _child->sibling : NULL))
 
 
 /* dont to use this variable, it is used internally by sgl library */
@@ -790,23 +807,6 @@ static inline sgl_color_t sgl_rgb2color(uint8_t red, uint8_t green, uint8_t blue
     color.ch.red = red;
     return color;
 }
-
-
-/**
- * @brief for each child object of parent
- * @param _child: pointer of child object
- * @param parent: pointer of parent object
- */
-#define  sgl_obj_for_each_child(_child, parent)                   for (_child = parent->child; _child != NULL; _child = _child->sibling)
-
-
-/**
- * @brief for each child object of parent safely
- * @param _child: pointer of child object
- * @param parent: pointer of parent object
- */
-#define sgl_obj_for_each_child_safe(_child, n, parent)            for (_child = parent->child, n = (_child ? _child->sibling : NULL); _child != NULL; \
-                                                                       _child = n, n = (_child ? _child->sibling : NULL))
 
 
 /**
