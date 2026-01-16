@@ -71,13 +71,7 @@ int sgl_fbdev_register(sgl_fbinfo_t *fbinfo)
         return -1;
     }
 
-    sgl_system.fbdev.fbinfo.buffer[0]   = fbinfo->buffer[0];
-    sgl_system.fbdev.fbinfo.buffer[1]   = fbinfo->buffer[1];
-    sgl_system.fbdev.fbinfo.buffer_size = fbinfo->buffer_size;
-
-    sgl_system.fbdev.fbinfo.xres        = fbinfo->xres;
-    sgl_system.fbdev.fbinfo.yres        = fbinfo->yres;
-    sgl_system.fbdev.fbinfo.flush_area  = fbinfo->flush_area;
+    sgl_system.fbdev.fbinfo = *fbinfo;
 
     return 0;
 }

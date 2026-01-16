@@ -281,18 +281,28 @@ typedef struct sgl_icon_pixmap {
 *        all characters in a font, accelerating the search process
 *
 * @bitmap_index: point to bitmap index of font
+* @adv_w: advance width of character width
 * @box_h: height of font
 * @box_w: width of font
 * @ofs_x: offset of character x position
 * @ofs_y: offset of character y position
 */
 typedef struct sgl_font_table {
+#if (CONFIG_SGL_FONT_SMALL_TABLE)
+    const uint16_t bitmap_index;
+    const uint16_t adv_w;
+    const uint8_t  box_h;
+    const uint8_t  box_w;
+    const int8_t   ofs_x;
+    const int8_t   ofs_y;
+#else
     const uint32_t bitmap_index;
     const uint16_t adv_w;
     const uint16_t box_h;
     const uint16_t box_w;
     const int8_t   ofs_x;
     const int8_t   ofs_y;
+#endif
 } sgl_font_table_t;
 
 
