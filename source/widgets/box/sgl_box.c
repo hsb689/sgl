@@ -79,7 +79,7 @@ static void sgl_box_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_event_t *
                     area.y2 = area.y1 + scroll_height;
                 }
 
-                sgl_draw_fill_rect(surf, &obj->area, &area, SGL_BOX_SCROLL_WIDTH / 2, box->scroll.color, 128);
+                sgl_draw_fill_rect(surf, &obj->area, &area, SGL_BOX_SCROLL_WIDTH / 2, box->scroll_color, 128);
             }
 
             // Draw horizontal scrollbar if horizontal scrolling is enabled and showing is enabled
@@ -114,7 +114,7 @@ static void sgl_box_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_event_t *
                     area.x2 = area.x1 + scroll_width;
                 }
 
-                sgl_draw_fill_rect(surf, &obj->area, &area, SGL_BOX_SCROLL_WIDTH / 2, box->scroll.color, 128);
+                sgl_draw_fill_rect(surf, &obj->area, &area, SGL_BOX_SCROLL_WIDTH / 2, box->scroll_color, 128);
             }
         }
     }
@@ -230,16 +230,14 @@ sgl_obj_t* sgl_box_create(sgl_obj_t* parent)
     box->bg.border = 1;
     sgl_obj_set_border_width(obj, 1);
     box->bg.border_color = SGL_THEME_BORDER_COLOR;
-
-    box->scroll.alpha = SGL_THEME_ALPHA;
-    box->scroll.color = SGL_THEME_SCROLL_FG_COLOR;
+    box->scroll_color = SGL_THEME_SCROLL_FG_COLOR;
 
     box->x_offset = 0;
     box->y_offset = 0;
     box->scroll_enable = 0;
-    box->show_v_scrollbar = 1;  // 默认显示垂直滚动条
-    box->show_h_scrollbar = 1;  // 默认显示水平滚动条
-    box->scroll_mode = SGL_BOX_SCROLL_BOTH;  // 默认支持双向滚动
+    box->show_v_scrollbar = 1;
+    box->show_h_scrollbar = 1;
+    box->scroll_mode = SGL_BOX_SCROLL_BOTH;
     box->elastic_scroll_up = 0;    // Default: unlimited scrolling up
     box->elastic_scroll_down = 0;  // Default: unlimited scrolling down
     box->elastic_scroll_left = 0;  // Default: unlimited scrolling left
