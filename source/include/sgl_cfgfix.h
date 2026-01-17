@@ -178,7 +178,7 @@ extern "C" {
 #define CONFIG_SGL_FONT_CONSOLAS32                                 (0)
 #endif
 
-#if !(defined(CONFIG_SGL_THEME_DARK) || defined(CONFIG_SGL_THEME_LIGHT))
+#if !(CONFIG_SGL_THEME_DARK || CONFIG_SGL_THEME_LIGHT)
 #   ifndef CONFIG_SGL_THEME_DEFAULT
 #   define CONFIG_SGL_THEME_DEFAULT                                (1)
 #   endif
