@@ -86,7 +86,7 @@ typedef int32_t (*sgl_anim_path_algo_t)(uint32_t elaps, uint32_t duration, int32
  *              - 0: play once (no repeat)
  *              - n: repeat n times (total plays = n + 1)
  *              - -1: repeat indefinitely
- *              @note Only 30 bits are allocated; max value is 1073741823.
+ *              @note Only 30 bits are allocated; max value is 0x3FFFFFFE.
  *
  * @finished: Flag indicating whether the animation has completed (including all repeats).
  *            Set to 1 when the animation ends naturally or is stopped.
@@ -287,6 +287,11 @@ static inline void sgl_anim_set_act_duration(sgl_anim_t *anim, uint32_t duration
  * @param  anim animation object
  * @param  repeat_cnt repeat count
  * @return none
+ * @note the repeat count can be set to SGL_ANIM_REPEAT_LOOP or SGL_ANIM_REPEAT_ONCE
+ *       - SGL_ANIM_REPEAT_ONCE: repeat once, it same as repeat count 1
+ *       - SGL_ANIM_REPEAT_LOOP: repeat loop, it same as repeat count -1
+ *       - otherwise: repeat count
+ *       max value: 0x3FFFFFFE
  */
 static inline void sgl_anim_set_repeat_cnt(sgl_anim_t *anim, int32_t repeat_cnt)
 {
