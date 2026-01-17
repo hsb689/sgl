@@ -78,13 +78,13 @@ static void sgl_led_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_event_t *
                 }
                 else if (real_r2 >= r2) {
                     edge_alpha = SGL_ALPHA_MAX - sgl_sqrt_error(real_r2);
-                    sgl_color_t color_mix = sgl_color_mixer(led->border_color, *blend, edge_alpha);
+                    sgl_color_t color_mix = sgl_color_mixer(led->bg_color, *blend, edge_alpha);
                     *blend = sgl_color_mixer(color_mix, *blend, led->alpha);
                 }
                 else {
                     ds_alpha = real_r2 * SGL_ALPHA_NUM / r2;
                     ds_alpha = sgl_pow2(ds_alpha) / SGL_ALPHA_NUM ;
-                    *blend = sgl_color_mixer(sgl_color_mixer(led->border_color, color, ds_alpha), *blend, led->alpha);//SGL_THEME_BG_COLOR
+                    *blend = sgl_color_mixer(sgl_color_mixer(led->bg_color, color, ds_alpha), *blend, led->alpha);//SGL_THEME_BG_COLOR
                 }
             }
             buf += surf->w;
@@ -128,7 +128,7 @@ sgl_obj_t* sgl_led_create(sgl_obj_t* parent)
     led->alpha = SGL_ALPHA_MAX;
     led->on_color = SGL_THEME_COLOR;
     led->off_color = SGL_THEME_BG_COLOR;
-    led->border_color = SGL_THEME_BG_COLOR;
+    led->bg_color = SGL_THEME_BG_COLOR;
     led->cx = -1;
     led->cy = -1;
     obj->radius = SGL_RADIUS_INVALID;

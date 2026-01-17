@@ -87,12 +87,12 @@ static inline void sgl_led_set_off_color(sgl_obj_t *obj, sgl_color_t color)
 }
 
 /**
- * @brief Set the border color of the led
+ * @brief Set the background color of the led
  * @param obj led object
- * @param color border color of the led
+ * @param color background color of the led
  * @return none
  */
-static inline void sgl_led_set_border_color(sgl_obj_t *obj, sgl_color_t color)
+static inline void sgl_led_set_bg_color(sgl_obj_t *obj, sgl_color_t color)
 {
     sgl_led_t *led = (sgl_led_t *)obj;
     led->border_color = color;
