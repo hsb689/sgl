@@ -119,12 +119,12 @@ typedef struct sgl_ext_img {
     void            (*read)(const uint8_t *addr, uint8_t *out, uint32_t len_bytes);
     uint8_t         alpha;
     uint8_t         pixmap_auto;
+    uint8_t         pixmap_idx;
+    uint8_t         pixmap_num;
     /* RLE compress context */
     sgl_color_t     color;
     uint16_t        remainder;
     uint32_t        index;
-    uint32_t        pixmap_idx;
-    uint32_t        pixmap_num;
 }sgl_ext_img_t;
 
 /**
@@ -178,8 +178,9 @@ static inline void sgl_ext_img_set_alpha(sgl_obj_t *obj, uint8_t alpha)
  * @param auto_refresh ext_img pixmap auto refresh
  * @return none
  * @note if auto_refresh is true, the ext_img will refresh automatically after pixmap flush conplete
+ * @warning the num max is 255
  */
-static inline void sgl_ext_img_set_pixmap_num(sgl_obj_t *obj, uint32_t num, bool auto_refresh)
+static inline void sgl_ext_img_set_pixmap_num(sgl_obj_t *obj, uint8_t num, bool auto_refresh)
 {
     SGL_ASSERT(obj != NULL);
     ((sgl_ext_img_t*)obj)->pixmap_num = num;
