@@ -47,7 +47,7 @@ typedef struct sgl_box {
     sgl_draw_rect_t bg;
     int16_t         x_offset;             // X-axis offset
     int16_t         y_offset;             // Y-axis offset
-    sgl_draw_rect_t scroll;
+    sgl_color_t     scroll_color;         // scroll color;
     uint8_t         scroll_mode;          // Scroll mode (vertical/horizontal/both)
     uint8_t         scroll_enable : 1;    // Whether scrolling is enabled
     uint8_t         show_v_scrollbar : 1; // Whether to show the vertical scrollbar
@@ -153,7 +153,7 @@ void sgl_box_set_elastic_scroll(sgl_obj_t* obj, int16_t up_limit, int16_t down_l
 static inline void sgl_box_set_scrollbar_color(sgl_obj_t *obj, sgl_color_t color)
 {
     sgl_box_t *box = (sgl_box_t*)obj;
-    box->scroll.color = color;
+    box->scroll_color = color;
     sgl_obj_set_dirty(obj);
 }
 

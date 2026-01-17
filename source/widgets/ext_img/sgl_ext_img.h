@@ -201,4 +201,18 @@ static inline void sgl_ext_img_set_next_pixmap(sgl_obj_t *obj)
     sgl_obj_set_dirty(obj);
 }
 
+/**
+ * @brief set ext_img pixmap current index
+ * @param obj ext_img object
+ * @param index ext_img pixmap index
+ * @return none
+ */
+static inline void sgl_ext_img_set_pixmap_index(sgl_obj_t *obj, uint8_t index)
+{
+    SGL_ASSERT(obj != NULL);
+    sgl_ext_img_t *ext_img = (sgl_ext_img_t*)obj;
+    ext_img->pixmap_idx = sgl_min(index, ext_img->pixmap_num - 1);
+    sgl_obj_set_dirty(obj);
+}
+
 #endif // !__SGL_EXT_IMG_H__
