@@ -197,7 +197,6 @@ static inline void sgl_ext_img_set_next_pixmap(sgl_obj_t *obj)
     sgl_ext_img_t *ext_img = (sgl_ext_img_t*)obj;
     uint32_t pixmap_idx = ext_img->pixmap_idx + 1;
     ext_img->pixmap_idx = pixmap_idx >= ext_img->pixmap_num ? 0 : pixmap_idx;
-    SGL_LOG_INFO("pixmap_idx:======================================== %d", ext_img->pixmap_idx);
     sgl_obj_set_dirty(obj);
 }
 
