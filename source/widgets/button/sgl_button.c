@@ -103,7 +103,7 @@ sgl_obj_t* sgl_button_create(sgl_obj_t* parent)
     sgl_obj_set_clickable(obj);
     sgl_obj_set_flexible(obj);
     sgl_obj_set_border_width(obj, SGL_THEME_BORDER_WIDTH);
-    sgl_obj_fix_radius(obj, SGL_THEME_RADIUS);
+    sgl_obj_set_radius(obj, SGL_THEME_RADIUS);
 
     obj->construct_fn = sgl_button_construct_cb;
 

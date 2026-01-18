@@ -134,7 +134,7 @@ static inline void sgl_slider_set_direct(sgl_obj_t *obj, uint8_t direct)
  */
 static inline void sgl_slider_set_radius(sgl_obj_t *obj, uint8_t radius)
 {
-    sgl_obj_fix_radius(obj, radius);
+    sgl_obj_set_radius(obj, radius);
     sgl_obj_set_dirty(obj);
 }
 

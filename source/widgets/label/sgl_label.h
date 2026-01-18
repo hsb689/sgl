@@ -122,7 +122,7 @@ static inline void sgl_label_set_bg_color(sgl_obj_t *obj, sgl_color_t color)
  */
 static inline void sgl_label_set_radius(sgl_obj_t *obj, uint8_t radius)
 {
-    sgl_obj_fix_radius(obj, radius);
+    sgl_obj_set_radius(obj, radius);
     sgl_obj_set_dirty(obj);
 }
 

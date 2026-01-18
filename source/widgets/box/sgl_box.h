@@ -89,7 +89,8 @@ static inline void sgl_box_set_bg_color(sgl_obj_t *obj, sgl_color_t color)
 static inline void sgl_box_set_radius(sgl_obj_t *obj, uint8_t radius)
 {
     sgl_box_t *box = (sgl_box_t*)obj;
-    box->bg.radius = sgl_obj_fix_radius(obj, radius);
+    sgl_obj_set_radius(obj, radius);
+    box->bg.radius = obj->radius;
     sgl_obj_set_dirty(obj);
 }
 

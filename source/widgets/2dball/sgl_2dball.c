@@ -50,18 +50,18 @@ static void sgl_2dball_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_event_
         }
 
         sgl_area_t c_rect = {
-            .x1 = cx - ball->radius,
-            .x2 = cx + ball->radius,
-            .y1 = cy - ball->radius,
-            .y2 = cy + ball->radius
+            .x1 = cx - obj->radius,
+            .x2 = cx + obj->radius,
+            .y1 = cy - obj->radius,
+            .y2 = cy + obj->radius
         };
         if (!sgl_area_selfclip(&clip, &c_rect)) {
             return;
         }
 
         int y2 = 0, real_r2 = 0, edge_alpha = 0;
-        int r2 = sgl_pow2(ball->radius);
-        int r2_edge = sgl_pow2(ball->radius + 1);
+        int r2 = sgl_pow2(obj->radius);
+        int r2_edge = sgl_pow2(obj->radius + 1);
         int ds_alpha = SGL_ALPHA_MIN;
 
         buf = sgl_surf_get_buf(surf, clip.x1 - surf->x1, clip.y1 - surf->y1);
@@ -88,11 +88,6 @@ static void sgl_2dball_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_event_
                 }
             }
             buf += surf->w;
-        }
-    }
-    else if(evt->type == SGL_EVENT_DRAW_INIT) {
-        if(ball->radius == -1) {
-            ball->radius = (ball->obj.coords.y2 - ball->obj.coords.y1) / 2;
         }
     }
 }
@@ -122,7 +117,6 @@ sgl_obj_t* sgl_2dball_create(sgl_obj_t* parent)
     ball->alpha = SGL_ALPHA_MAX;
     ball->color = SGL_THEME_COLOR;
     ball->bg_color = SGL_THEME_BG_COLOR;
-    ball->radius = -1;
 
     return obj;
 }

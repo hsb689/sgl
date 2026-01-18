@@ -134,7 +134,7 @@ static inline void sgl_button_set_pixmap(sgl_obj_t *obj, const sgl_pixmap_t *pix
  */
 static inline void sgl_button_set_radius(sgl_obj_t *obj, uint8_t radius)
 {
-    sgl_obj_fix_radius(obj, radius);
+    sgl_obj_set_radius(obj, radius);
     sgl_obj_set_dirty(obj);
 }
 

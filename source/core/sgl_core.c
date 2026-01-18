@@ -403,10 +403,11 @@ void sgl_obj_move_bottom(sgl_obj_t *obj)
 /**
  * @brief get fix radius of object
  * @param obj object
- * @return fix radius
+ * @param radius: radius that you want to set
+ * @return none
  * @note if radius is larger than object's width or height, fix radius will be returned
  */
-int16_t sgl_obj_fix_radius(sgl_obj_t *obj, size_t radius)
+void sgl_obj_set_radius(sgl_obj_t *obj, size_t radius)
 {
     int16_t w = (obj->coords.x2 - obj->coords.x1 + 1);
     int16_t h = (obj->coords.y2 - obj->coords.y1 + 1);
@@ -417,7 +418,6 @@ int16_t sgl_obj_fix_radius(sgl_obj_t *obj, size_t radius)
     }
 
     obj->radius = radius & 0xFFF;
-    return radius;
 }
 
 

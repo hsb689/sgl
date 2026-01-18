@@ -1536,10 +1536,11 @@ static inline void sgl_obj_set_event_cb(sgl_obj_t *obj, void (*event_fn)(sgl_eve
 /**
  * @brief get fix radius of object
  * @param obj object
- * @return fix radius
+ * @param radius: radius that you want to set
+ * @return none
  * @note if radius is larger than object's width or height, fix radius will be returned
  */
-int16_t sgl_obj_fix_radius(sgl_obj_t *obj, size_t radius);
+void sgl_obj_set_radius(sgl_obj_t *obj, size_t radius);
 
 
 /**
