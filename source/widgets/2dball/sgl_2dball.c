@@ -36,23 +36,24 @@
 static void sgl_2dball_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_event_t *evt)
 {
     sgl_2dball_t *ball = (sgl_2dball_t*)obj;
+    int16_t cx = 0, cy = 0;
 
     if(evt->type == SGL_EVENT_DRAW_MAIN) {
         sgl_area_t clip;
         sgl_color_t *buf = NULL, *blend = NULL;
 
-        ball->cx = (ball->obj.coords.x1 + ball->obj.coords.x2) / 2;
-        ball->cy = (ball->obj.coords.y1 + ball->obj.coords.y2) / 2;
+        cx = (ball->obj.coords.x1 + ball->obj.coords.x2) / 2;
+        cy = (ball->obj.coords.y1 + ball->obj.coords.y2) / 2;
 
         if (!sgl_surf_clip(surf, &obj->area, &clip)) {
             return;
         }
 
         sgl_area_t c_rect = {
-            .x1 = ball->cx - ball->radius,
-            .x2 = ball->cx + ball->radius,
-            .y1 = ball->cy - ball->radius,
-            .y2 = ball->cy + ball->radius
+            .x1 = cx - ball->radius,
+            .x2 = cx + ball->radius,
+            .y1 = cy - ball->radius,
+            .y2 = cy + ball->radius
         };
         if (!sgl_area_selfclip(&clip, &c_rect)) {
             return;
@@ -65,15 +66,15 @@ static void sgl_2dball_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_event_
 
         buf = sgl_surf_get_buf(surf, clip.x1 - surf->x1, clip.y1 - surf->y1);
         for (int y = clip.y1; y <= clip.y2; y++) {
-            y2 = sgl_pow2(y - ball->cy);
+            y2 = sgl_pow2(y - cy);
             blend = buf;
 
             for (int x = clip.x1; x <= clip.x2; x++, blend++) {
-                real_r2 = sgl_pow2(x - ball->cx) + y2;
+                real_r2 = sgl_pow2(x - cx) + y2;
                 ds_alpha = real_r2 * SGL_ALPHA_NUM / r2;
 
                 if (real_r2 >= r2_edge) {
-                    if(x > ball->cx)
+                    if(x > cx)
                         break;
                     continue;
                 }
@@ -121,8 +122,6 @@ sgl_obj_t* sgl_2dball_create(sgl_obj_t* parent)
     ball->alpha = SGL_ALPHA_MAX;
     ball->color = SGL_THEME_COLOR;
     ball->bg_color = SGL_THEME_BG_COLOR;
-    ball->cx = -1;
-    ball->cy = -1;
     ball->radius = -1;
 
     return obj;

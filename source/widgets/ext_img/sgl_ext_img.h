@@ -192,7 +192,7 @@ static inline void sgl_ext_img_set_pixmap_num(sgl_obj_t *obj, uint8_t num, bool 
  * @param obj ext_img object
  * @return none
  */
-static inline void sgl_ext_img_set_next_pixmap(sgl_obj_t *obj)
+static inline void sgl_ext_img_set_pixmap_next(sgl_obj_t *obj)
 {
     SGL_ASSERT(obj != NULL);
     sgl_ext_img_t *ext_img = (sgl_ext_img_t*)obj;

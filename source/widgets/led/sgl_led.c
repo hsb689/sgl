@@ -36,24 +36,25 @@
 static void sgl_led_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_event_t *evt)
 {
     sgl_led_t *led = (sgl_led_t*)obj;
+    int16_t cx = 0, cy = 0;
     sgl_color_t color = led->status ? led->on_color : led->off_color;
     sgl_color_t *buf = NULL, *blend = NULL;
 
     if(evt->type == SGL_EVENT_DRAW_MAIN) {
         sgl_area_t clip;
 
-        led->cx = (led->obj.coords.x1 + led->obj.coords.x2) / 2;
-        led->cy = (led->obj.coords.y1 + led->obj.coords.y2) / 2;
+        cx = (led->obj.coords.x1 + led->obj.coords.x2) / 2;
+        cy = (led->obj.coords.y1 + led->obj.coords.y2) / 2;
 
         if (!sgl_surf_clip(surf, &obj->area, &clip)) {
             return;
         }
 
         sgl_area_t c_rect = {
-            .x1 = led->cx - obj->radius,
-            .x2 = led->cx + obj->radius,
-            .y1 = led->cy - obj->radius,
-            .y2 = led->cy + obj->radius
+            .x1 = cx - obj->radius,
+            .x2 = cx + obj->radius,
+            .y1 = cy - obj->radius,
+            .y2 = cy + obj->radius
         };
         if (!sgl_area_selfclip(&clip, &c_rect)) {
             return;
@@ -66,13 +67,13 @@ static void sgl_led_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_event_t *
 
         buf = sgl_surf_get_buf(surf, clip.x1 - surf->x1, clip.y1 - surf->y1);
         for (int y = clip.y1; y <= clip.y2; y++) {
-            y2 = sgl_pow2(y - led->cy);
+            y2 = sgl_pow2(y - cy);
             blend = buf;
 
             for (int x = clip.x1; x <= clip.x2; x++, blend++) {
-                real_r2 = sgl_pow2(x - led->cx) + y2;
+                real_r2 = sgl_pow2(x - cx) + y2;
                 if (real_r2 >= r2_edge) {
-                    if(x > led->cx)
+                    if(x > cx)
                         break;
                     continue;
                 }
@@ -129,8 +130,6 @@ sgl_obj_t* sgl_led_create(sgl_obj_t* parent)
     led->on_color = SGL_THEME_COLOR;
     led->off_color = SGL_THEME_BG_COLOR;
     led->bg_color = SGL_THEME_BG_COLOR;
-    led->cx = -1;
-    led->cy = -1;
     obj->radius = SGL_RADIUS_INVALID;
 
     return obj;
