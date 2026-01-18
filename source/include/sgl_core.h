@@ -1508,10 +1508,10 @@ static inline sgl_area_t sgl_obj_get_fill_rect(sgl_obj_t *obj)
 {
     SGL_ASSERT(obj != NULL);
     sgl_area_t fill = {
-        .x1 = obj->coords.x1 + obj->border,
-        .y1 = obj->coords.y1 + obj->border,
-        .x2 = obj->coords.x2 - obj->border,
-        .y2 = obj->coords.y2 - obj->border
+        .x1 = sgl_max(obj->coords.x1 + obj->border, obj->area.x1),
+        .y1 = sgl_max(obj->coords.y1 + obj->border, obj->area.y1),
+        .x2 = sgl_min(obj->coords.x2 - obj->border, obj->area.x2),
+        .y2 = sgl_min(obj->coords.y2 - obj->border, obj->area.y2),
     };
     return fill;
 }
@@ -1534,13 +1534,25 @@ static inline void sgl_obj_set_event_cb(sgl_obj_t *obj, void (*event_fn)(sgl_eve
 
 
 /**
- * @brief get fix radius of object
+ * @brief set the radius of object
  * @param obj object
  * @param radius: radius that you want to set
  * @return none
  * @note if radius is larger than object's width or height, fix radius will be returned
  */
 void sgl_obj_set_radius(sgl_obj_t *obj, size_t radius);
+
+
+/**
+ * @brief get the radius of object
+ * @param obj object
+ * @return object radius
+ */
+static inline int16_t sgl_obj_get_radius(sgl_obj_t *obj)
+{
+    SGL_ASSERT(obj != NULL);
+    return obj->radius;
+}
 
 
 /**

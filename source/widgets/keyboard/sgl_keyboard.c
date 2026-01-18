@@ -535,9 +535,9 @@ sgl_obj_t* sgl_keyboard_create(sgl_obj_t* parent)
     keyboard->text_color = SGL_THEME_TEXT_COLOR;
 
     keyboard->btn_desc.alpha = SGL_THEME_ALPHA;
-    keyboard->btn_desc.color = SGL_THEME_COLOR;
-    keyboard->btn_desc.radius = 0;
-    keyboard->btn_desc.border = 1;
+    keyboard->btn_desc.color = sgl_color_mixer(SGL_THEME_BORDER_COLOR, SGL_THEME_COLOR, 128);
+    keyboard->btn_desc.radius = 4;
+    keyboard->btn_desc.border = 0;
     keyboard->btn_desc.border_color = SGL_THEME_BORDER_COLOR;
     keyboard->btn_desc.pixmap = NULL;
 

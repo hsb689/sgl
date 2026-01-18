@@ -43,7 +43,7 @@ typedef struct sgl_keyboard {
     sgl_obj_t        obj;
     sgl_draw_rect_t  body_desc;
     sgl_draw_rect_t  btn_desc;
-    const sgl_font_t       *font;
+    const sgl_font_t *font;
     char             *edit;
     sgl_color_t      text_color;
     uint8_t          opcode;
