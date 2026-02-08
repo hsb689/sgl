@@ -321,7 +321,7 @@ static inline void sgl_anim_set_finish_cb(sgl_anim_t *anim, void (*finish_cb)(sg
 static inline bool sgl_anim_is_finished(sgl_anim_t *anim)
 {
     SGL_ASSERT(anim != NULL);
-    return anim->finished == 1;
+    return (bool)anim->finished;
 }
 
 

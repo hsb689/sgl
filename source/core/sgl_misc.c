@@ -1,4 +1,4 @@
-/* source/include/sgl_misc.c
+/* source/core/sgl_misc.c
  *
  * MIT License
  *

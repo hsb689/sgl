@@ -677,8 +677,10 @@ int sgl_init(void)
     }
 #if (CONFIG_SGL_FBDEV_RUNTIME_ROTATION)
     sgl_system.angle = 0;
+    sgl_system.next_angle = 0;
 #endif
 #endif
+
     /* create event queue */
     if (sgl_event_queue_init()) {
         SGL_LOG_ERROR("sgl_init: event queue init failed");
@@ -712,24 +714,23 @@ void sgl_screen_load(sgl_obj_t *obj)
 #if (CONFIG_SGL_FBDEV_RUNTIME_ROTATION)
 /**
  * @brief set framebuffer device rotation angle
- * @param angle [in] rotation angle, that is 0, 90, 180, 270
+ * @param none
  * @return none
- * @note Rotation angle must be 0, 90, 180, 270
  */
-void sgl_fbdev_set_angle(uint16_t angle)
+static void fbdev_set_angle(void)
 {
-    if (angle == sgl_system.angle) {
+    if (sgl_system.next_angle == sgl_system.angle) {
         return;
     }
 
     const uint8_t cur_status = (sgl_system.angle == 0 || sgl_system.angle == 180) ? 0 : 
                                (sgl_system.angle == 90 || sgl_system.angle == 270) ? 1 : 2;
 
-    const uint8_t new_status = (angle == 0 || angle == 180) ? 0 : 
-                               (angle == 90 || angle == 270) ? 1 : 2;
+    const uint8_t new_status = (sgl_system.next_angle == 0 || sgl_system.next_angle == 180) ? 0 : 
+                               (sgl_system.next_angle == 90 || sgl_system.next_angle == 270) ? 1 : 2;
 
     if (cur_status == 2 || new_status == 2) {
-        SGL_LOG_WARN("sgl_fbdev_set_angle: invalid angle");
+        SGL_LOG_WARN("fbdev_set_angle: invalid angle");
         return;
     }
 
@@ -737,7 +738,7 @@ void sgl_fbdev_set_angle(uint16_t angle)
         sgl_swap(&sgl_system.fbdev.fbinfo.xres, &sgl_system.fbdev.fbinfo.yres);
     }
 
-    sgl_system.angle = angle;
+    sgl_system.angle = sgl_system.next_angle;
 }
 #endif // !CONFIG_SGL_FBDEV_RUNTIME_ROTATION
 
@@ -1540,6 +1541,10 @@ static inline void sgl_draw_task(sgl_fbdev_t *fbdev)
     }
     /* clear dirty area */
     fbdev->dirty_num = 0;
+
+#if (CONFIG_SGL_FBDEV_RUNTIME_ROTATION)
+    fbdev_set_angle();
+#endif
 }
 
 
