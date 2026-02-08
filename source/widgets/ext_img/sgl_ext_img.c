@@ -44,7 +44,7 @@ static inline void rle_decompress_line(sgl_ext_img_t *img, sgl_area_t *coords, s
     uint8_t tmp_buf[8];
     uint8_t* read_ptr = NULL;
     uint8_t* start_ptr = (uint8_t*)img->pixmap[img->pixmap_idx].bitmap.array;
-    uint32_t start_addr = img->pixmap[img->pixmap_idx].bitmap.addr;
+    uintptr_t start_addr = img->pixmap[img->pixmap_idx].bitmap.addr;
     uint8_t format = img->pixmap->format;
     uint32_t pix_value;
 
