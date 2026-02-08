@@ -34,7 +34,7 @@
 #include <string.h>
 
 /**
- * @brief For example, you can use this canvas:
+ * @brief For example, you can use the canvas widget:
  *        void painter_func(sgl_surf_t *surf, sgl_area_t *area, sgl_obj_t *obj)
  *        {
  *            for (int i = obj->coords.y1; i < obj->coords.y2; i += 10) {

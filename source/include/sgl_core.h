@@ -485,8 +485,7 @@ typedef struct sgl_system {
     sgl_color_t        *rotation;
 #elif (CONFIG_SGL_FBDEV_RUNTIME_ROTATION)
     sgl_color_t        *rotation;
-    uint16_t           angle;
-    uint16_t           next_angle;
+    uint16_t            angle;
 #endif
 } sgl_system_t;
 
@@ -712,6 +711,17 @@ static inline void sgl_fbdev_flush_area(sgl_area_t *area, sgl_color_t *src)
     sgl_system.fbdev.fbinfo.flush_area(area, src);
 #endif
 }
+
+
+#if (CONFIG_SGL_FBDEV_RUNTIME_ROTATION)
+/**
+ * @brief set framebuffer device rotation angle
+ * @param angle [in] rotation angle, that is 0, 90, 180, 270
+ * @return none
+ * @note Rotation angle must be 0, 90, 180, 270
+ */
+void sgl_fbdev_set_angle(uint16_t angle);
+#endif //CONFIG_SGL_FBDEV_RUNTIME_ROTATION
 
 
 /**
@@ -2111,23 +2121,8 @@ static inline void sgl_obj_set_name(sgl_obj_t *obj, const char *name)
  * @return none
  */
 void sgl_obj_print_name(sgl_obj_t *obj);
+
 #endif
-
-
-#if (CONFIG_SGL_FBDEV_RUNTIME_ROTATION)
-/**
- * @brief set framebuffer device rotation angle
- * @param angle [in] rotation angle, that is 0, 90, 180, 270
- * @return none
- * @note Rotation angle must be 0, 90, 180, 270
- */
-static inline void sgl_fbdev_set_angle(uint16_t angle)
-{
-    sgl_system.next_angle = angle;
-    sgl_obj_set_dirty(sgl_system.fbdev.active);
-}
-#endif //!CONFIG_SGL_FBDEV_RUNTIME_ROTATION
-
 
 #ifdef __cplusplus
 } /*extern "C"*/
