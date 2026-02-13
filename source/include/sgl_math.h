@@ -57,6 +57,7 @@ extern "C" {
 
 #define sgl_swap(a, b)                    do { (*a) ^= (*b); (*b) ^= (*a); (*a) ^= (*b); } while (0)
 
+#define sgl_mid(a, b)                     (((a) + (b)) / 2)
 
 #define SGL_FIXED_SHIFT                   (10)
 #define SGL_FIXED_ONE                     (1 << SGL_FIXED_SHIFT)
