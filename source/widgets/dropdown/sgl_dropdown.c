@@ -85,10 +85,10 @@ static void sgl_dropdown_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_even
     if (evt->type == SGL_EVENT_DRAW_MAIN) {
         sgl_draw_rect(surf, &obj->area, &body_area, &dropdown->body_desc);
         if (dropdown->is_open) {
-            sgl_draw_icon(surf, &icon_area, icon_area.x1, icon_y + 2, dropdown->text_color, dropdown->body_desc.alpha, &dropdown_icon);
+            sgl_draw_icon(surf, &obj->area, icon_area.x1, icon_y + 2, dropdown->text_color, dropdown->body_desc.alpha, &dropdown_icon);
         }
         else {
-            sgl_draw_icon(surf, &icon_area, icon_area.x1, icon_y, dropdown->text_color, dropdown->body_desc.alpha, &dropdown_icon);
+            sgl_draw_icon(surf, &obj->area, icon_area.x1, icon_y, dropdown->text_color, dropdown->body_desc.alpha, &dropdown_icon);
         }
 
         for (int i = 0; option != NULL; i++) {

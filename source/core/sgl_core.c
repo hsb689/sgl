@@ -982,30 +982,24 @@ void sgl_obj_delete(sgl_obj_t *obj)
  */
 uint32_t sgl_utf8_to_unicode(const char *utf8_str, uint32_t *p_unicode_buffer)
 {
-    int bytes = 0;
-    if (((uint8_t)(*utf8_str)) < 0x80) { // 1-byte/7-bit ASCII
-        bytes = 1;
-        *p_unicode_buffer = utf8_str[0];
+    uint8_t* ptr = (uint8_t*)utf8_str;
+    if ((*ptr) < 0x80) { // 1-byte/7-bit ASCII
+        *p_unicode_buffer = ptr[0];
+        return 1;
     }
-    else if ((((uint8_t)(*utf8_str)) & 0xE0) == 0xC0) { // 2-byte
-        bytes = 2;
-        *p_unicode_buffer = (utf8_str[0] & 0x1F) << 6;
-        *p_unicode_buffer |= (utf8_str[1] & 0x3F);
+    else if (((*ptr) & 0xE0) == 0xC0) { // 2-byte
+        *p_unicode_buffer = (ptr[0] & 0x1F) << 6 | (ptr[1] & 0x3F);
+        return 2;
     }
-    else if ((((uint8_t)(*utf8_str)) & 0xF0) == 0xE0) { // 3-byte
-        bytes = 3;
-        *p_unicode_buffer = (utf8_str[0] & 0x0F) << 12;
-        *p_unicode_buffer |= (utf8_str[1] & 0x3F) << 6;
-        *p_unicode_buffer |= (utf8_str[2] & 0x3F);
+    else if (((*ptr) & 0xF0) == 0xE0) { // 3-byte
+        *p_unicode_buffer = (ptr[0] & 0x0F) << 12 | (ptr[1] & 0x3F) << 6 | (ptr[2] & 0x3F);
+        return 3;
     }
-    else if ((((uint8_t)(*utf8_str)) & 0xF8) == 0xF0) { // 4-byte
-        bytes = 4;
-        *p_unicode_buffer = (utf8_str[0] & 0x07) << 18;
-        *p_unicode_buffer |= (utf8_str[2] & 0x3F) << 6;
-        *p_unicode_buffer |= (utf8_str[1] & 0x3F) << 12;
-        *p_unicode_buffer |= (utf8_str[3] & 0x3F);
+    else if (((*ptr) & 0xF8) == 0xF0) { // 4-byte
+        *p_unicode_buffer = (ptr[0] & 0x07) << 18 | (ptr[1] & 0x3F) << 12 | (ptr[2] & 0x3F) << 6  | (ptr[3] & 0x3F);
+        return 4;
     }
-    return bytes;
+    return 0;
 }
 
 
