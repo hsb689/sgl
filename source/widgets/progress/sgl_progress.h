@@ -167,15 +167,15 @@ static inline void sgl_progress_set_pixmap(sgl_obj_t *obj, const sgl_pixmap_t *p
 }
 
 /**
- * @brief set progress fill interval
+ * @brief set progress fill gap size
  * @param obj progress object
- * @param interval progress fill interval
+ * @param gap progress fill gap size
  * @return none
  */
-static inline void sgl_progress_set_fill_interval(sgl_obj_t *obj, uint8_t interval)
+static inline void sgl_progress_set_fill_gap(sgl_obj_t *obj, uint8_t gap)
 {
     sgl_progress_t *progress = sgl_container_of(obj, sgl_progress_t, obj);
-    progress->interval = interval;
+    progress->interval = gap;
     sgl_obj_set_dirty(obj);
 }
 
@@ -214,7 +214,7 @@ static inline void sgl_progress_set_fill_width(sgl_obj_t *obj, uint8_t width)
 static inline void sgl_progress_set_value(sgl_obj_t *obj, uint8_t value)
 {
     sgl_progress_t *progress = sgl_container_of(obj, sgl_progress_t, obj);
-    progress->value = value;
+    progress->value = sgl_min(value, 100);
     progress->shift ++;
     sgl_obj_set_dirty(obj);
 }
