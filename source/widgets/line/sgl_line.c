@@ -36,9 +36,25 @@
 static void sgl_line_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_event_t *evt)
 {
     sgl_line_t *line = sgl_container_of(obj, sgl_line_t, obj);
+    sgl_draw_line_t desc;
+
+    desc.x1 = obj->coords.x1;
+    desc.y1 = obj->coords.y1;
+    desc.x2 = obj->coords.x2;
+    desc.y2 = obj->coords.y2;
+    desc.color = line->color;
+    desc.alpha = line->alpha;
+    desc.width = obj->border;
 
     if(evt->type == SGL_EVENT_DRAW_MAIN) {
-        sgl_draw_line(surf, &obj->parent->area, &obj->coords, &line->desc, obj->border);
+        if (line->x_swap) {
+            sgl_swap(&desc.x1, &desc.x2);
+        }
+        if (line->y_swap) {
+            sgl_swap(&desc.y1, &desc.y2);
+        }
+
+        sgl_draw_line(surf, &obj->parent->area, &desc);
     }
 }
 
@@ -63,8 +79,8 @@ sgl_obj_t* sgl_line_create(sgl_obj_t* parent)
     sgl_obj_init(&line->obj, parent);
     obj->construct_fn = sgl_line_construct_cb;
 
-    line->desc.color = SGL_THEME_BG_COLOR;
-    line->desc.alpha = SGL_ALPHA_MAX;
+    line->color = SGL_THEME_BG_COLOR;
+    line->alpha = SGL_ALPHA_MAX;
     obj->border = 1;
 
     return obj;
@@ -91,18 +107,18 @@ void sgl_line_set_pos(sgl_obj_t *obj, int16_t x1, int16_t y1, int16_t x2, int16_
 
 	if (_x1 > _x2) {
 		sgl_swap(&_x1, &_x2);
-        line->desc.x_swap = 1;
+        line->x_swap = 1;
 	}
     else {
-        line->desc.x_swap = 0;
+        line->x_swap = 0;
     }
 
 	if (_y1 > _y2) {
 		sgl_swap(&_y1, &_y2);
-        line->desc.y_swap = 1;
+        line->y_swap = 1;
 	}
     else {
-        line->desc.y_swap = 0;
+        line->y_swap = 0;
     }
 
 	/* default thinckness is 1 */

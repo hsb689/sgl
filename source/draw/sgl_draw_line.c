@@ -178,32 +178,18 @@ void draw_line_fill_slanted(sgl_surf_t *surf, sgl_area_t *area, int16_t x1, int1
  * @brief draw a line
  * @param surf surface
  * @param area area that contains the line
- * @param coords line coords
  * @param desc line description
- * @param width line width
  * @return none
  */
-void sgl_draw_line(sgl_surf_t *surf, sgl_area_t *area, sgl_area_t *coords, sgl_draw_line_t *desc, int16_t width)
+void sgl_draw_line(sgl_surf_t *surf, sgl_area_t *area, sgl_draw_line_t *desc)
 {
-	uint8_t alpha = desc->alpha;
-	int16_t x1 = coords->x1;
-	int16_t y1 = coords->y1;
-	int16_t x2 = coords->x2;
-	int16_t y2 = coords->y2;
-
-	if (x1 == x2) {
-		sgl_draw_fill_vline(surf, area, x1, y1, y2, width / 2, desc->color, alpha);
+	if (desc->x1 == desc->x2) {
+		sgl_draw_fill_vline(surf, area, desc->x1, desc->y1, desc->y2, desc->width / 2, desc->color, desc->alpha);
 	}
-	else if (y1 == y2) {
-		sgl_draw_fill_hline(surf, area, y1, x1, x2, width / 2, desc->color, alpha);
+	else if (desc->y1 == desc->y2) {
+		sgl_draw_fill_hline(surf, area, desc->y1, desc->x1, desc->x2, desc->width / 2, desc->color, desc->alpha);
 	}
 	else {
-		if (desc->x_swap) {
-			sgl_swap(&x1, &x2);
-		}
-		if (desc->y_swap) {
-			sgl_swap(&y1, &y2);
-		}
-		draw_line_fill_slanted(surf, area, x1, y1, x2, y2, width, desc->color, alpha);
+		draw_line_fill_slanted(surf, area, desc->x1, desc->y1, desc->x2, desc->y2, desc->width, desc->color, desc->alpha);
 	}
 }

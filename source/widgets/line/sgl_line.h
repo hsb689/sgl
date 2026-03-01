@@ -37,11 +37,17 @@
 /**
  * @brief sgl line struct
  * @obj: sgl general object
- * @desc: pointer to line draw descriptor
+ * @color: line color
+ * @x_swap: x coordinate swap
+ * @y_swap: y coordinate swap
+ * @alpha: alpha
  */
 typedef struct sgl_line {
-    sgl_obj_t       obj;
-    sgl_draw_line_t desc;
+    sgl_obj_t     obj;
+    sgl_color_t   color;
+    uint8_t       x_swap : 4;
+    uint8_t       y_swap : 4;
+    uint8_t       alpha;
 }sgl_line_t;
 
 
@@ -62,7 +68,7 @@ sgl_obj_t* sgl_line_create(sgl_obj_t* parent);
 static inline void sgl_line_set_color(sgl_obj_t *obj, sgl_color_t color)
 {
     sgl_line_t *line = sgl_container_of(obj, sgl_line_t, obj);
-    line->desc.color = color;
+    line->color = color;
     sgl_obj_set_dirty(obj);
 }
 
@@ -76,7 +82,7 @@ static inline void sgl_line_set_alpha(sgl_obj_t *obj, uint8_t alpha)
 {
     SGL_ASSERT(obj != NULL);
     sgl_line_t *line = sgl_container_of(obj, sgl_line_t, obj);
-    line->desc.alpha = alpha;
+    line->alpha = alpha;
     sgl_obj_set_dirty(obj);
 }
 
