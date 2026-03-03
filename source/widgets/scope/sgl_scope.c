@@ -23,6 +23,7 @@
  */
 
 #include <stdio.h>
+#include <limits.h>
 #include <sgl_theme.h>
 #include "sgl_scope.h"
 
@@ -203,25 +204,46 @@ static void scope_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_event_t *ev
         sgl_draw_rect(surf, &obj->area, &obj->coords, &bg_rect);
 
         // Compute waveform display parameters
-        uint16_t display_min = scope->min_value;
-        uint16_t display_max = scope->max_value;
+        int16_t display_min = scope->min_value;
+        int16_t display_max = scope->max_value;
+        int16_t actual_min = display_min;  // Actual min/max of waveform data (for labels)
+        int16_t actual_max = display_max;  // Actual max of waveform data (for labels)
         
-        // If auto-scaling is enabled, use runtime min/max values
+        // If auto-scaling is enabled, recalculate min/max from current buffer data
         if (scope->auto_scale) {
-            display_min = scope->running_min;
-            display_max = scope->running_max;
+            // Recalculate running_min and running_max based on current data in buffer
+            if (scope->display_count > 0) {
+                display_min = scope->data_buffer[0];
+                display_max = scope->data_buffer[0];
+                
+                // Iterate through all data points in buffer to find min/max
+                uint32_t end_index = (scope->display_count < scope->data_len) ? scope->display_count : scope->data_len;
+                for (uint32_t i = 0; i < end_index; i++) {
+                    int16_t val = scope->data_buffer[i];
+                    if (val < display_min) display_min = val;
+                    if (val > display_max) display_max = val;
+                }
+                
+                // Save actual data min/max for label display
+                actual_min = display_min;
+                actual_max = display_max;
+                
+                // Update running values for next frame
+                scope->running_min = display_min;
+                scope->running_max = display_max;
+            }
             
             // Add margin to prevent waveform from touching borders
-            uint16_t margin = (display_max - display_min) / 10;
+            int32_t margin = (int32_t)(display_max - display_min) / 10;
             if (margin == 0) margin = 1;
             
-            display_min = (display_min > margin) ? display_min - margin : 0;
-            display_max = (display_max + margin < 0xFFFF) ? display_max + margin : 0xFFFF;
+            display_min = (display_min > INT16_MIN + margin) ? display_min - margin : INT16_MIN;
+            display_max = (display_max < INT16_MAX - margin) ? display_max + margin : INT16_MAX;
         }
         
         // Avoid division by zero if min equals max
         if (display_min == display_max) {
-            if (display_max < 0xFFFF) {
+            if (display_max < INT16_MAX) {
                 display_max++;
             } else {
                 display_min--;
@@ -330,18 +352,19 @@ static void scope_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_event_t *ev
 
             sgl_area_selfclip(&text_area, &obj->area);
             
-            // Display maximum value
-            sprintf(label_text, "%u", display_max);
+            // Display actual maximum value of waveform data
+            sprintf(label_text, "%d", actual_max);
             sgl_draw_string(surf, &text_area, obj->coords.x1 + 2, obj->coords.y1 + 2, 
                            label_text, scope->y_label_color, scope->alpha, scope->y_label_font);
             
-            // Display minimum value
-            sprintf(label_text, "%u", display_min);
+            // Display actual minimum value of waveform data
+            sprintf(label_text, "%d", actual_min);
             sgl_draw_string(surf, &text_area, obj->coords.x1 + 2, obj->coords.y2 - scope->y_label_font->font_height - 2, 
                            label_text, scope->y_label_color, scope->alpha, scope->y_label_font);
             
-            // Display mid-range value
-            uint16_t mid_value = (display_max + display_min) / 2;
+            // Display mid-range value of actual waveform
+            int16_t mid_value = (actual_max + actual_min) / 2;
+            sprintf(label_text, "%d", mid_value);
             sprintf(label_text, "%u", mid_value);
             sgl_draw_string(surf, &text_area, obj->coords.x1 + 2, y_center - scope->y_label_font->font_height/2, 
                            label_text, scope->y_label_color, scope->alpha, scope->y_label_font);
@@ -373,8 +396,8 @@ sgl_obj_t* sgl_scope_create(sgl_obj_t* parent)
     scope->border_color = sgl_rgb(150, 150, 150); // Light gray outer border
     scope->min_value = 0;
     scope->max_value = 0xFFFF;
-    scope->running_min = 0xFFFF;  // Initialize runtime minimum
-    scope->running_max = 0;       // Initialize runtime maximum
+    scope->running_min = INT16_MAX;   // Initialize runtime minimum to max int16_t value
+    scope->running_max = INT16_MIN;   // Initialize runtime maximum to min int16_t value
     scope->auto_scale = 1;        // Enable auto-scaling by default
     scope->line_width = 2;        // Default line thickness
     scope->max_display_points = 0; // Display all points by default
@@ -400,12 +423,8 @@ void sgl_scope_append_data(sgl_obj_t* obj, int16_t value)
 {
     sgl_scope_t *scope = (sgl_scope_t*)obj;
 
-    // update the auto scale only if the auto_scale is enabled
-    if (scope->auto_scale) {
-        if (value < scope->running_min) scope->running_min = value;
-        if (value > scope->running_max) scope->running_max = value;
-    }
-
+    // Simply append the data point to the buffer
+    // Min/max will be recalculated during drawing if auto-scale is enabled
     scope->data_buffer[scope->current_index] = value;
 
     if (sgl_is_pow2(scope->data_len)) {
