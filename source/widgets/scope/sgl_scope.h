@@ -40,9 +40,10 @@ extern "C" {
 
 typedef struct {
     sgl_obj_t obj;
-    int16_t  *data_buffer;             // channel data buffer
-    uint32_t  data_len;                // data length
-    sgl_color_t waveform_color;        // waveform color
+    int16_t  **data_buffers;          // array of channel data buffers
+    uint32_t  data_len;                // data length per channel
+    uint8_t   channel_count;           // number of channels (1-4)
+    sgl_color_t *waveform_colors;      // array of waveform colors per channel
     sgl_color_t bg_color;              // background color
     sgl_color_t grid_color;            // grid line color
     sgl_color_t border_color;          // border color
@@ -54,13 +55,13 @@ typedef struct {
     uint8_t show_y_labels : 1;         // whether to show Y axis labels
     uint8_t border_width;              // outer border width
     uint8_t line_width;                // width of waveform line
-    uint8_t display_count;             // data count that has been displayed
+    uint8_t *display_counts;           // array of display counts per channel
     uint32_t max_display_points;       // max display points
     uint8_t alpha;                     // aplha of waveform
     uint8_t grid_style;                // grid line style（0-solid line，other: dashed line
     const sgl_font_t *y_label_font;    // font of Y axis labels
     sgl_color_t y_label_color;         // color of Y axis labels
-    uint32_t current_index;            // current data index
+    uint32_t *current_indices;         // array of current indices per channel
 } sgl_scope_t;
 
 
@@ -72,42 +73,48 @@ typedef struct {
 sgl_obj_t* sgl_scope_create(sgl_obj_t* parent);
 
 /**
- * @brief set scope data buffer
+ * @brief set scope channel count
  * @param obj scope object
+ * @param channel_count number of channels (1-4)
+ * @return none
+ */
+void sgl_scope_set_channel_count(sgl_obj_t* obj, uint8_t channel_count);
+
+/**
+ * @brief set scope data buffer for a specific channel
+ * @param obj scope object
+ * @param channel channel number (0-based)
  * @param data_buffer data buffer
  * @param data_len data length
  * @return none
  */
-static inline void sgl_scope_set_data_buffer(sgl_obj_t* obj, int16_t *data_buffer, uint32_t data_len)
-{
-    sgl_scope_t *scope = sgl_container_of(obj, sgl_scope_t, obj);
-    scope->data_buffer = data_buffer;
-    scope->data_len = data_len;
-}
+void sgl_scope_set_channel_data_buffer(sgl_obj_t* obj, uint8_t channel, int16_t *data_buffer, uint32_t data_len);
 
 /**
- * @brief Append a new data point to the oscilloscope
+ * @brief Append a new data point to the oscilloscope for a specific channel
  * @param obj The oscilloscope object
+ * @param channel Channel number (0-based)
  * @param value The new data point
- * @note This function appends a new data point to the oscilloscope. 
+ * @note This function appends a new data point to the specified channel of the oscilloscope. 
  *       If the oscilloscope is configured to auto-scale, the function updates the running minimum and maximum values. 
  *       The function also updates the display count and marks the oscilloscope object as dirty.
  */
-void sgl_scope_append_data(sgl_obj_t* obj, int16_t value);
+void sgl_scope_append_data(sgl_obj_t* obj, uint8_t channel, int16_t value);
 
 /**
- * @brief get scope data
+ * @brief get scope data for a specific channel
  * @param obj scope object
+ * @param channel channel number (0-based)
  * @param index data index
  * @return data value
  */
-static inline int16_t sgl_scope_get_data(sgl_obj_t* obj, uint32_t index)
+static inline int16_t sgl_scope_get_channel_data(sgl_obj_t* obj, uint8_t channel, uint32_t index)
 {
     sgl_scope_t *scope = sgl_container_of(obj, sgl_scope_t, obj);
-    if (index >= scope->data_len) 
+    if (channel >= scope->channel_count || index >= scope->data_len) 
         return 0;
 
-    return scope->data_buffer[index];
+    return scope->data_buffers[channel][index];
 }
 
 /**
@@ -124,17 +131,13 @@ static inline void sgl_scope_set_max_display_points(sgl_obj_t* obj, uint8_t max_
 }
 
 /**
- * @brief set scope waveform color
+ * @brief set scope waveform color for a specific channel
  * @param obj scope object
+ * @param channel channel number (0-based)
  * @param color waveform color
  * @return none
  */
-static inline void sgl_scope_set_waveform_color(sgl_obj_t* obj, sgl_color_t color)
-{
-    sgl_scope_t *scope = sgl_container_of(obj, sgl_scope_t, obj);
-    scope->waveform_color = color;
-    sgl_obj_set_dirty(obj);
-}
+void sgl_scope_set_channel_waveform_color(sgl_obj_t* obj, uint8_t channel, sgl_color_t color);
 
 /**
  * @brief set scope background color

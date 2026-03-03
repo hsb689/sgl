@@ -211,17 +211,19 @@ static void scope_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_event_t *ev
         
         // If auto-scaling is enabled, recalculate min/max from current buffer data
         if (scope->auto_scale) {
-            // Recalculate running_min and running_max based on current data in buffer
-            if (scope->display_count > 0) {
-                display_min = scope->data_buffer[0];
-                display_max = scope->data_buffer[0];
+            // Recalculate running_min and running_max based on current data in all channels
+            if (scope->display_counts[0] > 0) {
+                display_min = scope->data_buffers[0][0];
+                display_max = scope->data_buffers[0][0];
                 
-                // Iterate through all data points in buffer to find min/max
-                uint32_t end_index = (scope->display_count < scope->data_len) ? scope->display_count : scope->data_len;
-                for (uint32_t i = 0; i < end_index; i++) {
-                    int16_t val = scope->data_buffer[i];
-                    if (val < display_min) display_min = val;
-                    if (val > display_max) display_max = val;
+                // Iterate through all channels and all data points to find min/max
+                for (uint8_t ch = 0; ch < scope->channel_count; ch++) {
+                    uint32_t end_index = (scope->display_counts[ch] < scope->data_len) ? scope->display_counts[ch] : scope->data_len;
+                    for (uint32_t i = 0; i < end_index; i++) {
+                        int16_t val = scope->data_buffers[ch][i];
+                        if (val < display_min) display_min = val;
+                        if (val > display_max) display_max = val;
+                    }
                 }
                 
                 // Save actual data min/max for label display
@@ -299,44 +301,45 @@ static void scope_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_event_t *ev
             }
         }
 
-        // Draw waveform data
-        if (scope->display_count > 1) {
-            sgl_pos_t start, end;
-            
-            // Determine number of points to display
-            uint32_t display_points = scope->max_display_points > 0 ? scope->max_display_points : scope->data_len;
-            if (display_points > scope->data_len) display_points = scope->data_len;
-            
-            // Number of actual data points to render
-            uint32_t data_points = scope->display_count < display_points ? scope->display_count : display_points;
-            
-            // Compute index of the most recent data point (rightmost on screen)
-            uint32_t last_index = (scope->current_index == 0) ? scope->data_len - 1 : scope->current_index - 1;
-            int16_t last_value = scope->data_buffer[last_index];
-            
-            // Clamp value to display range
-            if (last_value < display_min) last_value = display_min;
-            if (last_value > display_max) last_value = display_max;
-            
-            start.x = obj->coords.x2;  // Rightmost X position
-            start.y = obj->coords.y2 - ((int32_t)(last_value - display_min) * height) / (display_max - display_min);
-            
-            // Draw waveform from right to left
-            for (uint32_t i = 1; i < data_points; i++) {
-                //int index = (scope->current_index >= i) ? scope->current_index - i : scope->data_len - (i - scope->current_index);
-                uint32_t prev_index = (scope->current_index >= i + 1) ? scope->current_index - (i + 1) : scope->data_len - (i + 1 - scope->current_index);
-
-                int16_t current_value = scope->data_buffer[prev_index];
-
+        // Draw waveform data for each channel
+        for (uint8_t ch = 0; ch < scope->channel_count; ch++) {
+            if (scope->display_counts[ch] > 1) {
+                sgl_pos_t start, end;
+                
+                // Determine number of points to display
+                uint32_t display_points = scope->max_display_points > 0 ? scope->max_display_points : scope->data_len;
+                if (display_points > scope->data_len) display_points = scope->data_len;
+                
+                // Number of actual data points to render
+                uint32_t data_points = scope->display_counts[ch] < display_points ? scope->display_counts[ch] : display_points;
+                
+                // Compute index of the most recent data point (rightmost on screen)
+                uint32_t last_index = (scope->current_indices[ch] == 0) ? scope->data_len - 1 : scope->current_indices[ch] - 1;
+                int16_t last_value = scope->data_buffers[ch][last_index];
+                
                 // Clamp value to display range
-                current_value = sgl_clamp(current_value, display_min, display_max);
+                if (last_value < display_min) last_value = display_min;
+                if (last_value > display_max) last_value = display_max;
+                
+                start.x = obj->coords.x2;  // Rightmost X position
+                start.y = obj->coords.y2 - ((int32_t)(last_value - display_min) * height) / (display_max - display_min);
+                
+                // Draw waveform from right to left
+                for (uint32_t i = 1; i < data_points; i++) {
+                    uint32_t prev_index = (scope->current_indices[ch] >= i + 1) ? scope->current_indices[ch] - (i + 1) : scope->data_len - (i + 1 - scope->current_indices[ch]);
 
-                end.x = obj->coords.x2 - (i * width / (data_points - 1));  // Move leftward
-                end.y = obj->coords.y2 - ((int32_t)(current_value - display_min) * height) / (display_max - display_min);
+                    int16_t current_value = scope->data_buffers[ch][prev_index];
 
-                custom_draw_line(surf, &obj->area, start, end, scope->waveform_color, scope->line_width);
+                    // Clamp value to display range
+                    current_value = sgl_clamp(current_value, display_min, display_max);
 
-                start = end;
+                    end.x = obj->coords.x2 - (i * width / (data_points - 1));  // Move leftward
+                    end.y = obj->coords.y2 - ((int32_t)(current_value - display_min) * height) / (display_max - display_min);
+
+                    custom_draw_line(surf, &obj->area, start, end, scope->waveform_colors[ch], scope->line_width);
+
+                    start = end;
+                }
             }
         }
 
@@ -388,8 +391,33 @@ sgl_obj_t* sgl_scope_create(sgl_obj_t* parent)
     obj->construct_fn = scope_construct_cb;
     sgl_obj_set_border_width(obj, SGL_THEME_BORDER_WIDTH);
     
-    // Initialize default parameters
-    scope->waveform_color = sgl_rgb(0, 255, 0);   // Green waveform
+    // Initialize default parameters for single channel
+    scope->channel_count = 1;        // Default to 1 channel
+    scope->data_buffers = NULL;       // Will be allocated per channel
+    scope->waveform_colors = NULL;    // Will be allocated per channel
+    scope->current_indices = NULL;    // Will be allocated per channel
+    scope->display_counts = NULL;     // Will be allocated per channel
+    
+    // Allocate default channel arrays
+    scope->data_buffers = sgl_malloc(sizeof(int16_t*) * scope->channel_count);
+    scope->waveform_colors = sgl_malloc(sizeof(sgl_color_t) * scope->channel_count);
+    scope->current_indices = sgl_malloc(sizeof(uint32_t) * scope->channel_count);
+    scope->display_counts = sgl_malloc(sizeof(uint8_t) * scope->channel_count);
+    
+    if (!scope->data_buffers || !scope->waveform_colors || !scope->current_indices || !scope->display_counts) {
+        sgl_free(scope->data_buffers);
+        sgl_free(scope->waveform_colors);
+        sgl_free(scope->current_indices);
+        sgl_free(scope->display_counts);
+        sgl_free(scope);
+        return NULL;
+    }
+    
+    scope->data_buffers[0] = NULL;    // User must set via sgl_scope_set_channel_data_buffer
+    scope->waveform_colors[0] = sgl_rgb(0, 255, 0);   // Green waveform for channel 0
+    scope->current_indices[0] = 0;
+    scope->display_counts[0] = 0;
+    
     scope->bg_color = sgl_rgb(0, 0, 0);           // Black background
     scope->grid_color = sgl_rgb(50, 50, 50);      // Gray grid lines
     scope->border_width = 0;                      // border width is 0
@@ -406,37 +434,157 @@ sgl_obj_t* sgl_scope_create(sgl_obj_t* parent)
     scope->grid_style = 0;         // Solid grid lines by default
     scope->y_label_font = NULL;    // No font by default
     scope->y_label_color = sgl_rgb(255, 255, 255); // White label color
-    scope->display_count = 0;         // No data initially
+    scope->data_len = 0;            // No data buffer initially
 
     return obj;
 }
 
 /**
- * @brief Append a new data point to the oscilloscope
+ * @brief Append a new data point to the oscilloscope for a specific channel
  * @param obj The oscilloscope object
+ * @param channel Channel number (0-based)
  * @param value The new data point
- * @note This function appends a new data point to the oscilloscope. 
+ * @note This function appends a new data point to the specified channel of the oscilloscope. 
  *       If the oscilloscope is configured to auto-scale, the function updates the running minimum and maximum values. 
  *       The function also updates the display count and marks the oscilloscope object as dirty.
  */
-void sgl_scope_append_data(sgl_obj_t* obj, int16_t value)
+void sgl_scope_append_data(sgl_obj_t* obj, uint8_t channel, int16_t value)
 {
     sgl_scope_t *scope = (sgl_scope_t*)obj;
+    
+    if (channel >= scope->channel_count || !scope->data_buffers[channel]) {
+        return;
+    }
 
     // Simply append the data point to the buffer
-    // Min/max will be recalculated during drawing if auto-scale is enabled
-    scope->data_buffer[scope->current_index] = value;
+    scope->data_buffers[channel][scope->current_indices[channel]] = value;
 
     if (sgl_is_pow2(scope->data_len)) {
-        scope->current_index = (scope->current_index + 1) & (scope->data_len - 1);
+        scope->current_indices[channel] = (scope->current_indices[channel] + 1) & (scope->data_len - 1);
     } else {
-        scope->current_index = (scope->current_index + 1) % scope->data_len;
+        scope->current_indices[channel] = (scope->current_indices[channel] + 1) % scope->data_len;
     }
 
-    // update display count
-    if (scope->display_count < scope->data_len) {
-        scope->display_count++;
+    // update display count for this channel
+    if (scope->display_counts[channel] < scope->data_len) {
+        scope->display_counts[channel]++;
     }
 
+    sgl_obj_set_dirty(obj);
+}
+
+/**
+ * @brief set scope channel count
+ * @param obj scope object
+ * @param channel_count number of channels (1-4)
+ * @return none
+ */
+void sgl_scope_set_channel_count(sgl_obj_t* obj, uint8_t channel_count)
+{
+    sgl_scope_t *scope = sgl_container_of(obj, sgl_scope_t, obj);
+    
+    if (channel_count == 0 || channel_count > 4) {
+        SGL_LOG_ERROR("Invalid channel count: %d (must be 1-4)\n", channel_count);
+        return;
+    }
+    
+    // Free old arrays
+    if (scope->data_buffers) {
+        for (uint8_t i = 0; i < scope->channel_count; i++) {
+            if (scope->data_buffers[i]) {
+                sgl_free(scope->data_buffers[i]);
+            }
+        }
+        sgl_free(scope->data_buffers);
+    }
+    if (scope->waveform_colors) sgl_free(scope->waveform_colors);
+    if (scope->current_indices) sgl_free(scope->current_indices);
+    if (scope->display_counts) sgl_free(scope->display_counts);
+    
+    // Update channel count
+    scope->channel_count = channel_count;
+    
+    // Allocate new arrays
+    scope->data_buffers = sgl_malloc(sizeof(int16_t*) * channel_count);
+    scope->waveform_colors = sgl_malloc(sizeof(sgl_color_t) * channel_count);
+    scope->current_indices = sgl_malloc(sizeof(uint32_t) * channel_count);
+    scope->display_counts = sgl_malloc(sizeof(uint8_t) * channel_count);
+    
+    if (!scope->data_buffers || !scope->waveform_colors || !scope->current_indices || !scope->display_counts) {
+        SGL_LOG_ERROR("Failed to allocate memory for channel arrays\n");
+        return;
+    }
+    
+    // Initialize channel data
+    for (uint8_t i = 0; i < channel_count; i++) {
+        scope->data_buffers[i] = NULL;  // User must set via sgl_scope_set_channel_data_buffer
+        scope->current_indices[i] = 0;
+        scope->display_counts[i] = 0;
+        
+        // Set default colors for each channel
+        switch (i) {
+            case 0:
+                scope->waveform_colors[i] = sgl_rgb(0, 255, 0);   // Green
+                break;
+            case 1:
+                scope->waveform_colors[i] = sgl_rgb(255, 0, 0);   // Red
+                break;
+            case 2:
+                scope->waveform_colors[i] = sgl_rgb(0, 0, 255);   // Blue
+                break;
+            case 3:
+                scope->waveform_colors[i] = sgl_rgb(255, 255, 0); // Yellow
+                break;
+            default:
+                scope->waveform_colors[i] = sgl_rgb(255, 255, 255); // White
+                break;
+        }
+    }
+    
+    sgl_obj_set_dirty(obj);
+}
+
+/**
+ * @brief set scope data buffer for a specific channel
+ * @param obj scope object
+ * @param channel channel number (0-based)
+ * @param data_buffer data buffer
+ * @param data_len data length
+ * @return none
+ */
+void sgl_scope_set_channel_data_buffer(sgl_obj_t* obj, uint8_t channel, int16_t *data_buffer, uint32_t data_len)
+{
+    sgl_scope_t *scope = sgl_container_of(obj, sgl_scope_t, obj);
+    
+    if (channel >= scope->channel_count) {
+        SGL_LOG_ERROR("Invalid channel: %d (max %d)\n", channel, scope->channel_count - 1);
+        return;
+    }
+    
+    scope->data_buffers[channel] = data_buffer;
+    scope->data_len = data_len;
+    scope->current_indices[channel] = 0;
+    scope->display_counts[channel] = 0;
+    
+    sgl_obj_set_dirty(obj);
+}
+
+/**
+ * @brief set scope waveform color for a specific channel
+ * @param obj scope object
+ * @param channel channel number (0-based)
+ * @param color waveform color
+ * @return none
+ */
+void sgl_scope_set_channel_waveform_color(sgl_obj_t* obj, uint8_t channel, sgl_color_t color)
+{
+    sgl_scope_t *scope = sgl_container_of(obj, sgl_scope_t, obj);
+    
+    if (channel >= scope->channel_count) {
+        SGL_LOG_ERROR("Invalid channel: %d (max %d)\n", channel, scope->channel_count - 1);
+        return;
+    }
+    
+    scope->waveform_colors[channel] = color;
     sgl_obj_set_dirty(obj);
 }
