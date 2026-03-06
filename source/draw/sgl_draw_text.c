@@ -245,7 +245,7 @@ void sgl_draw_character(sgl_surf_t *surf, sgl_area_t *area, int16_t x, int16_t y
                 else if (font->bpp == 1) {
                     byte_index = pixel_index >> 3;
                     shift = 7 - (pixel_index & 0x7);
-                    alpha_dot = (dot[byte_index] >> shift) & 0x01 ? SGL_ALPHA_MAX : SGL_ALPHA_MIN;
+                    alpha_dot = ((dot[byte_index] >> shift) & 0x01) ? SGL_ALPHA_MAX : SGL_ALPHA_MIN;
                 }
 
                 color_mix = sgl_color_mixer(color, *blend, alpha_dot);
