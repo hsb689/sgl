@@ -78,7 +78,6 @@ struct sgl_page;
 *
 * @x: x coordinate
 * @y: y coordinate
-* @sgl_event_type_t: event type
 */
 typedef struct sgl_event_pos {
     int16_t x;

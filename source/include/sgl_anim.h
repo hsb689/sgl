@@ -83,9 +83,9 @@ typedef int32_t (*sgl_anim_path_algo_t)(uint32_t elaps, uint32_t duration, int32
  *             May be NULL if no cleanup or notification is needed.
  *
  * @repeat_cnt: Number of times the animation should repeat.
- *              - 0: play once (no repeat)
- *              - n: repeat n times (total plays = n + 1)
- *              - -1: repeat indefinitely
+ *              - -1: play indefinitely, you can use SGL_ANIM_REPEAT_LOOP
+ *              - 1: play once (no repeat), you can use SGL_ANIM_REPEAT_ONCE
+ *              - n: repeat n times (total plays = n)
  *              @note Only 30 bits are allocated; max value is 0x3FFFFFFE.
  *
  * @finished: Flag indicating whether the animation has completed (including all repeats).

@@ -2060,11 +2060,11 @@ void sgl_page_set_pixmap(sgl_obj_t* obj, const sgl_pixmap_t *pixmap);
 
 
 /**
- * @brief get patent of an object
+ * @brief get parent of an object
  * @param obj the object
- * @return the patent of the object
+ * @return the parent of the object
  */
-static inline sgl_obj_t* sgl_obj_get_patent(sgl_obj_t* obj)
+static inline sgl_obj_t* sgl_obj_get_parent(sgl_obj_t* obj)
 {
     SGL_ASSERT(obj != NULL);
     return obj->parent;
