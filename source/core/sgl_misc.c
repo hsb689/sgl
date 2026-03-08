@@ -153,7 +153,7 @@ void sgl_boot_logo(void)
     sgl_anim_set_start_value(anim, SGL_ALPHA_MAX);
     sgl_anim_set_end_value(anim, SGL_ALPHA_MIN);
     sgl_anim_set_path(anim, sgl_logo_anim, SGL_ANIM_PATH_LINEAR);
-    sgl_anim_start(anim, 1);
+    sgl_anim_start(anim, SGL_ANIM_REPEAT_ONCE);
 
     while (!sgl_anim_is_finished(anim)) {
         sgl_task_handle();
