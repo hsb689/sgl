@@ -115,8 +115,6 @@ typedef struct sgl_anim {
  * @brief animation context, it will be used to store status of animation
  * @anim_list_head: animation list head
  * @anim_list_tail: animation list tail
- * @anim_cnt:       animation count
- * @tick_ms:        animation tick, ms
  */
 typedef struct sgl_anim_ctx {
     sgl_anim_t *anim_list_head;
