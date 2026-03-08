@@ -491,10 +491,10 @@ static void sgl_page_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_event_t 
 
     if (evt->type == SGL_EVENT_DRAW_MAIN) {
         if (pixmap == NULL) {
-            sgl_draw_fill_rect(surf, &obj->area, &obj->coords, 0, page->color, SGL_ALPHA_MAX);
+            sgl_draw_fill_rect(surf, &obj->area, &obj->coords, 0, page->color, page->alpha);
         }
         else {
-            sgl_draw_fill_rect_pixmap(surf, &obj->area, &obj->coords, 0, pixmap, SGL_ALPHA_MAX);
+            sgl_draw_fill_rect_pixmap(surf, &obj->area, &obj->coords, 0, pixmap, page->alpha);
         }
     }
     else {
@@ -529,6 +529,20 @@ void sgl_page_set_pixmap(sgl_obj_t* obj, const sgl_pixmap_t *pixmap)
 {
     sgl_page_t* page = (sgl_page_t*)obj;
     page->pixmap = pixmap;
+    sgl_obj_set_dirty(obj);
+}
+
+
+/**
+ * @brief set page background alpha
+ * @param obj point to object
+ * @param alpha background alpha
+ * @return none
+ */
+void sgl_page_set_alpha(sgl_obj_t* obj, uint8_t alpha)
+{
+    sgl_page_t* page = (sgl_page_t*)obj;
+    page->alpha = alpha;
     sgl_obj_set_dirty(obj);
 }
 

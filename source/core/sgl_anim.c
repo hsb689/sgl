@@ -47,7 +47,6 @@ void sgl_anim_init(sgl_anim_t *anim)
 {
     anim->next = NULL;
     anim->data = NULL;
-    anim->act_time = 0;
     anim->act_delay = 0;
     anim->act_duration = 0;
     anim->start_value = 0;
@@ -59,6 +58,7 @@ void sgl_anim_init(sgl_anim_t *anim)
 
     anim->finish_cb = NULL;
     anim->auto_free = 0;
+    anim->finished = 1;
 }
 
 

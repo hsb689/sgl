@@ -52,7 +52,7 @@ typedef struct sgl_switch {
     uint8_t           alpha;
     uint8_t           knob_radius;
     uint8_t           knob_margin;
-}sgl_switch_t;
+} sgl_switch_t;
 
 
 /**

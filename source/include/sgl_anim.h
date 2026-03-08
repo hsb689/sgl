@@ -175,7 +175,11 @@ void sgl_anim_remove(sgl_anim_t *anim);
 */
 static inline void sgl_anim_start(sgl_anim_t *anim)
 {
-    sgl_anim_add(anim);
+    if (anim->finished) {
+        sgl_anim_add(anim);
+        anim->finished = 0;
+    }
+    anim->act_time = 0;
 }
 
 
@@ -186,7 +190,10 @@ static inline void sgl_anim_start(sgl_anim_t *anim)
 */
 static inline void sgl_anim_stop(sgl_anim_t *anim)
 {
-    sgl_anim_remove(anim);
+    if (!anim->finished) {
+        sgl_anim_remove(anim);
+        anim->finished = 1;
+    }
 }
 
 
