@@ -1281,7 +1281,13 @@ static inline bool sgl_obj_is_movable(sgl_obj_t *obj)
  */
 static inline void sgl_obj_update_area(sgl_area_t *area)
 {
-    sgl_dirty_area_push(area);
+    SGL_ASSERT(area != NULL);
+    sgl_area_t clip = sgl_system.fbdev.active->area;
+    clip.x1 = sgl_max(clip.x1, area->x1);
+    clip.x2 = sgl_min(clip.x2, area->x2);
+    clip.y1 = sgl_max(clip.y1, area->y1);
+    clip.y2 = sgl_min(clip.y2, area->y2);
+    sgl_dirty_area_push(&clip);
 }
 
 
