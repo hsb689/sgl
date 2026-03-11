@@ -846,6 +846,7 @@ static inline bool sgl_merge_determines(sgl_area_t* a, sgl_area_t* b)
  * 
  * @param area [in] Pointer to the area
  * @return none
+ * @warning This function is unsafe, you should check the area is not out of screen size by yourself
  */
 void sgl_dirty_area_push(sgl_area_t *area)
 {
@@ -1596,9 +1597,6 @@ static inline void sgl_draw_task(sgl_fbdev_t *fbdev)
  */
 void sgl_task_handle_sync(void)
 {
-    /* sync tick */
-    sgl_tick_sync();
-
     /* event task */
     sgl_event_task();
 

@@ -49,10 +49,10 @@ extern "C" {
  * @pixmap: pixmap of rect
  */
 typedef struct sgl_draw_rect {
-    sgl_color_t             color;
-    int16_t                 radius;
     uint8_t                 alpha;
     uint8_t                 border;
+    sgl_color_t             color;
+    int16_t                 radius;
     sgl_color_t             border_color;
     const sgl_pixmap_t      *pixmap;
 } sgl_draw_rect_t;
@@ -69,13 +69,13 @@ typedef struct sgl_draw_rect {
  * @width: width of line
  */
 typedef struct sgl_draw_line {
+    uint8_t          alpha;
+    uint8_t          width;
+    sgl_color_t      color;
     int16_t          x1;
     int16_t          y1;
     int16_t          x2;
     int16_t          y2;
-    sgl_color_t      color;
-    uint8_t          alpha;
-    uint8_t          width;
 } sgl_draw_line_t;
 
 
@@ -91,13 +91,13 @@ typedef struct sgl_draw_line {
  * @pixmap: pixmap of rectangle
  */
 typedef struct sgl_draw_circle {
-    int16_t            cx;
-    int16_t            cy;
-    sgl_color_t        color;
-    int16_t            radius;
     uint8_t            alpha;
     uint8_t            border;
+    sgl_color_t        color;
+    int16_t            radius;
     sgl_color_t        border_color;
+    int16_t            cx;
+    int16_t            cy;
     const sgl_pixmap_t *pixmap;
 } sgl_draw_circle_t;
 
@@ -116,12 +116,12 @@ typedef struct sgl_draw_circle {
  * @bg_color: background color of arc
  */
 typedef struct sgl_draw_arc {
+    uint8_t          alpha;
+    sgl_color_t      color;
     int16_t          cx;
     int16_t          cy;
     int16_t          radius_in;
     int16_t          radius_out;
-    sgl_color_t      color;
-    uint8_t          alpha;
     uint32_t         start_angle: 9;
     uint32_t         end_angle: 9;
     uint32_t         mode: 2;
@@ -136,10 +136,10 @@ typedef struct sgl_draw_arc {
  * @alpha: alpha of icon
  */
 typedef struct sgl_draw_icon {
-    const sgl_icon_pixmap_t *icon;
-    sgl_color_t       color;
     uint8_t           alpha;
     uint8_t           align;
+    sgl_color_t       color;
+    const sgl_icon_pixmap_t *icon;
 } sgl_draw_icon_t;
 
 
