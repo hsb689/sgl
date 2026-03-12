@@ -1395,6 +1395,110 @@ void sgl_obj_set_pos_align_ref(sgl_obj_t *ref, sgl_obj_t *obj, sgl_align_type_t 
 
 
 /**
+ * @brief Set the layout of the object.
+ * @param obj The object to set the layout.
+ * @param desc The layout description.
+ * @return none
+ * @note The layout description should be one of the sgl_layout_desc_t values:
+ *       - SGL_LAYOUT_NONE        : No layout.
+ *       - SGL_LAYOUT_HORIZONTAL  : Horizontal layout.
+ *       - SGL_LAYOUT_VERTICAL    : Vertical layout.
+ *       - SGL_LAYOUT_GRID        : Grid layout.
+ * @warning You must set col_num and row_num if the layout type is SGL_LAYOUT_GRID.
+ */
+void sgl_obj_set_layout(sgl_obj_t *obj, sgl_layout_desc_t *desc)
+{
+    SGL_ASSERT(obj != NULL);
+    if ((!sgl_obj_has_child(obj)) || (desc->type == SGL_LAYOUT_NONE)) {
+        return;
+    }
+
+    sgl_obj_t *child = NULL;
+    size_t child_num = sgl_obj_get_child_count(obj);
+    int16_t child_span_x[64] = {0}, child_span_y[64] = {0}, x = 0, y = 0, child_pos_x = 0, child_pos_y = 0;
+
+    /* set object to dirty flag for layout change */
+    sgl_obj_set_dirty(obj);
+
+    switch (desc->type ) {
+    case SGL_LAYOUT_HORIZONTAL:
+        sgl_split_len_avg((obj->coords.x2 - obj->coords.x1 + 1 - obj->border * 2 - desc->left_space - desc->right_space), 
+                            child_num, desc->col_space, child_span_x
+                         );
+        child_pos_x = obj->coords.x1 + obj->border + desc->left_space;
+
+        sgl_obj_for_each_child(child, obj) {
+            child->coords.x1 = child_pos_x;
+            child->coords.x2 = child_pos_x + child_span_x[x] - 1;
+            child->coords.y1 = obj->coords.y1 + desc->top_space;
+            child->coords.y2 = obj->coords.y2 - desc->bottom_space;
+            child_pos_x += (child_span_x[x++] + desc->col_space);
+        }
+        break;
+
+    case SGL_LAYOUT_VERTICAL:
+        sgl_split_len_avg((obj->coords.y2 - obj->coords.y1 + 1 - obj->border * 2 - desc->top_space - desc->bottom_space), 
+                            child_num, desc->row_space, child_span_y
+                         );
+        child_pos_y = obj->coords.x1 + obj->border + desc->top_space;
+
+        sgl_obj_for_each_child(child, obj) {
+            child->coords.x1 = obj->coords.x1 + desc->left_space;
+            child->coords.x2 = obj->coords.x2 - desc->right_space;
+            child->coords.y1 = child_pos_y;
+            child->coords.y2 = child_pos_y + child_span_y[y] - 1;
+            child_pos_y += (child_span_y[y++] + desc->row_space);
+        }
+        break;
+
+    case SGL_LAYOUT_GRID:
+        if (desc->col_num == 0 || desc->row_num == 0 || child_num == 0) {
+            break;
+        }
+
+        sgl_split_len_avg((obj->coords.x2 - obj->coords.x1 + 1 - obj->border * 2 - desc->left_space - desc->right_space), 
+                            desc->col_num, desc->col_space, child_span_x
+                         );
+        sgl_split_len_avg((obj->coords.y2 - obj->coords.y1 + 1 - obj->border * 2 - desc->top_space - desc->bottom_space), 
+                            desc->row_num, desc->row_space, child_span_y
+                         );
+
+        sgl_obj_for_each_child(child, obj) {
+            if (y >= desc->row_num || x >= desc->col_num) {
+                break;
+            }
+
+            child_pos_x = obj->coords.x1 + obj->border + desc->left_space;
+            for (int i = 0; i < x; i++) {
+                child_pos_x += child_span_x[i] + desc->col_space;
+            }
+
+            child_pos_y = obj->coords.y1 + obj->border + desc->top_space;
+            for (int i = 0; i < y; i++) {
+                child_pos_y += child_span_y[i] + desc->row_space;
+            }
+
+            child->coords.x1 = child_pos_x;
+            child->coords.x2 = child_pos_x + child_span_x[x] - 1;
+            child->coords.y1 = child_pos_y;
+            child->coords.y2 = child->coords.y1 + child_span_y[y] - 1;
+
+            x++;
+            if (x >= desc->col_num) {
+                x = 0;
+                y++;
+            }
+        }
+        break;
+    default:
+        SGL_LOG_WARN("invalid layout type");
+        return;
+    }
+    sgl_obj_set_dirty(obj);
+}
+
+
+/**
  * @brief draw object slice completely
  * @param obj it should point to active root object
  * @param surf surface that draw to

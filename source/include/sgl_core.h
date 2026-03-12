@@ -93,6 +93,33 @@ typedef enum sgl_layout_type {
 
 
 /**
+* @brief This structure describes the layout of the control, including the layout type,
+*        number of columns, number of rows, column spacing, and row spacing
+*
+* @type: layout type
+* @col_num: number of columns
+* @row_num: number of rows
+* @col_space: column spacing
+* @row_space: row spacing
+* @left_space: left spacing
+* @right_space: right spacing
+* @top_space: top spacing
+* @bottom_space: bottom spacing
+*/
+typedef struct sgl_layout_desc {
+    sgl_layout_type_t type;
+    uint16_t col_num;
+    uint16_t row_num;
+    uint16_t col_space;
+    uint16_t row_space;
+    uint16_t left_space;
+    uint16_t right_space;
+    uint16_t top_space;
+    uint16_t bottom_space;
+} sgl_layout_desc_t;
+
+
+/**
 * @brief This structure is a structure that describes the position of the control,
 *        where x represents the position of the x coordinate, which is the row coordinate position,
 *        and y represents the position of the y coordinate, which is the column coordinate position
@@ -1504,6 +1531,21 @@ void sgl_obj_set_pos_align(sgl_obj_t *obj, sgl_align_type_t type);
  * @warning You must set the size of object before calling this function.
  */
 void sgl_obj_set_pos_align_ref(sgl_obj_t *ref, sgl_obj_t *obj, sgl_align_type_t type);
+
+
+/**
+ * @brief Set the layout of the object.
+ * @param obj The object to set the layout.
+ * @param desc The layout description.
+ * @return none
+ * @note The layout description should be one of the sgl_layout_desc_t values:
+ *       - SGL_LAYOUT_NONE        : No layout.
+ *       - SGL_LAYOUT_HORIZONTAL  : Horizontal layout.
+ *       - SGL_LAYOUT_VERTICAL    : Vertical layout.
+ *       - SGL_LAYOUT_GRID        : Grid layout.
+ * @warning You must set col_num and row_num if the layout type is SGL_LAYOUT_GRID.
+ */
+void sgl_obj_set_layout(sgl_obj_t *obj, sgl_layout_desc_t *desc);
 
 
 /**

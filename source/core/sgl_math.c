@@ -390,7 +390,7 @@ void sgl_split_len(const uint8_t *weight, int count, int16_t length, int16_t gap
  */
 void sgl_split_len_avg(int length, int count, int16_t gap, int16_t *out)
 {
-    int16_t available_length = length - (count + 1) * gap;
+    int16_t available_length = length - (count - 1) * gap;
     int16_t base = available_length / count;
     int16_t remainder = available_length % count;
 
