@@ -38,6 +38,7 @@ typedef struct sgl_arc {
     sgl_obj_t       obj;
     sgl_draw_arc_t  desc;
     int16_t         width;
+    uint8_t         cap_style;      /* 0: flat cap, 1: round cap */
 }sgl_arc_t;
 
 
@@ -142,6 +143,19 @@ static inline void sgl_arc_set_end_angle(sgl_obj_t *obj, int16_t angle)
 {
     sgl_arc_t *arc = sgl_container_of(obj, sgl_arc_t, obj);
     arc->desc.end_angle = angle;
+    sgl_obj_set_dirty(obj);
+}
+
+/**
+ * @brief set arc object round cap style
+ * @param obj arc object
+ * @param enable 0: flat cap (default), 1: round cap
+ * @return none
+ */
+static inline void sgl_arc_set_round_cap(sgl_obj_t *obj, uint8_t enable)
+{
+    sgl_arc_t *arc = sgl_container_of(obj, sgl_arc_t, obj);
+    arc->cap_style = enable ? 1 : 0;
     sgl_obj_set_dirty(obj);
 }
 

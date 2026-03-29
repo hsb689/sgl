@@ -143,7 +143,10 @@ void sgl_draw_fill_arc(sgl_surf_t *surf, sgl_area_t *area, sgl_draw_arc_t *desc)
     }
 
     if (desc->start_angle != 0 || desc->end_angle != 360) {
-        flag = (desc->end_angle - desc->start_angle > 180) ? 1 : 0;
+        /* Compute arc span with wrap-around support (e.g. start=315 end=45 => span=90°) */
+        int16_t arc_span = desc->end_angle - desc->start_angle;
+        if (arc_span < 0) arc_span += 360;
+        flag = (arc_span > 180) ? 1 : 0;
         sx = sgl_sin(desc->start_angle);
         sy = -sgl_cos(desc->start_angle);
         ex = sgl_sin(desc->end_angle);
