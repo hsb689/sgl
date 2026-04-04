@@ -23,9 +23,12 @@
 */
 
 #include <stdio.h>
-#include <limits.h>
 #include <sgl_theme.h>
 #include "sgl_scope.h"
+
+/* use SGL coordinate limits instead of C standard limits */
+#define SGL_SCOPE_INT16_MAX   (SGL_POS_MAX)
+#define SGL_SCOPE_INT16_MIN   (SGL_POS_MIN)
 
 
 // Draw a dashed line using Bresenham's algorithm with dash pattern
@@ -79,106 +82,36 @@ static void draw_dashed_line(sgl_surf_t *surf, sgl_area_t *area, int16_t x0, int
 }
 
 
-// Custom line drawing function supporting variable line width
-static void custom_draw_line(sgl_surf_t *surf, sgl_area_t *area, sgl_pos_t start, sgl_pos_t end, sgl_color_t color, int16_t width)
+// Custom line drawing function supporting variable line width (uses SGL anti-aliased line API)
+static void custom_draw_line(sgl_surf_t *surf, sgl_area_t *area, sgl_pos_t start, sgl_pos_t end, sgl_color_t color, int16_t width, uint8_t alpha)
 {
-    int16_t x0 = start.x;
-    int16_t y0 = start.y;
-    int16_t x1 = end.x;
-    int16_t y1 = end.y;
-    
     // Handle invalid line width (zero or negative)
-    if (width <= 0) return;
-    
-    // For line width = 1, use standard Bresenham algorithm
-    if (width == 1) {
-        int16_t dx = sgl_abs(x1 - x0);
-        int16_t dy = sgl_abs(y1 - y0);
-        int16_t sx = (x0 < x1) ? 1 : -1;
-        int16_t sy = (y0 < y1) ? 1 : -1;
-        int16_t err = dx - dy;
-        int16_t e2;
-        
-        sgl_area_t clip_area = {
-            .x1 = surf->x1,
-            .y1 = surf->y1,
-            .x2 = surf->x2,
-            .y2 = surf->y2
-        };
-        
-        while (1) {
-            // Check if point is within clipping area
-            if (x0 >= clip_area.x1 && x0 <= clip_area.x2 && y0 >= clip_area.y1 && y0 <= clip_area.y2) {
-                sgl_color_t *buf = sgl_surf_get_buf(surf, x0 - surf->x1, y0 - surf->y1);
-                *buf = color;
-            }
-            
-            if (x0 == x1 && y0 == y1) break;
-            e2 = 2 * err;
-            if (e2 > -dy) {
-                err -= dy;
-                x0 += sx;
-            }
-            if (e2 < dx) {
-                err += dx;
-                y0 += sy;
-            }
-        }
+    if (width <= 0) {
         return;
     }
-    
-    // For line width > 1, draw main line plus perpendicular offsets to simulate thickness
-    int16_t dx = sgl_abs(x1 - x0);
-    int16_t dy = sgl_abs(y1 - y0);
-    int16_t sx = (x0 < x1) ? 1 : -1;
-    int16_t sy = (y0 < y1) ? 1 : -1;
-    int16_t err = dx - dy;
-    int16_t e2;
-    
-    sgl_area_t clip_area = {
-        .x1 = surf->x1,
-        .y1 = surf->y1,
-        .x2 = surf->x2,
-        .y2 = surf->y2
+    uint8_t eff_width;
+    if (width <= 1) {
+        eff_width = 4;              /* 逻辑 1 → 约 1 像素线 */
+    } else if (width == 2) {
+        eff_width = 8;              /* 逻辑 2 → 稍粗一些 */
+    } else {
+        int32_t scaled = (int32_t)width << 2;
+        if (scaled > 255) scaled = 255;
+        eff_width = (uint8_t)scaled;
+    }
+
+    sgl_draw_line_t line = {
+        .alpha = alpha,
+        .width = eff_width,
+        .color = color,
+        .x1    = start.x,
+        .y1    = start.y,
+        .x2    = end.x,
+        .y2    = end.y,
     };
 
-    sgl_area_selfclip(&clip_area, area);
-    
-    // Compute half-width for symmetric thickening
-    int16_t half_width = width / 2;
-    
-    while (1) {
-        // Draw current pixel and its perpendicular neighbors to form line thickness
-        for (int16_t w = -half_width; w <= half_width; w++) {
-            int16_t px, py;
-            
-            // Determine offset direction based on dominant axis
-            if (dx > dy) {  // Dominant X-axis direction
-                px = x0;
-                py = y0 + w;
-            } else {  // Dominant Y-axis direction
-                px = x0 + w;
-                py = y0;
-            }
-            
-            // Check if point is within clipping area
-            if (px >= clip_area.x1 && px <= clip_area.x2 && py >= clip_area.y1 && py <= clip_area.y2) {
-                sgl_color_t *buf = sgl_surf_get_buf(surf, px - surf->x1, py - surf->y1);
-                *buf = color;
-            }
-        }
-
-        if (x0 == x1 && y0 == y1) break;
-        e2 = 2 * err;
-        if (e2 > -dy) {
-            err -= dy;
-            x0 += sx;
-        }
-        if (e2 < dx) {
-            err += dx;
-            y0 += sy;
-        }
-    }
+    /* Use SGL's internal anti-aliased line drawing (SDF based) */
+    sgl_draw_line(surf, area, &line);
 }
 
 // Oscilloscope drawing callback function
@@ -209,43 +142,30 @@ static void scope_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_event_t *ev
         int16_t actual_min = display_min;  // Actual min/max of waveform data (for labels)
         int16_t actual_max = display_max;  // Actual max of waveform data (for labels)
         
-        // If auto-scaling is enabled, recalculate min/max from current buffer data
+        // If auto-scaling is enabled, use running min/max collected at append time
         if (scope->auto_scale) {
-            // Recalculate running_min and running_max based on current data in all channels
-            if (scope->display_counts[0] > 0) {
-                display_min = scope->data_buffers[0][0];
-                display_max = scope->data_buffers[0][0];
-                
-                // Iterate through all channels and all data points to find min/max
-                for (uint8_t ch = 0; ch < scope->channel_count; ch++) {
-                    uint32_t end_index = (scope->display_counts[ch] < scope->data_len) ? scope->display_counts[ch] : scope->data_len;
-                    for (uint32_t i = 0; i < end_index; i++) {
-                        int16_t val = scope->data_buffers[ch][i];
-                        if (val < display_min) display_min = val;
-                        if (val > display_max) display_max = val;
-                    }
-                }
-                
+            if (scope->display_counts[0] > 0 &&
+                scope->running_min != SGL_SCOPE_INT16_MAX &&
+                scope->running_max != SGL_SCOPE_INT16_MIN) {
+                display_min = scope->running_min;
+                display_max = scope->running_max;
+
                 // Save actual data min/max for label display
                 actual_min = display_min;
                 actual_max = display_max;
-                
-                // Update running values for next frame
-                scope->running_min = display_min;
-                scope->running_max = display_max;
             }
-            
+
             // Add margin to prevent waveform from touching borders
             int32_t margin = (int32_t)(display_max - display_min) / 10;
             if (margin == 0) margin = 1;
-            
-            display_min = (display_min > INT16_MIN + margin) ? display_min - margin : INT16_MIN;
-            display_max = (display_max < INT16_MAX - margin) ? display_max + margin : INT16_MAX;
+ 
+            display_min = (display_min > SGL_SCOPE_INT16_MIN + margin) ? display_min - margin : SGL_SCOPE_INT16_MIN;
+            display_max = (display_max < SGL_SCOPE_INT16_MAX - margin) ? display_max + margin : SGL_SCOPE_INT16_MAX;
         }
         
         // Avoid division by zero if min equals max
         if (display_min == display_max) {
-            if (display_max < INT16_MAX) {
+            if (display_max < SGL_SCOPE_INT16_MAX) {
                 display_max++;
             } else {
                 display_min--;
@@ -336,7 +256,7 @@ static void scope_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_event_t *ev
                     end.x = obj->coords.x2 - (i * width / (data_points - 1));  // Move leftward
                     end.y = obj->coords.y2 - ((int32_t)(current_value - display_min) * height) / (display_max - display_min);
 
-                    custom_draw_line(surf, &obj->area, start, end, scope->waveform_colors[ch], scope->line_width);
+                    custom_draw_line(surf, &obj->area, start, end, scope->waveform_colors[ch], scope->line_width, scope->alpha);
 
                     start = end;
                 }
@@ -424,8 +344,8 @@ sgl_obj_t* sgl_scope_create(sgl_obj_t* parent)
     scope->border_color = sgl_rgb(150, 150, 150); // Light gray outer border
     scope->min_value = 0;
     scope->max_value = 0xFFFF;
-    scope->running_min = INT16_MAX;   // Initialize runtime minimum to max int16_t value
-    scope->running_max = INT16_MIN;   // Initialize runtime maximum to min int16_t value
+    scope->running_min = SGL_SCOPE_INT16_MAX;   // Initialize runtime minimum to max range value
+    scope->running_max = SGL_SCOPE_INT16_MIN;   // Initialize runtime maximum to min range value
     scope->auto_scale = 1;        // Enable auto-scaling by default
     scope->line_width = 2;        // Default line thickness
     scope->max_display_points = 0; // Display all points by default
@@ -452,24 +372,65 @@ void sgl_scope_append_data(sgl_obj_t* obj, uint8_t channel, int16_t value)
 {
     sgl_scope_t *scope = (sgl_scope_t*)obj;
     
-    if (channel >= scope->channel_count || !scope->data_buffers[channel]) {
+    if (channel >= scope->channel_count || !scope->data_buffers[channel] || scope->data_len == 0) {
         return;
     }
 
-    // Simply append the data point to the buffer
+    // Append the data point to the buffer
     scope->data_buffers[channel][scope->current_indices[channel]] = value;
 
+    // Update running min/max for auto-scale (cheap incremental path)
+    if (scope->auto_scale) {
+        if (scope->running_min == SGL_SCOPE_INT16_MAX && scope->running_max == SGL_SCOPE_INT16_MIN) {
+            scope->running_min = value;
+            scope->running_max = value;
+        } else {
+            if (value < scope->running_min) {
+                scope->running_min = value;
+            }
+            if (value > scope->running_max) {
+                scope->running_max = value;
+            }
+        }
+    }
+
+    // Advance write index (ring buffer)
     if (sgl_is_pow2(scope->data_len)) {
         scope->current_indices[channel] = (scope->current_indices[channel] + 1) & (scope->data_len - 1);
     } else {
         scope->current_indices[channel] = (scope->current_indices[channel] + 1) % scope->data_len;
     }
 
-    // update display count for this channel
+    // Update display count for this channel
     if (scope->display_counts[channel] < scope->data_len) {
         scope->display_counts[channel]++;
     }
 
+    // For auto-scale, periodically recompute running min/max when buffer wraps
+    if (scope->auto_scale &&
+        scope->display_counts[channel] >= scope->data_len &&
+        scope->current_indices[channel] == 0) {
+
+        int16_t new_min = scope->data_buffers[0][0];
+        int16_t new_max = new_min;
+
+        for (uint8_t ch = 0; ch < scope->channel_count; ch++) {
+            if (!scope->data_buffers[ch]) {
+                continue;
+            }
+            uint32_t end_index = (scope->display_counts[ch] < scope->data_len) ? scope->display_counts[ch] : scope->data_len;
+            for (uint32_t i = 0; i < end_index; i++) {
+                int16_t v = scope->data_buffers[ch][i];
+                if (v < new_min) new_min = v;
+                if (v > new_max) new_max = v;
+            }
+        }
+
+        scope->running_min = new_min;
+        scope->running_max = new_max;
+    }
+
+    // Mark entire scope object as dirty so SGL's dirty-area mechanism can update it
     sgl_obj_set_dirty(obj);
 }
 
