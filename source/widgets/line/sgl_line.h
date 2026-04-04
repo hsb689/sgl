@@ -48,6 +48,9 @@ typedef struct sgl_line {
     uint8_t       x_swap : 4;
     uint8_t       y_swap : 4;
     sgl_color_t   color;
+    uint8_t       dashed;        /* 0: solid line, non-zero: dashed line */
+    uint16_t      dash_length;   /* solid segment length in pixels when dashed */
+    uint16_t      gap_length;    /* gap length in pixels when dashed */
 }sgl_line_t;
 
 
@@ -86,6 +89,36 @@ static inline void sgl_line_set_alpha(sgl_obj_t *obj, uint8_t alpha)
     sgl_obj_set_dirty(obj);
 }
 
+/**
+ * @brief set line dashed or solid
+ * @param obj line object
+ * @param dashed 0: solid line, non-zero: dashed line
+ * @return none
+ */
+static inline void sgl_line_set_dashed(sgl_obj_t *obj, uint8_t dashed)
+{
+    SGL_ASSERT(obj != NULL);
+    sgl_line_t *line = sgl_container_of(obj, sgl_line_t, obj);
+    line->dashed = dashed;
+    sgl_obj_set_dirty(obj);
+}
+
+/**
+ * @brief set line dash pattern when dashed
+ * @param obj line object
+ * @param dash_len length of solid segment in pixels
+ * @param gap_len length of space segment in pixels
+ * @return none
+ */
+static inline void sgl_line_set_dash_pattern(sgl_obj_t *obj, uint16_t dash_len, uint16_t gap_len)
+{
+    SGL_ASSERT(obj != NULL);
+    sgl_line_t *line = sgl_container_of(obj, sgl_line_t, obj);
+    line->dash_length = dash_len;
+    line->gap_length = gap_len;
+    sgl_obj_set_dirty(obj);
+}
+ 
 /**
  * @brief set line start position
  * @param obj line object
