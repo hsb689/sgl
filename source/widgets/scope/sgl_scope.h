@@ -180,7 +180,7 @@ typedef struct {
      sgl_scope_t *scope = sgl_container_of(obj, sgl_scope_t, obj);
      scope->min_value = min_value;
      scope->max_value = max_value;
-     scope->auto_scale = 0;  // disable auto scale
+     //scope->auto_scale = 0;  // disable auto scale
      sgl_obj_set_dirty(obj);
  }
  
