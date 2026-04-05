@@ -1167,17 +1167,17 @@ uint32_t sgl_utf8_to_unicode(const char *utf8_str, uint32_t *p_unicode_buffer)
  */
 uint32_t sgl_search_unicode_ch_index(const sgl_font_t *font, uint32_t unicode)
 {
-    uint32_t left = 0, right = 0, mid = 0;
+    uint32_t i, left = 0, right = 0, mid = 0;
     uint32_t target = unicode;
     const sgl_font_unicode_t *code = font->unicode;
 
-    for (uint32_t i = 0; i < font->unicode_num; i ++) {
+    for (i = 0; i < font->unicode_num - 1; i ++) {
         if ((target >= code[i].offset) && (target < code[i + 1].offset)) {
             break;
         }
-        code ++;
     }
 
+    code += i;
     target -= code->offset;
 
     if (code->list == NULL) {
