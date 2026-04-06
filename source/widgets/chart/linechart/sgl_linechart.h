@@ -111,7 +111,8 @@ typedef struct sgl_linechart_axis {
     uint8_t           show_grid    : 1;
     uint8_t           grid_dashed  : 1;
     uint8_t           show_labels  : 1;
-    uint8_t           reserved     : 4;
+    uint8_t           show_ticks   : 1;  /**< show small tick marks at axis edge */
+    uint8_t           reserved     : 3;
     uint8_t           auto_divisions;
     sgl_color_t       grid_color;
     uint8_t           grid_alpha;
@@ -405,6 +406,18 @@ static inline void sgl_linechart_set_axis_label_color(sgl_obj_t *obj, sgl_linech
     sgl_linechart_axis_t *a = sgl_linechart_get_axis(chart, axis);
     a->label_color = color;
     a->label_alpha = alpha;
+    sgl_obj_set_dirty(obj);
+}
+
+/**
+ * @brief Enable or disable axis tick marks at axis edge
+ */
+static inline void sgl_linechart_enable_axis_ticks(sgl_obj_t *obj, sgl_linechart_axis_id_t axis, bool enable)
+{
+    SGL_ASSERT(obj != NULL);
+    sgl_linechart_t *chart = sgl_container_of(obj, sgl_linechart_t, obj);
+    sgl_linechart_axis_t *a = sgl_linechart_get_axis(chart, axis);
+    a->show_ticks = (uint8_t)enable;
     sgl_obj_set_dirty(obj);
 }
 

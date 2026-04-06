@@ -33,6 +33,8 @@
 #include <string.h>
 #include "sgl_linechart.h"
 
+#define SGL_LINECHART_TICK_LEN 4
+
 
 static void sgl_linechart_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_event_t *evt);
 static void sgl_linechart_update_axis_auto(sgl_linechart_t *chart);
@@ -591,6 +593,13 @@ static void sgl_linechart_draw_grid_and_labels(sgl_surf_t *surf, sgl_obj_t *obj,
             .x2 = plot_rect->x1 - 2,
             .y2 = plot_rect->y2,
         };
+        sgl_area_t y_tick_area = {
+            .x1 = obj->coords.x1,
+            .y1 = plot_rect->y1,
+            .x2 = (int16_t)(plot_rect->x1 - 1),
+            .y2 = plot_rect->y2,
+        };
+        sgl_area_selfclip(&y_tick_area, &obj->area);
 
         uint8_t grid_alpha = chart->y_axis.grid_alpha;
         if (grid_alpha) {
@@ -644,6 +653,13 @@ static void sgl_linechart_draw_grid_and_labels(sgl_surf_t *surf, sgl_obj_t *obj,
                                 y_font);
             }
 
+            if (chart->y_axis.show_ticks && grid_alpha && y_tick_area.x2 >= y_tick_area.x1) {
+                sgl_draw_fill_hline(surf, &y_tick_area, y,
+                                    (int16_t)(plot_rect->x1 - SGL_LINECHART_TICK_LEN),
+                                    (int16_t)(plot_rect->x1 - 1),
+                                    1, chart->y_axis.grid_color, grid_alpha);
+            }
+
             tick_idx++;
             v += step;
         }
@@ -663,6 +679,13 @@ static void sgl_linechart_draw_grid_and_labels(sgl_surf_t *surf, sgl_obj_t *obj,
             .x2 = obj->coords.x2,
             .y2 = obj->coords.y2,
         };
+        sgl_area_t x_tick_area = {
+            .x1 = plot_rect->x1,
+            .y1 = (int16_t)(plot_rect->y2 + 1),
+            .x2 = plot_rect->x2,
+            .y2 = obj->coords.y2,
+        };
+        sgl_area_selfclip(&x_tick_area, &obj->area);
 
         uint8_t grid_alpha = chart->x_axis.grid_alpha;
         if (grid_alpha) {
@@ -733,6 +756,13 @@ static void sgl_linechart_draw_grid_and_labels(sgl_surf_t *surf, sgl_obj_t *obj,
                                 x_font);
             }
 
+            if (chart->x_axis.show_ticks && grid_alpha && x_tick_area.y2 >= x_tick_area.y1) {
+                sgl_draw_fill_vline(surf, &x_tick_area, x,
+                                    (int16_t)(plot_rect->y2 + 1),
+                                    (int16_t)(plot_rect->y2 + SGL_LINECHART_TICK_LEN),
+                                    1, chart->x_axis.grid_color, grid_alpha);
+            }
+
             tick_idx++;
             v += step;
         }
@@ -753,47 +783,64 @@ static void sgl_linechart_draw_series(sgl_surf_t *surf, sgl_obj_t *obj,
     if (plot_w <= 0 || plot_h <= 0) {
         return;
     }
-
+ 
     int32_t x_range = chart->x_axis.max - chart->x_axis.min;
     int32_t y_range = chart->y_axis.max - chart->y_axis.min;
     if (x_range <= 0) x_range = 1;
     if (y_range <= 0) y_range = 1;
-
+ 
     uint8_t base_alpha = chart->alpha ? chart->alpha : SGL_ALPHA_MAX;
     int16_t baseline_y = plot_rect->y2; /* baseline at axis minimum */
-
+ 
+    /* 为了避免最左/最右的数据点只显示一半，根据点半径为折线图预留水平边距 */
+    int16_t pad_x = 0;
+    for (uint8_t si = 0; si < chart->series_count; si++) {
+        sgl_linechart_series_t *s = &chart->series[si];
+        if (s->show_points && s->point_radius > pad_x) {
+            pad_x = s->point_radius;
+        }
+    }
+ 
+    int16_t plot_x1 = plot_rect->x1;
+    int16_t plot_x2 = plot_rect->x2;
+    if (pad_x > 0 && (plot_w > (pad_x * 2))) {
+        plot_x1 = (int16_t)(plot_x1 + pad_x);
+        plot_x2 = (int16_t)(plot_x2 - pad_x);
+        plot_w  = (int16_t)(plot_x2 - plot_x1);
+    }
+ 
     for (uint8_t si = 0; si < chart->series_count; si++) {
         sgl_linechart_series_t *s = &chart->series[si];
         if (s->y_data == NULL || s->point_count == 0) {
             continue;
         }
-
+ 
         uint8_t line_alpha = s->line_alpha ? s->line_alpha : SGL_ALPHA_MAX;
         uint16_t mix = (uint16_t)line_alpha * base_alpha / 255;
         if (mix == 0) mix = line_alpha;
         uint8_t eff_line_alpha = (uint8_t)mix;
-
+ 
         uint8_t fill_alpha = s->fill_alpha;
         if (fill_alpha) {
             uint16_t mix_fill = (uint16_t)fill_alpha * base_alpha / 255;
             if (mix_fill == 0) mix_fill = fill_alpha;
             fill_alpha = (uint8_t)mix_fill;
         }
-
+ 
         int16_t prev_x = 0, prev_y = 0;
         bool    prev_valid = false;
-
+ 
         for (uint16_t i = 0; i < s->point_count; i++) {
             int32_t vx = s->x_data ? s->x_data[i] : (int32_t)i;
             int32_t vy = s->y_data[i];
-
+ 
             /* clamp to axis range to avoid overflow */
             vx = sgl_clamp(vx, chart->x_axis.min, chart->x_axis.max);
             vy = sgl_clamp(vy, chart->y_axis.min, chart->y_axis.max);
-
-            int16_t x = plot_rect->x1 + (int32_t)(vx - chart->x_axis.min) * plot_w / x_range;
+ 
+            int16_t x = plot_x1 + (int32_t)(vx - chart->x_axis.min) * plot_w / x_range;
             int16_t y = plot_rect->y2 - (int32_t)(vy - chart->y_axis.min) * plot_h / y_range;
-
+ 
             if (prev_valid) {
                 if (s->fill_under && fill_alpha) {
                     sgl_linechart_fill_segment_under(surf, plot_clip,
@@ -803,7 +850,7 @@ static void sgl_linechart_draw_series(sgl_surf_t *surf, sgl_obj_t *obj,
                                                      s->fill_color,
                                                      fill_alpha);
                 }
-
+ 
                 if (s->show_line) {
                     sgl_linechart_draw_segment_line(surf, plot_clip,
                                                     prev_x, prev_y,
@@ -813,7 +860,7 @@ static void sgl_linechart_draw_series(sgl_surf_t *surf, sgl_obj_t *obj,
                                                     eff_line_alpha);
                 }
             }
-
+ 
             if (s->show_points) {
                 sgl_linechart_draw_point_marker(surf, plot_clip,
                                                 x, y,
@@ -822,13 +869,13 @@ static void sgl_linechart_draw_series(sgl_surf_t *surf, sgl_obj_t *obj,
                                                 s->line_color,
                                                 eff_line_alpha);
             }
-
+ 
             prev_x = x;
             prev_y = y;
             prev_valid = true;
         }
     }
-
+ 
     SGL_UNUSED(obj);
 }
 
