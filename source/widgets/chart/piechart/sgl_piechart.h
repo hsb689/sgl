@@ -71,10 +71,10 @@ typedef enum sgl_piechart_legend_dir {
  * @label: legend text of slice, must be persistent string
  */
 typedef struct sgl_piechart_slice {
+    const char *label;
     int32_t     value;
     sgl_color_t color;
     uint8_t     alpha;
-    const char *label;
 } sgl_piechart_slice_t;
 
 
@@ -84,6 +84,16 @@ typedef struct sgl_piechart_slice {
  */
 typedef struct sgl_piechart {
     sgl_obj_t   obj;
+    const sgl_font_t *legend_font;     /**< legend text font */
+    sgl_piechart_slice_t *slices;      /**< dynamic slice array */
+    sgl_color_t       legend_text_color;   /**< legend text color */
+    sgl_color_t       legend_bg_color;     /**< legend background color */
+    sgl_color_t       legend_border_color; /**< legend border color */
+    uint32_t          open_anim_start_tick; /**< animation start tick, ms */
+    int32_t           total_value;         /**< cached sum of all slice values (>0) */
+    uint16_t          radius_out;          /**< outer radius in pixels, 0: auto from object size */
+    int16_t           start_angle;         /**< start angle of first slice, unit: degree */
+    uint16_t          legend_area_size;    /**< thickness of legend area (width or height) */
 
     /* global pie config */
     uint8_t     alpha;              /**< global alpha of pie (0~255) */
@@ -92,35 +102,22 @@ typedef struct sgl_piechart {
     uint8_t     legend_bg_enable  : 1;  /**< draw legend background block */
     uint8_t     open_anim_enable  : 1;  /**< enable open (0->360deg) animation */
     uint8_t     open_anim_playing : 1;  /**< internal flag: open animation running */
-    uint8_t     reserved_flags    : 3;
+    uint8_t     legend_dir        : 1;  /**< @ref sgl_piechart_legend_dir_t */
+    uint8_t     reserved_flags    : 2;
+    uint8_t     legend_pos        : 3;  /**< @ref sgl_piechart_legend_pos_t */
+    uint8_t     reserved_layout   : 5;
 
-    uint8_t     legend_dir;        /**< @ref sgl_piechart_legend_dir_t */
     uint8_t     inner_radius_rate; /**< inner radius = outer * rate / 100, 0: full pie */
     uint8_t     legend_box_size;   /**< legend color box size in pixels */
     uint8_t     legend_item_gap;   /**< gap between legend items in pixels */
     uint8_t     legend_padding;    /**< inner padding of legend area */
     uint8_t     slice_count;       /**< number of slices */
-
-    uint16_t    radius_out;        /**< outer radius in pixels, 0: auto from object size */
-    int16_t     start_angle;       /**< start angle of first slice, unit: degree */
-    uint16_t    legend_area_size;  /**< thickness of legend area (width or height) */
-
-    sgl_piechart_legend_pos_t legend_pos;   /**< legend position */
-
-    const sgl_font_t *legend_font;     /**< legend text font */
-    sgl_color_t       legend_text_color;   /**< legend text color */
-    sgl_color_t       legend_bg_color;     /**< legend background color */
-    sgl_color_t       legend_border_color; /**< legend border color */
     uint8_t           legend_alpha;        /**< legend alpha */
 
     /* open animation state (angle reveal 0->360deg) */
-    uint32_t              open_anim_start_tick; /**< animation start tick, ms */
 #if (CONFIG_SGL_ANIMATION)
     sgl_anim_path_algo_t  open_anim_path;       /**< easing function for open animation, NULL=linear */
 #endif
-
-    sgl_piechart_slice_t *slices;  /**< dynamic slice array */
-    int32_t              total_value; /**< cached sum of all slice values (>0) */
 } sgl_piechart_t;
 
 
