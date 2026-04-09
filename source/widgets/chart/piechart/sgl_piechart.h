@@ -98,8 +98,14 @@ typedef struct sgl_piechart_slice {
  */
 typedef struct sgl_piechart {
     sgl_obj_t              obj;
+    /* global pie config */
+    sgl_piechart_option_bits_t option_bits;
+    sgl_piechart_layout_bits_t layout_bits;
     const sgl_font_t *legend_font;     /**< legend text font */
     sgl_piechart_slice_t *slices;      /**< dynamic slice array */
+#if (CONFIG_SGL_ANIMATION)
+    sgl_anim_path_algo_t  open_anim_path;       /**< easing function for open animation, NULL=linear */
+#endif
     sgl_color_t       legend_text_color;   /**< legend text color */
     sgl_color_t       legend_bg_color;     /**< legend background color */
     sgl_color_t       legend_border_color; /**< legend border color */
@@ -108,11 +114,6 @@ typedef struct sgl_piechart {
     uint16_t          radius_out;          /**< outer radius in pixels, 0: auto from object size */
     int16_t           start_angle;         /**< start angle of first slice, unit: degree */
     uint16_t          legend_area_size;    /**< thickness of legend area (width or height) */
-
-    /* global pie config */
-    sgl_piechart_option_bits_t option_bits;
-    sgl_piechart_layout_bits_t layout_bits;
-
     uint8_t     inner_radius_rate; /**< inner radius = outer * rate / 100, 0: full pie */
     uint8_t     legend_box_size;   /**< legend color box size in pixels */
     uint8_t     legend_item_gap;   /**< gap between legend items in pixels */
@@ -120,11 +121,6 @@ typedef struct sgl_piechart {
     uint8_t     slice_count;       /**< number of slices */
     uint8_t     alpha;              /**< global alpha of pie (0~255) */
     uint8_t     legend_alpha;       /**< legend alpha */
-
-    /* open animation state (angle reveal 0->360deg) */
-#if (CONFIG_SGL_ANIMATION)
-    sgl_anim_path_algo_t  open_anim_path;       /**< easing function for open animation, NULL=linear */
-#endif
 } sgl_piechart_t;
 
 

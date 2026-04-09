@@ -45,17 +45,17 @@
 typedef struct sgl_box {
     sgl_obj_t       obj;
     sgl_draw_rect_t bg;
+    sgl_color_t     scroll_color;         // scroll color;
     int16_t         x_offset;             // X-axis offset
     int16_t         y_offset;             // Y-axis offset
-    sgl_color_t     scroll_color;         // scroll color;
-    uint8_t         scroll_mode;          // Scroll mode (vertical/horizontal/both)
-    uint8_t         scroll_enable : 1;    // Whether scrolling is enabled
-    uint8_t         show_v_scrollbar : 1; // Whether to show the vertical scrollbar
-    uint8_t         show_h_scrollbar : 1; // Whether to show the horizontal scrollbar
     int16_t         elastic_scroll_up;    // Maximum allowable upward elastic scroll offset
     int16_t         elastic_scroll_down;  // Maximum allowable downward elastic scroll offset
     int16_t         elastic_scroll_left;  // Maximum allowable leftward elastic scroll offset
     int16_t         elastic_scroll_right; // Maximum allowable rightward elastic scroll offset
+    uint8_t         scroll_mode;          // Scroll mode (vertical/horizontal/both)
+    uint8_t         scroll_enable : 1;    // Whether scrolling is enabled
+    uint8_t         show_v_scrollbar : 1; // Whether to show the vertical scrollbar
+    uint8_t         show_h_scrollbar : 1; // Whether to show the horizontal scrollbar
 } sgl_box_t;
 
 

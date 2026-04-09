@@ -41,12 +41,11 @@
  */
 typedef struct sgl_led {
     sgl_obj_t       obj;
-    uint8_t         alpha;
-    bool            status;
     sgl_color_t     on_color;
     sgl_color_t     off_color;
     sgl_color_t     bg_color;
-
+    uint8_t         alpha;
+    bool            status;
 }sgl_led_t;
 
 

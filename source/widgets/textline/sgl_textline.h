@@ -40,14 +40,14 @@
  */
 typedef struct sgl_textline {
     sgl_obj_t        obj;
-    uint8_t          alpha;
-    uint8_t          line_margin;
-    uint8_t          edge_margin : 7;
-    uint8_t          bg_flag : 1;
     const char       *text;
     const sgl_font_t *font;
     sgl_color_t      color;
     sgl_color_t      bg_color;
+    uint8_t          alpha;
+    uint8_t          line_margin;
+    uint8_t          edge_margin : 7;
+    uint8_t          bg_flag : 1;
 } sgl_textline_t;
 
 

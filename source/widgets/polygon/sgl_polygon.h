@@ -44,16 +44,16 @@ extern "C" {
 
 typedef struct {
     sgl_obj_t obj;              // Base object
-    uint8_t alpha;              // Alpha value
-    uint8_t border_width;       // Border width
-    uint16_t vertex_count;      // Number of vertices
     sgl_pos_t *vertices;        // Array of vertex coordinates
-    sgl_color_t fill_color;     // Fill color
-    sgl_color_t border_color;   // Border color
     const sgl_pixmap_t *pixmap; // Background image
     const char *text;           // Display text
     const sgl_font_t *font;     // Font
+    sgl_color_t fill_color;     // Fill color
+    sgl_color_t border_color;   // Border color
     sgl_color_t text_color;     // Text color
+    uint16_t vertex_count;      // Number of vertices
+    uint8_t alpha;              // Alpha value
+    uint8_t border_width;       // Border width
 } sgl_polygon_t;
 
 

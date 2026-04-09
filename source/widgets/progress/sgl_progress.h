@@ -42,14 +42,14 @@
  */
 typedef struct sgl_progress {
     sgl_obj_t          obj;
+    sgl_draw_rect_t    body;
+    sgl_color_t        color;
     uint8_t            alpha;
     uint8_t            value;
     uint8_t            interval;
     uint8_t            shift;
     uint8_t            knob_radius;
     uint8_t            knob_width;
-    sgl_color_t        color;
-    sgl_draw_rect_t    body;
 }sgl_progress_t;
 
 

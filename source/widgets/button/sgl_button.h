@@ -43,14 +43,14 @@
  */
 typedef struct sgl_button {
     sgl_obj_t               obj;
-    uint8_t                 alpha;
-    uint8_t                 align;
-    sgl_color_t             color;
-    sgl_color_t             border_color;
-    sgl_color_t             text_color;
     const sgl_pixmap_t      *pixmap;
     const char              *text;
     const sgl_font_t        *font;
+    sgl_color_t             color;
+    sgl_color_t             border_color;
+    sgl_color_t             text_color;
+    uint8_t                 alpha;
+    uint8_t                 align;
 }sgl_button_t;
 
 

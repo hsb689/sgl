@@ -42,10 +42,10 @@
  */
 typedef struct sgl_ring {
     sgl_obj_t        obj;
-    uint8_t          alpha;
     sgl_color_t      color;
     int16_t          radius_in;
     int16_t          radius_out;
+    uint8_t          alpha;
 }sgl_ring_t;
 
 

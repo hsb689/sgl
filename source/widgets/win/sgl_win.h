@@ -39,14 +39,14 @@
  */
 typedef struct sgl_win {
     sgl_obj_t       obj;
+    sgl_draw_rect_t bg;
     const char     *title_text;
     const sgl_font_t *title_font;
     sgl_color_t     title_bg_color;
     sgl_color_t     title_text_color;
-    sgl_draw_rect_t bg;
+    sgl_color_t     close_color;
     uint8_t         title_h;
     uint8_t         title_align;
-    sgl_color_t     close_color;
 } sgl_win_t;
 
 /**

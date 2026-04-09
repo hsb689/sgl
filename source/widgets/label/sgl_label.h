@@ -41,11 +41,6 @@
  */
 typedef struct sgl_label {
     sgl_obj_t        obj;
-    uint8_t          alpha;
-    uint8_t          dynamic : 1;
-    uint8_t          align: 5;
-    uint8_t          bg_flag : 1;
-    uint8_t          rota : 1;
     union {
         struct {
             int8_t offset_x;
@@ -54,9 +49,14 @@ typedef struct sgl_label {
         int16_t rotation;
     } transform;
     const sgl_font_t *font;
+    char             *text;
     sgl_color_t      color;
     sgl_color_t      bg_color;
-    char             *text;
+    uint8_t          alpha;
+    uint8_t          dynamic : 1;
+    uint8_t          align: 5;
+    uint8_t          bg_flag : 1;
+    uint8_t          rota : 1;
 } sgl_label_t;
 
 

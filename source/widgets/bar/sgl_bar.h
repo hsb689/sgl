@@ -47,14 +47,14 @@
  */
 typedef struct sgl_bar {
     sgl_obj_t          obj;
+    const sgl_pixmap_t *pixmap;
+    sgl_color_t        fill_color;
+    sgl_color_t        track_color;
+    sgl_color_t        border_color;
     uint8_t            alpha;
     /* 0: horizontal, 1: vertical */
     uint8_t            direct : 1;
     uint8_t            value : 7;
-    sgl_color_t        fill_color;
-    sgl_color_t        track_color;
-    sgl_color_t        border_color;
-    const sgl_pixmap_t *pixmap;
 } sgl_bar_t;
 
 /**

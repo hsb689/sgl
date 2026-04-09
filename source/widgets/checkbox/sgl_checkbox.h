@@ -36,12 +36,12 @@
 
 typedef struct sgl_checkbox {
     sgl_obj_t          obj;
-    uint8_t            alpha;
-    bool               status;
-    sgl_color_t        color;
     const char         *text;
     const sgl_font_t   *font;
     const sgl_icon_pixmap_t *icon;
+    sgl_color_t        color;
+    uint8_t            alpha;
+    bool               status;
 } sgl_checkbox_t;
 
 
