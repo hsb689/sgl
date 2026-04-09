@@ -195,7 +195,7 @@ void sgl_anim_task(void)
     const uint32_t current_tick = sgl_tick_get();
     sgl_anim_t *anim = NULL, *next = NULL;
 
-    sgl_anim_for_each (anim, &sgl_anim_ctx) {
+    sgl_anim_for_each_safe(anim, next, &sgl_anim_ctx) {
         if(current_tick < anim->act_time) {
             continue;
         }
@@ -224,9 +224,7 @@ void sgl_anim_task(void)
 
                 /* if animation is auto free, free it */
                 if (anim->auto_free) {
-                    next = anim->next;
                     sgl_free(anim);
-                    anim = next;
                     continue;
                 }
             }
