@@ -1018,6 +1018,25 @@ void sgl_obj_clear_all_dirty(sgl_obj_t *obj)
  * @brief update object area
  * @param area point to area that need update
  * @return none, this function will force update object area
+ * @note this function will update object area, and the object area will be merged into the dirty area
+ */
+void sgl_update_area(sgl_area_t *area)
+{
+    SGL_ASSERT(area != NULL);
+    sgl_area_t clip = sgl_system.fbdev.active->area;
+    clip.x1 = sgl_max(clip.x1, area->x1);
+    clip.x2 = sgl_min(clip.x2, area->x2);
+    clip.y1 = sgl_max(clip.y1, area->y1);
+    clip.y2 = sgl_min(clip.y2, area->y2);
+    sgl_dirty_area_push(&clip);
+}
+
+
+/**
+ * @brief update object area
+ * @param area point to area that need update
+ * @return none, this function will force update object area
+ * @note this function will update object area, it will be added into dirty area without merging
  */
 void sgl_obj_update_area(sgl_area_t *area)
 {
@@ -1027,7 +1046,14 @@ void sgl_obj_update_area(sgl_area_t *area)
     clip.x2 = sgl_min(clip.x2, area->x2);
     clip.y1 = sgl_max(clip.y1, area->y1);
     clip.y2 = sgl_min(clip.y2, area->y2);
-    sgl_dirty_area_push(&clip);
+
+    if (sgl_system.fbdev.dirty_num < SGL_DIRTY_AREA_NUM_MAX) {
+        /* add new dirty area */
+        sgl_system.fbdev.dirty[sgl_system.fbdev.dirty_num++] = clip;
+    } else {
+        /* merge object area into last dirty area */
+        sgl_area_selfmerge(&sgl_system.fbdev.dirty[SGL_DIRTY_AREA_NUM_MAX - 1], &clip);
+    }
 }
 
 

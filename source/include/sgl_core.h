@@ -1228,6 +1228,16 @@ static inline bool sgl_obj_is_movable(sgl_obj_t *obj)
  * @brief update object area
  * @param area point to area that need update
  * @return none, this function will force update object area
+ * @note this function will update object area, and the object area will be merged into the dirty area
+ */
+void sgl_update_area(sgl_area_t *area);
+
+
+/**
+ * @brief update object area
+ * @param area point to area that need update
+ * @return none, this function will force update object area
+ * @note this function will update object area, it will be added into dirty area without merging
  */
 void sgl_obj_update_area(sgl_area_t *area);
 

@@ -95,6 +95,10 @@ static void sgl_label_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_event_t
             sgl_free(temp_buf);
         }
 #endif
+    } else if (evt->type == SGL_EVENT_DESTROYED) {
+        if (label->dynamic) {
+            sgl_free((void*)label->text);
+        }
     }
 }
 
@@ -122,11 +126,7 @@ sgl_obj_t* sgl_label_create(sgl_obj_t* parent)
     label->alpha = SGL_ALPHA_MAX;
     label->bg_flag = 0;
     label->color = SGL_THEME_TEXT_COLOR;
-#if (SGL_LABEL_FMT_LEN_MAX)
-    label->text[0] = '\0';
-#else
     label->text = "";
-#endif
     label->transform.rotation = 0;
     label->rota = 0;
     label->font = sgl_get_system_font();
@@ -135,23 +135,30 @@ sgl_obj_t* sgl_label_create(sgl_obj_t* parent)
 }
 
 
-#if (SGL_LABEL_FMT_LEN_MAX)
 /**
- * @brief set the text of the label
+ * @brief set the text of the label with format
  * @param obj pointer to the label object
- * @param fmt format string
+ * @param text pointer to the text
  * @return none
- * @warning If you use this function, please make sure the string is less than CONFIG_SGL_LABEL_FMT_LEN_MAX
- *          the CONFIG_SGL_LABEL_FMT_LEN_MAX is 16 by default.
  */
-void sgl_label_set_text(sgl_obj_t* obj, const char *fmt, ...)
+void sgl_label_set_text_fmt(sgl_obj_t* obj, const char *fmt, ...)
 {
+    char text[200];
     va_list args;
     sgl_label_t *label = sgl_container_of(obj, sgl_label_t, obj);
 
     va_start(args, fmt);
-    sgl_vsnprintf(label->text, SGL_LABEL_FMT_LEN_MAX, fmt, args);
+    sgl_vsnprintf(text, sizeof(text), fmt, args);
     va_end(args);
+
+    if (!label->dynamic) {
+        label->text = sgl_malloc(strlen(text) + 1);
+        if (label->text == NULL) {
+            SGL_LOG_ERROR("sgl_label_set_text_fmt: malloc failed");
+            return;
+        }
+        label->dynamic = 1;
+    }
+    strcpy(label->text, text);
     sgl_obj_set_dirty(obj);
 }
-#endif // SGL_LABEL_FMT_LEN_MAX

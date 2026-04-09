@@ -127,10 +127,6 @@ extern "C" {
 #define CONFIG_SGL_LABEL_ROTATION                                  (0)  /* Label text rotation support */
 #endif
 
-#ifndef CONFIG_SGL_LABEL_FMT_LEN_MAX
-#define CONFIG_SGL_LABEL_FMT_LEN_MAX                               (0)  /* Max label format string length */
-#endif
-
 #ifndef CONFIG_SGL_FONT_SONG23
 #define CONFIG_SGL_FONT_SONG23                                     (0)  /* Enable Song23 font */
 #endif
