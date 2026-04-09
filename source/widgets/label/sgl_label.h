@@ -43,6 +43,7 @@ typedef struct sgl_label {
     sgl_obj_t        obj;
     const sgl_font_t *font;
     char             *text;
+    size_t           text_capacity;
     sgl_color_t      color;
     sgl_color_t      bg_color;
     union {
@@ -70,6 +71,13 @@ sgl_obj_t* sgl_label_create(sgl_obj_t* parent);
 static inline void sgl_label_set_text(sgl_obj_t *obj, char *text)
 {
     sgl_label_t *label = sgl_container_of(obj, sgl_label_t, obj);
+
+    if (label->dynamic) {
+        sgl_free((void *)label->text);
+        label->dynamic = 0;
+        label->text_capacity = 0;
+    }
+
     label->text = text;
     sgl_obj_set_dirty(obj);
 }

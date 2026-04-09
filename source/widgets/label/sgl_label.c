@@ -143,22 +143,41 @@ sgl_obj_t* sgl_label_create(sgl_obj_t* parent)
  */
 void sgl_label_set_text_fmt(sgl_obj_t* obj, const char *fmt, ...)
 {
-    char text[200];
     va_list args;
+    va_list args_copy;
+    char *text;
+    int len;
+    size_t cap;
     sgl_label_t *label = sgl_container_of(obj, sgl_label_t, obj);
 
     va_start(args, fmt);
-    sgl_vsnprintf(text, sizeof(text), fmt, args);
-    va_end(args);
+    va_copy(args_copy, args);
+    len = sgl_vsnprintf(NULL, 0, fmt, args_copy);
+    va_end(args_copy);
 
-    if (!label->dynamic) {
-        label->text = sgl_malloc(strlen(text) + 1);
-        if (label->text == NULL) {
-            SGL_LOG_ERROR("sgl_label_set_text_fmt: malloc failed");
+    if (len < 0) {
+        va_end(args);
+        SGL_LOG_ERROR("sgl_label_set_text_fmt: format failed");
+        return;
+    }
+
+    cap = ((size_t)len + 2) & ~(size_t)1;
+
+    if (label->text_capacity < cap) {
+        text = label->dynamic ? sgl_realloc(label->text, cap) : sgl_malloc(cap);
+        if (text == NULL) {
+            va_end(args);
+            SGL_LOG_ERROR("sgl_label_set_text_fmt: alloc failed");
             return;
         }
+
+        label->text = text;
         label->dynamic = 1;
+        label->text_capacity = cap;
     }
-    strcpy(label->text, text);
+
+    sgl_vsnprintf(label->text, label->text_capacity, fmt, args);
+    va_end(args);
+
     sgl_obj_set_dirty(obj);
 }
