@@ -48,13 +48,13 @@ typedef struct sgl_dropdown {
     sgl_obj_t             obj;
     sgl_draw_rect_t       body_desc;
     const sgl_font_t      *font;
-    sgl_color_t           text_color;
     sgl_dropdown_option_t *head;
+    sgl_dropdown_option_t *expend_start;
+    sgl_color_t           text_color;
     uint16_t              option_num;
     int16_t               selected;
     int16_t               option_h;
     int16_t               expand_h;
-    sgl_dropdown_option_t *expend_start;
     uint8_t               clicked;
     bool                  is_open;
 }sgl_dropdown_t;

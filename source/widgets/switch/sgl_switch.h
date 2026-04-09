@@ -43,15 +43,15 @@
  */
 typedef struct sgl_switch {
     sgl_obj_t         obj;
-    uint8_t           alpha;
-    bool              status;
-    uint8_t           knob_radius;
-    uint8_t           knob_margin;
     const sgl_pixmap_t *pixmap;
     sgl_color_t       border_color;
     sgl_color_t       color;
     sgl_color_t       bg_color;
     sgl_color_t       knob_color;
+    uint8_t           alpha;
+    bool              status;
+    uint8_t           knob_radius;
+    uint8_t           knob_margin;
 } sgl_switch_t;
 
 

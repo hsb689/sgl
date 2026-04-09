@@ -104,12 +104,12 @@ typedef struct sgl_barchart {
     sgl_barchart_option_bits_t option_bits; /**< packed chart flags, orientation and animation state */
     sgl_barchart_series_t *series;
     const char           **x_labels;
-    sgl_color_t            bg_color;
-    sgl_color_t            border_color;
-    uint32_t               open_anim_start_tick;
 #if (CONFIG_SGL_ANIMATION)
     sgl_anim_path_algo_t   open_anim_path;
 #endif
+    sgl_color_t            bg_color;
+    sgl_color_t            border_color;
+    uint32_t               open_anim_start_tick;
     int16_t                layout_left_margin;
     int16_t                layout_top_margin;
     int16_t                layout_right_margin;

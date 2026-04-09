@@ -41,10 +41,9 @@
  */
 typedef struct sgl_2dball {
     sgl_obj_t       obj;
-    uint8_t         alpha;
     sgl_color_t     color;
     sgl_color_t     bg_color;
-
+    uint8_t         alpha;
 }sgl_2dball_t;
 
 

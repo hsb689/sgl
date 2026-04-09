@@ -41,14 +41,14 @@
 typedef struct sgl_textbox {
     sgl_obj_t       obj;
     sgl_draw_rect_t bg;
+    sgl_draw_rect_t  scroll;
     const char       *text;
     const sgl_font_t *font;
-    uint8_t          line_margin;
     sgl_color_t      text_color;
     int32_t          y_offset;
-    sgl_draw_rect_t  scroll;
     uint32_t         text_height: 31;
     uint32_t         scroll_enable: 1;
+    uint8_t          line_margin;
 }sgl_textbox_t;
 
 

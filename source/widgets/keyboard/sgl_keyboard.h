@@ -46,11 +46,11 @@ typedef struct sgl_keyboard {
     const sgl_font_t *font;
     char             *edit;
     sgl_color_t      text_color;
+    uint32_t         edit_max_len;
     uint8_t          opcode;
     uint8_t          key_margin;
     int8_t           key_index;
     uint8_t          key_mode;
-    uint32_t         edit_max_len;
 } sgl_keyboard_t;
 
 

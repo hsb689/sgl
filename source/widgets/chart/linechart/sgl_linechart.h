@@ -198,12 +198,12 @@ typedef struct sgl_linechart {
     sgl_linechart_option_bits_t option_bits;   /**< packed plot/layout/animation flags */
     sgl_linechart_series_t *series;
     const char           **x_labels;       /**< Optional X axis labels, array of persistent strings */
-    sgl_color_t           bg_color;
-    sgl_color_t           border_color;
-    uint32_t              open_anim_start_tick;
 #if (CONFIG_SGL_ANIMATION)
     sgl_anim_path_algo_t  open_anim_path;
 #endif
+    sgl_color_t           bg_color;
+    sgl_color_t           border_color;
+    uint32_t              open_anim_start_tick;
     uint8_t               alpha;
     uint8_t               bg_alpha;
     uint8_t               series_count;

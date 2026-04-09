@@ -37,11 +37,11 @@
 typedef struct sgl_scroll {
     sgl_obj_t               obj;
     sgl_draw_rect_t         desc;
+    sgl_obj_t               *bind;
     uint8_t                 width;
     uint8_t                 value;
     uint8_t                 direct;
     uint8_t                 hidden;
-    sgl_obj_t               *bind;
 } sgl_scroll_t;
 
 

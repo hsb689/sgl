@@ -44,13 +44,13 @@
  */
 typedef struct sgl_line {
     sgl_obj_t     obj;
+    sgl_color_t   color;
+    uint16_t      dash_length;   /* solid segment length in pixels when dashed */
+    uint16_t      gap_length;    /* gap length in pixels when dashed */
     uint8_t       alpha;
     uint8_t       x_swap : 4;
     uint8_t       y_swap : 4;
-    sgl_color_t   color;
     uint8_t       dashed;        /* 0: solid line, non-zero: dashed line */
-    uint16_t      dash_length;   /* solid segment length in pixels when dashed */
-    uint16_t      gap_length;    /* gap length in pixels when dashed */
 }sgl_line_t;
 
 

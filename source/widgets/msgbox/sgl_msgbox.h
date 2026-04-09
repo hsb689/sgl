@@ -48,24 +48,22 @@ typedef struct sgl_msgbox {
     sgl_obj_t        obj;
     sgl_draw_rect_t  body_desc;
     const sgl_font_t *font;
-
     const char       *title_text;
     const char       *msg_text;
+    const char       *lbtn_text;
+    const char       *rbtn_text;
+    const char       **exit_btn;
     sgl_color_t      title_color;
     sgl_color_t      msg_color;
-    uint8_t          msg_line_margin;
-    uint8_t          status;
     sgl_color_t      lbtn_text_color;
     sgl_color_t      rbtn_text_color;
     sgl_color_t      lbtn_color;
     sgl_color_t      rbtn_color;
-    const char       *lbtn_text;
-    const char       *rbtn_text;
-
+    uint8_t          msg_line_margin;
+    uint8_t          status;
     uint8_t          title_height;
     uint8_t          text_y_offset;
     uint8_t          text_x_offset;
-    const char       **exit_btn;
 }sgl_msgbox_t;
 
 

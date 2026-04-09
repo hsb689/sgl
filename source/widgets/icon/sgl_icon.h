@@ -36,10 +36,10 @@
 
 typedef struct sgl_icon {
     sgl_obj_t               obj;
+    const sgl_icon_pixmap_t *icon;
+    sgl_color_t       color;
     uint8_t           alpha;
     uint8_t           align;
-    sgl_color_t       color;
-    const sgl_icon_pixmap_t *icon;
 } sgl_icon_t;
 
 
