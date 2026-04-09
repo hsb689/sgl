@@ -67,11 +67,10 @@ sgl_obj_t* sgl_piechart_create(sgl_obj_t *parent)
 
     /* default configuration */
     pie->alpha             = SGL_ALPHA_MAX;
-    pie->options           = 0;
-    SGL_PIECHART_SET(pie, SGL_PIECHART_FLAG_LEGEND_ENABLE, true);
-    SGL_PIECHART_SET(pie, SGL_PIECHART_FLAG_SMOOTH, false); /* 默认关闭平滑，需要时由用户调用 sgl_piechart_set_smooth 开启 */
-    SGL_PIECHART_SET(pie, SGL_PIECHART_FLAG_LEGEND_BG_ENABLE, false);
-    SGL_PIECHART_SET_LEGEND_DIR(pie, SGL_PIECHART_LEGEND_DIR_VERTICAL);
+    pie->option_bits.legend_enable = 1U;
+    pie->option_bits.smooth = 0U; /* 默认关闭平滑，需要时由用户调用 sgl_piechart_set_smooth 开启 */
+    pie->option_bits.legend_bg_enable = 0U;
+    pie->option_bits.legend_dir = 0U;
     pie->inner_radius_rate = 0;   /* full pie */
     pie->legend_box_size   = SGL_PIECHART_DEFAULT_BOX_SIZE;
     pie->legend_item_gap   = SGL_PIECHART_DEFAULT_GAP;
@@ -79,8 +78,7 @@ sgl_obj_t* sgl_piechart_create(sgl_obj_t *parent)
     pie->slice_count       = 0;
     pie->start_angle       = 0;
     pie->legend_area_size  = SGL_PIECHART_DEFAULT_LEGEND_SIZE;
-    pie->layout            = 0;
-    SGL_PIECHART_SET_LEGEND_POS(pie, SGL_PIECHART_LEGEND_POS_RIGHT);
+    pie->layout_bits.legend_pos = SGL_PIECHART_LEGEND_POS_RIGHT;
     pie->legend_font       = sgl_get_system_font();
     pie->legend_text_color = SGL_THEME_TEXT_COLOR;
     pie->legend_bg_color   = SGL_THEME_BG_COLOR;
@@ -239,7 +237,7 @@ static void sgl_piechart_recalc_total(sgl_piechart_t *pie)
  */
 static void sgl_piechart_draw_legend(sgl_surf_t *surf, sgl_obj_t *obj, sgl_piechart_t *pie, sgl_area_t *legend_rect)
 {
-    if (!SGL_PIECHART_HAS(pie, SGL_PIECHART_FLAG_LEGEND_ENABLE) || pie->slice_count == 0 || pie->legend_font == NULL || pie->legend_alpha == 0) {
+    if (!pie->option_bits.legend_enable || pie->slice_count == 0 || pie->legend_font == NULL || pie->legend_alpha == 0) {
         return;
     }
 
@@ -249,7 +247,7 @@ static void sgl_piechart_draw_legend(sgl_surf_t *surf, sgl_obj_t *obj, sgl_piech
     }
 
     /* draw legend background & border */
-    if (SGL_PIECHART_HAS(pie, SGL_PIECHART_FLAG_LEGEND_BG_ENABLE)) {
+    if (pie->option_bits.legend_bg_enable) {
         sgl_draw_fill_rect(surf, &obj->area, &clip, 0, pie->legend_bg_color, pie->legend_alpha);
         sgl_draw_wireframe(surf, &obj->area, &clip, 1, pie->legend_border_color, pie->legend_alpha);
     }
@@ -266,7 +264,7 @@ static void sgl_piechart_draw_legend(sgl_surf_t *surf, sgl_obj_t *obj, sgl_piech
         return;
     }
 
-    if (SGL_PIECHART_GET_LEGEND_DIR(pie) == SGL_PIECHART_LEGEND_DIR_VERTICAL) {
+    if (pie->option_bits.legend_dir == SGL_PIECHART_LEGEND_DIR_VERTICAL) {
         /* top to bottom layout */
         int16_t y = clip.y1 + padding;
 
@@ -372,12 +370,12 @@ static void sgl_piechart_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_even
         bool legend_has_area = false;
 
         /* split area into pie and legend */
-        if (SGL_PIECHART_HAS(pie, SGL_PIECHART_FLAG_LEGEND_ENABLE) && pie->slice_count > 0 && pie->legend_font != NULL && pie->legend_alpha > 0) {
+        if (pie->option_bits.legend_enable && pie->slice_count > 0 && pie->legend_font != NULL && pie->legend_alpha > 0) {
             int16_t width  = obj->coords.x2 - obj->coords.x1 + 1;
             int16_t height = obj->coords.y2 - obj->coords.y1 + 1;
             int16_t legend_size = pie->legend_area_size ? (int16_t)pie->legend_area_size : SGL_PIECHART_DEFAULT_LEGEND_SIZE;
 
-            switch (SGL_PIECHART_GET_LEGEND_POS(pie)) {
+            switch ((sgl_piechart_legend_pos_t)pie->layout_bits.legend_pos) {
             case SGL_PIECHART_LEGEND_POS_LEFT:
                 if (legend_size >= width) legend_size = width / 3;
                 legend_rect.x1 = obj->coords.x1;
@@ -465,11 +463,11 @@ static void sgl_piechart_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_even
                 bool anim_active = false;
                 int32_t reveal_end_angle = base_angle + 360;
 
-                if (SGL_PIECHART_HAS(pie, SGL_PIECHART_FLAG_OPEN_ANIM_ENABLE)) {
+                if (pie->option_bits.open_anim_enable) {
                     anim_active = true;
 
-                    if (!SGL_PIECHART_HAS(pie, SGL_PIECHART_FLAG_OPEN_ANIM_PLAYING)) {
-                        SGL_PIECHART_SET(pie, SGL_PIECHART_FLAG_OPEN_ANIM_PLAYING, true);
+                    if (!pie->option_bits.open_anim_playing) {
+                        pie->option_bits.open_anim_playing = 1U;
                         pie->open_anim_start_tick = sgl_tick_get();
                     }
 
@@ -478,8 +476,8 @@ static void sgl_piechart_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_even
 
                     if (elaps >= SGL_PIECHART_OPEN_ANIM_DURATION) {
                         /* animation finished: draw full pie from now on */
-                        SGL_PIECHART_SET(pie, SGL_PIECHART_FLAG_OPEN_ANIM_ENABLE, false);
-                        SGL_PIECHART_SET(pie, SGL_PIECHART_FLAG_OPEN_ANIM_PLAYING, false);
+                        pie->option_bits.open_anim_enable = 0U;
+                        pie->option_bits.open_anim_playing = 0U;
                         anim_active            = false;
                         reveal_end_angle       = base_angle + 360;
                     }
@@ -556,7 +554,7 @@ static void sgl_piechart_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_even
                         .radius_out = radius,
                         .start_angle = (uint32_t)(current_angle & 0x1FF),
                         .end_angle   = (uint32_t)(end_angle   & 0x1FF),
-                        .mode       = SGL_PIECHART_HAS(pie, SGL_PIECHART_FLAG_SMOOTH) ? SGL_ARC_MODE_NORMAL_SMOOTH : SGL_ARC_MODE_NORMAL,
+                        .mode       = pie->option_bits.smooth ? SGL_ARC_MODE_NORMAL_SMOOTH : SGL_ARC_MODE_NORMAL,
                         .bg_color   = SGL_THEME_BG_COLOR,
                     };
 

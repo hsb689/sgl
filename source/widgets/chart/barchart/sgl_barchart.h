@@ -51,50 +51,32 @@ typedef enum sgl_barchart_orientation {
     SGL_BARCHART_ORIENTATION_HORIZONTAL = 1,
 } sgl_barchart_orientation_t;
 
-#ifndef SGL_BITS_GET
-#define SGL_BITS_GET(value, mask) (((value) & (mask)) != 0U)
-#define SGL_BITS_SET(value, mask) ((value) |= (uint8_t)(mask))
-#define SGL_BITS_CLR(value, mask) ((value) &= (uint8_t)(~(mask)))
-#define SGL_BITS_SET_TO(value, mask, enable) do { if (enable) SGL_BITS_SET((value), (mask)); else SGL_BITS_CLR((value), (mask)); } while (0)
-#define SGL_BITS_FIELD_GET(value, mask, shift) (((value) & (mask)) >> (shift))
-#define SGL_BITS_FIELD_SET(value, mask, shift, field_value) \
-    ((value) = (uint8_t)(((value) & (uint8_t)(~(mask))) | ((((uint8_t)(field_value)) << (shift)) & (mask))))
-#endif
+typedef struct sgl_barchart_axis_bits {
+    uint8_t auto_scale  : 1;
+    uint8_t show_grid   : 1;
+    uint8_t grid_dashed : 1;
+    uint8_t show_labels : 1;
+    uint8_t show_ticks  : 1;
+    uint8_t reserved    : 3;
+} sgl_barchart_axis_bits_t;
 
-#define SGL_BARCHART_AXIS_FLAG_AUTO_SCALE    (1U << 0)
-#define SGL_BARCHART_AXIS_FLAG_SHOW_GRID     (1U << 1)
-#define SGL_BARCHART_AXIS_FLAG_GRID_DASHED   (1U << 2)
-#define SGL_BARCHART_AXIS_FLAG_SHOW_LABELS   (1U << 3)
-#define SGL_BARCHART_AXIS_FLAG_SHOW_TICKS    (1U << 4)
-
-#define SGL_BARCHART_FLAG_CUSTOM_PLOT_RECT   (1U << 0)
-#define SGL_BARCHART_FLAG_OPEN_ANIM_ENABLE   (1U << 1)
-#define SGL_BARCHART_FLAG_OPEN_ANIM_PLAYING  (1U << 2)
-#define SGL_BARCHART_FLAG_ORIENTATION        (1U << 3)
-#define SGL_BARCHART_OPEN_ANIM_DIR_SHIFT     4U
-#define SGL_BARCHART_OPEN_ANIM_DIR_MASK      (0x3U << SGL_BARCHART_OPEN_ANIM_DIR_SHIFT)
-
-#define SGL_BARCHART_AXIS_HAS(axis, flag) SGL_BITS_GET((axis)->flags, (flag))
-#define SGL_BARCHART_AXIS_SET(axis, flag, enable) SGL_BITS_SET_TO((axis)->flags, (flag), (enable))
-#define SGL_BARCHART_HAS(chart, flag) SGL_BITS_GET((chart)->options, (flag))
-#define SGL_BARCHART_SET(chart, flag, enable) SGL_BITS_SET_TO((chart)->options, (flag), (enable))
-#define SGL_BARCHART_GET_ORIENTATION(chart) \
-    (SGL_BARCHART_HAS((chart), SGL_BARCHART_FLAG_ORIENTATION) ? SGL_BARCHART_ORIENTATION_HORIZONTAL : SGL_BARCHART_ORIENTATION_VERTICAL)
-#define SGL_BARCHART_SET_ORIENTATION(chart, orientation) \
-    SGL_BARCHART_SET((chart), SGL_BARCHART_FLAG_ORIENTATION, (orientation) == SGL_BARCHART_ORIENTATION_HORIZONTAL)
-#define SGL_BARCHART_GET_OPEN_ANIM_DIR(chart) \
-    ((sgl_barchart_open_anim_dir_t)SGL_BITS_FIELD_GET((chart)->options, SGL_BARCHART_OPEN_ANIM_DIR_MASK, SGL_BARCHART_OPEN_ANIM_DIR_SHIFT))
-#define SGL_BARCHART_SET_OPEN_ANIM_DIR(chart, dir) \
-    SGL_BITS_FIELD_SET((chart)->options, SGL_BARCHART_OPEN_ANIM_DIR_MASK, SGL_BARCHART_OPEN_ANIM_DIR_SHIFT, (dir))
+typedef struct sgl_barchart_option_bits {
+    uint8_t custom_plot_rect  : 1;
+    uint8_t open_anim_enable  : 1;
+    uint8_t open_anim_playing : 1;
+    uint8_t orientation       : 1;
+    uint8_t open_anim_dir     : 2;
+    uint8_t reserved          : 2;
+} sgl_barchart_option_bits_t;
 
 typedef struct sgl_barchart_axis {
+    sgl_barchart_axis_bits_t flag_bits;  /**< packed axis flags */
+    const sgl_font_t *label_font;
     int32_t           min;
     int32_t           max;
     int32_t           step;
-    const sgl_font_t *label_font;
     sgl_color_t       grid_color;
     sgl_color_t       label_color;
-    uint8_t           flags;           /**< packed axis flags, see SGL_BARCHART_AXIS_FLAG_* */
     uint8_t           auto_divisions;
     uint8_t           grid_alpha;
     uint8_t           label_alpha;
@@ -116,29 +98,29 @@ typedef struct sgl_barchart_series {
  */
 typedef struct sgl_barchart {
     sgl_obj_t              obj;
-    uint8_t                alpha;
-    sgl_color_t            bg_color;
-    uint8_t                bg_alpha;
-    sgl_color_t            border_color;
     sgl_barchart_axis_t    x_axis;
     sgl_barchart_axis_t    y_axis;
-    uint8_t                series_count;
+    sgl_area_t             plot_rel_rect;
+    sgl_barchart_option_bits_t option_bits; /**< packed chart flags, orientation and animation state */
     sgl_barchart_series_t *series;
     const char           **x_labels;
-    uint8_t                x_label_count;
-    sgl_area_t             plot_rel_rect;
-    int16_t                layout_left_margin;
-    int16_t                layout_top_margin;
-    int16_t                layout_right_margin;
-    int16_t                layout_bottom_margin;
-    uint8_t                bar_gap;
-    uint8_t                category_gap;
-    uint8_t                options; /**< packed chart flags, orientation and animation state */
-    uint16_t               open_anim_duration;
+    sgl_color_t            bg_color;
+    sgl_color_t            border_color;
     uint32_t               open_anim_start_tick;
 #if (CONFIG_SGL_ANIMATION)
     sgl_anim_path_algo_t   open_anim_path;
 #endif
+    int16_t                layout_left_margin;
+    int16_t                layout_top_margin;
+    int16_t                layout_right_margin;
+    int16_t                layout_bottom_margin;
+    uint16_t               open_anim_duration;
+    uint8_t                alpha;
+    uint8_t                bg_alpha;
+    uint8_t                series_count;
+    uint8_t                x_label_count;
+    uint8_t                bar_gap;
+    uint8_t                category_gap;
 } sgl_barchart_t;
 
 /**
@@ -207,7 +189,7 @@ static inline void sgl_barchart_set_axis_range(sgl_obj_t *obj, sgl_barchart_axis
     sgl_barchart_axis_t *a = sgl_barchart_get_axis(chart, axis);
     a->min = min;
     a->max = max;
-    SGL_BARCHART_AXIS_SET(a, SGL_BARCHART_AXIS_FLAG_AUTO_SCALE, false);
+    a->flag_bits.auto_scale = 0U;
     sgl_obj_set_dirty(obj);
 }
 
@@ -218,7 +200,7 @@ static inline void sgl_barchart_enable_axis_auto_scale(sgl_obj_t *obj, sgl_barch
 {
     SGL_ASSERT(obj != NULL);
     sgl_barchart_t *chart = sgl_container_of(obj, sgl_barchart_t, obj);
-    SGL_BARCHART_AXIS_SET(sgl_barchart_get_axis(chart, axis), SGL_BARCHART_AXIS_FLAG_AUTO_SCALE, enable);
+    sgl_barchart_get_axis(chart, axis)->flag_bits.auto_scale = enable ? 1U : 0U;
     sgl_obj_set_dirty(obj);
 }
 
@@ -251,7 +233,7 @@ static inline void sgl_barchart_enable_axis_grid(sgl_obj_t *obj, sgl_barchart_ax
 {
     SGL_ASSERT(obj != NULL);
     sgl_barchart_t *chart = sgl_container_of(obj, sgl_barchart_t, obj);
-    SGL_BARCHART_AXIS_SET(sgl_barchart_get_axis(chart, axis), SGL_BARCHART_AXIS_FLAG_SHOW_GRID, enable);
+    sgl_barchart_get_axis(chart, axis)->flag_bits.show_grid = enable ? 1U : 0U;
     sgl_obj_set_dirty(obj);
 }
 
@@ -263,7 +245,7 @@ static inline void sgl_barchart_set_axis_grid_style(sgl_obj_t *obj, sgl_barchart
 {
     SGL_ASSERT(obj != NULL);
     sgl_barchart_t *chart = sgl_container_of(obj, sgl_barchart_t, obj);
-    SGL_BARCHART_AXIS_SET(sgl_barchart_get_axis(chart, axis), SGL_BARCHART_AXIS_FLAG_GRID_DASHED, dashed != 0U);
+    sgl_barchart_get_axis(chart, axis)->flag_bits.grid_dashed = (dashed != 0U) ? 1U : 0U;
     sgl_obj_set_dirty(obj);
 }
 
@@ -288,7 +270,7 @@ static inline void sgl_barchart_enable_axis_labels(sgl_obj_t *obj, sgl_barchart_
 {
     SGL_ASSERT(obj != NULL);
     sgl_barchart_t *chart = sgl_container_of(obj, sgl_barchart_t, obj);
-    SGL_BARCHART_AXIS_SET(sgl_barchart_get_axis(chart, axis), SGL_BARCHART_AXIS_FLAG_SHOW_LABELS, enable);
+    sgl_barchart_get_axis(chart, axis)->flag_bits.show_labels = enable ? 1U : 0U;
     sgl_obj_set_dirty(obj);
 }
 
@@ -325,7 +307,7 @@ static inline void sgl_barchart_enable_axis_ticks(sgl_obj_t *obj, sgl_barchart_a
 {
     SGL_ASSERT(obj != NULL);
     sgl_barchart_t *chart = sgl_container_of(obj, sgl_barchart_t, obj);
-    SGL_BARCHART_AXIS_SET(sgl_barchart_get_axis(chart, axis), SGL_BARCHART_AXIS_FLAG_SHOW_TICKS, enable);
+    sgl_barchart_get_axis(chart, axis)->flag_bits.show_ticks = enable ? 1U : 0U;
     sgl_obj_set_dirty(obj);
 }
 
@@ -388,7 +370,7 @@ static inline void sgl_barchart_set_plot_area_rel(sgl_obj_t *obj,
     SGL_ASSERT(obj != NULL);
     sgl_barchart_t *chart = sgl_container_of(obj, sgl_barchart_t, obj);
     if (width <= 0 || height <= 0) {
-        SGL_BARCHART_SET(chart, SGL_BARCHART_FLAG_CUSTOM_PLOT_RECT, false);
+        chart->option_bits.custom_plot_rect = 0U;
         sgl_obj_set_dirty(obj);
         return;
     }
@@ -396,7 +378,7 @@ static inline void sgl_barchart_set_plot_area_rel(sgl_obj_t *obj,
     chart->plot_rel_rect.y1 = offset_top;
     chart->plot_rel_rect.x2 = (int16_t)(offset_left + width - 1);
     chart->plot_rel_rect.y2 = (int16_t)(offset_top + height - 1);
-    SGL_BARCHART_SET(chart, SGL_BARCHART_FLAG_CUSTOM_PLOT_RECT, true);
+    chart->option_bits.custom_plot_rect = 1U;
     sgl_obj_set_dirty(obj);
 }
 
@@ -406,7 +388,7 @@ static inline void sgl_barchart_set_plot_area_rel(sgl_obj_t *obj,
 static inline void sgl_barchart_reset_plot_area(sgl_obj_t *obj)
 {
     SGL_ASSERT(obj != NULL);
-    SGL_BARCHART_SET(sgl_container_of(obj, sgl_barchart_t, obj), SGL_BARCHART_FLAG_CUSTOM_PLOT_RECT, false);
+    sgl_container_of(obj, sgl_barchart_t, obj)->option_bits.custom_plot_rect = 0U;
     sgl_obj_set_dirty(obj);
 }
 
@@ -425,7 +407,7 @@ static inline void sgl_barchart_set_layout_padding(sgl_obj_t *obj,
     chart->layout_top_margin = top;
     chart->layout_right_margin = right;
     chart->layout_bottom_margin = bottom;
-    SGL_BARCHART_SET(chart, SGL_BARCHART_FLAG_CUSTOM_PLOT_RECT, false);
+    chart->option_bits.custom_plot_rect = 0U;
     sgl_obj_set_dirty(obj);
 }
 
@@ -485,7 +467,7 @@ static inline void sgl_barchart_set_orientation(sgl_obj_t *obj, sgl_barchart_ori
 {
     SGL_ASSERT(obj != NULL);
     sgl_barchart_t *chart = sgl_container_of(obj, sgl_barchart_t, obj);
-    SGL_BARCHART_SET_ORIENTATION(chart, orientation);
+    chart->option_bits.orientation = (orientation == SGL_BARCHART_ORIENTATION_HORIZONTAL) ? 1U : 0U;
     sgl_obj_set_dirty(obj);
 }
 
@@ -496,8 +478,8 @@ static inline void sgl_barchart_enable_open_anim(sgl_obj_t *obj, bool enable)
 {
     SGL_ASSERT(obj != NULL);
     sgl_barchart_t *chart = sgl_container_of(obj, sgl_barchart_t, obj);
-    SGL_BARCHART_SET(chart, SGL_BARCHART_FLAG_OPEN_ANIM_ENABLE, enable);
-    SGL_BARCHART_SET(chart, SGL_BARCHART_FLAG_OPEN_ANIM_PLAYING, false);
+    chart->option_bits.open_anim_enable = enable ? 1U : 0U;
+    chart->option_bits.open_anim_playing = 0U;
     sgl_obj_set_dirty(obj);
 }
 
@@ -507,7 +489,7 @@ static inline void sgl_barchart_enable_open_anim(sgl_obj_t *obj, bool enable)
 static inline void sgl_barchart_set_open_anim_dir(sgl_obj_t *obj, sgl_barchart_open_anim_dir_t dir)
 {
     SGL_ASSERT(obj != NULL);
-    SGL_BARCHART_SET_OPEN_ANIM_DIR(sgl_container_of(obj, sgl_barchart_t, obj), dir);
+    sgl_container_of(obj, sgl_barchart_t, obj)->option_bits.open_anim_dir = (uint8_t)dir;
     sgl_obj_set_dirty(obj);
 }
 

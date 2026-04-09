@@ -98,11 +98,10 @@ sgl_obj_t* sgl_linechart_create(sgl_obj_t *parent)
     chart->x_axis.min           = 0;
     chart->x_axis.max           = 100;
     chart->x_axis.step          = 0;
-    chart->x_axis.flags         = 0;
-    SGL_LINECHART_AXIS_SET(&chart->x_axis, SGL_LINECHART_AXIS_FLAG_AUTO_SCALE, true);
-    SGL_LINECHART_AXIS_SET(&chart->x_axis, SGL_LINECHART_AXIS_FLAG_SHOW_GRID, true);
-    SGL_LINECHART_AXIS_SET(&chart->x_axis, SGL_LINECHART_AXIS_FLAG_GRID_DASHED, true);
-    SGL_LINECHART_AXIS_SET(&chart->x_axis, SGL_LINECHART_AXIS_FLAG_SHOW_LABELS, true);
+    chart->x_axis.flag_bits.auto_scale = 1U;
+    chart->x_axis.flag_bits.show_grid = 1U;
+    chart->x_axis.flag_bits.grid_dashed = 1U;
+    chart->x_axis.flag_bits.show_labels = 1U;
     chart->x_axis.auto_divisions= SGL_LINECHART_DEFAULT_DIVISIONS;
     chart->x_axis.grid_color    = sgl_rgb(60, 60, 60);
     chart->x_axis.grid_alpha    = 80;
@@ -114,11 +113,10 @@ sgl_obj_t* sgl_linechart_create(sgl_obj_t *parent)
     chart->y_axis.min           = 0;
     chart->y_axis.max           = 100;
     chart->y_axis.step          = 0;
-    chart->y_axis.flags         = 0;
-    SGL_LINECHART_AXIS_SET(&chart->y_axis, SGL_LINECHART_AXIS_FLAG_AUTO_SCALE, true);
-    SGL_LINECHART_AXIS_SET(&chart->y_axis, SGL_LINECHART_AXIS_FLAG_SHOW_GRID, true);
-    SGL_LINECHART_AXIS_SET(&chart->y_axis, SGL_LINECHART_AXIS_FLAG_GRID_DASHED, true);
-    SGL_LINECHART_AXIS_SET(&chart->y_axis, SGL_LINECHART_AXIS_FLAG_SHOW_LABELS, true);
+    chart->y_axis.flag_bits.auto_scale = 1U;
+    chart->y_axis.flag_bits.show_grid = 1U;
+    chart->y_axis.flag_bits.grid_dashed = 1U;
+    chart->y_axis.flag_bits.show_labels = 1U;
     chart->y_axis.auto_divisions= SGL_LINECHART_DEFAULT_DIVISIONS;
     chart->y_axis.grid_color    = sgl_rgb(60, 60, 60);
     chart->y_axis.grid_alpha    = 80;
@@ -131,10 +129,9 @@ sgl_obj_t* sgl_linechart_create(sgl_obj_t *parent)
     chart->x_labels             = NULL;
     chart->x_label_count        = 0;
  
-    chart->options              = 0;
-    SGL_LINECHART_SET(chart, SGL_LINECHART_FLAG_OPEN_ANIM_ENABLE, false);
-    SGL_LINECHART_SET(chart, SGL_LINECHART_FLAG_OPEN_ANIM_PLAYING, false);
-    SGL_LINECHART_SET_OPEN_ANIM_DIR(chart, SGL_LINECHART_OPEN_ANIM_FROM_LEFT);
+    chart->option_bits.open_anim_enable = 0U;
+    chart->option_bits.open_anim_playing = 0U;
+    chart->option_bits.open_anim_dir = SGL_LINECHART_OPEN_ANIM_FROM_LEFT;
     chart->open_anim_start_tick = 0;
 #if (CONFIG_SGL_ANIMATION)
     chart->open_anim_path       = NULL;
@@ -173,11 +170,10 @@ void sgl_linechart_set_series_count(sgl_obj_t *obj, uint8_t count)
     memset(series, 0, sizeof(sgl_linechart_series_t) * count);
 
     for (uint8_t i = 0; i < count; i++) {
-        series[i].style        = 0;
-        SGL_LINECHART_SERIES_SET(&series[i], SGL_LINECHART_SERIES_FLAG_SHOW_LINE, true);
-        SGL_LINECHART_SERIES_SET(&series[i], SGL_LINECHART_SERIES_FLAG_SHOW_POINTS, true);
-        SGL_LINECHART_SERIES_SET(&series[i], SGL_LINECHART_SERIES_FLAG_FILL_UNDER, false);
-        SGL_LINECHART_SERIES_SET_POINT_SHAPE(&series[i], SGL_LINECHART_POINT_SHAPE_CIRCLE);
+        series[i].style_bits.show_line = 1U;
+        series[i].style_bits.show_points = 1U;
+        series[i].style_bits.fill_under = 0U;
+        series[i].style_bits.point_shape = SGL_LINECHART_POINT_SHAPE_CIRCLE;
         series[i].line_width   = 2;
         series[i].point_radius = 3;
         series[i].line_color   = SGL_THEME_COLOR;
@@ -535,18 +531,18 @@ static void sgl_linechart_update_axis_auto(sgl_linechart_t *chart)
 
     if (data_min_x == INT32_MAX || data_min_y == INT32_MAX) {
         /* No data, keep previous or set default ranges */
-        if (SGL_LINECHART_AXIS_HAS(&chart->x_axis, SGL_LINECHART_AXIS_FLAG_AUTO_SCALE)) {
+        if (chart->x_axis.flag_bits.auto_scale) {
             chart->x_axis.min = 0;
             chart->x_axis.max = 10;
         }
-        if (SGL_LINECHART_AXIS_HAS(&chart->y_axis, SGL_LINECHART_AXIS_FLAG_AUTO_SCALE)) {
+        if (chart->y_axis.flag_bits.auto_scale) {
             chart->y_axis.min = 0;
             chart->y_axis.max = 10;
         }
         return;
     }
 
-    if (SGL_LINECHART_AXIS_HAS(&chart->x_axis, SGL_LINECHART_AXIS_FLAG_AUTO_SCALE)) {
+    if (chart->x_axis.flag_bits.auto_scale) {
         if (data_min_x == data_max_x) {
             chart->x_axis.min = data_min_x - 1;
             chart->x_axis.max = data_max_x + 1;
@@ -560,7 +556,7 @@ static void sgl_linechart_update_axis_auto(sgl_linechart_t *chart)
         }
     }
 
-    if (SGL_LINECHART_AXIS_HAS(&chart->y_axis, SGL_LINECHART_AXIS_FLAG_AUTO_SCALE)) {
+    if (chart->y_axis.flag_bits.auto_scale) {
         if (data_min_y == data_max_y) {
             chart->y_axis.min = data_min_y - 1;
             chart->y_axis.max = data_max_y + 1;
@@ -601,8 +597,7 @@ static void sgl_linechart_draw_grid_and_labels(sgl_surf_t *surf, sgl_obj_t *obj,
     uint8_t base_alpha = chart->alpha ? chart->alpha : SGL_ALPHA_MAX;
 
     /* Y axis: horizontal grid and labels (left side) */
-    if (SGL_LINECHART_AXIS_HAS(&chart->y_axis, SGL_LINECHART_AXIS_FLAG_SHOW_GRID) ||
-        (SGL_LINECHART_AXIS_HAS(&chart->y_axis, SGL_LINECHART_AXIS_FLAG_SHOW_LABELS) && y_font)) {
+    if (chart->y_axis.flag_bits.show_grid || (chart->y_axis.flag_bits.show_labels && y_font)) {
         int32_t step = sgl_linechart_get_effective_step(&chart->y_axis);
         int32_t v = chart->y_axis.min;
         uint8_t tick_idx = 0;
@@ -640,8 +635,8 @@ static void sgl_linechart_draw_grid_and_labels(sgl_surf_t *surf, sgl_obj_t *obj,
         while (tick_idx < SGL_LINECHART_MAX_AUTO_TICKS && v <= chart->y_axis.max) {
             int16_t y = plot_rect->y2 - (int32_t)(v - chart->y_axis.min) * plot_h / y_range;
 
-            if (SGL_LINECHART_AXIS_HAS(&chart->y_axis, SGL_LINECHART_AXIS_FLAG_SHOW_GRID) && grid_alpha) {
-                if (SGL_LINECHART_AXIS_HAS(&chart->y_axis, SGL_LINECHART_AXIS_FLAG_GRID_DASHED)) {
+            if (chart->y_axis.flag_bits.show_grid && grid_alpha) {
+                if (chart->y_axis.flag_bits.grid_dashed) {
                     sgl_linechart_draw_dashed_line(surf, &grid_area,
                                                    plot_rect->x1, y,
                                                    plot_rect->x2, y,
@@ -655,7 +650,7 @@ static void sgl_linechart_draw_grid_and_labels(sgl_surf_t *surf, sgl_obj_t *obj,
                 }
             }
 
-            if (SGL_LINECHART_AXIS_HAS(&chart->y_axis, SGL_LINECHART_AXIS_FLAG_SHOW_LABELS) && y_font && label_alpha && y_label_area.x2 > y_label_area.x1) {
+            if (chart->y_axis.flag_bits.show_labels && y_font && label_alpha && y_label_area.x2 > y_label_area.x1) {
                 sgl_linechart_format_value(buf, sizeof(buf), v);
 
                 int16_t text_y = y - (int16_t)y_font->font_height / 2;
@@ -675,7 +670,7 @@ static void sgl_linechart_draw_grid_and_labels(sgl_surf_t *surf, sgl_obj_t *obj,
                                 y_font);
             }
 
-            if (SGL_LINECHART_AXIS_HAS(&chart->y_axis, SGL_LINECHART_AXIS_FLAG_SHOW_TICKS) && grid_alpha && y_tick_area.x2 >= y_tick_area.x1) {
+            if (chart->y_axis.flag_bits.show_ticks && grid_alpha && y_tick_area.x2 >= y_tick_area.x1) {
                 sgl_draw_fill_hline(surf, &y_tick_area, y,
                                     (int16_t)(plot_rect->x1 - SGL_LINECHART_TICK_LEN),
                                     (int16_t)(plot_rect->x1 - 1),
@@ -688,8 +683,7 @@ static void sgl_linechart_draw_grid_and_labels(sgl_surf_t *surf, sgl_obj_t *obj,
     }
 
     /* X axis: vertical grid and labels (bottom side) */
-    if (SGL_LINECHART_AXIS_HAS(&chart->x_axis, SGL_LINECHART_AXIS_FLAG_SHOW_GRID) ||
-        (SGL_LINECHART_AXIS_HAS(&chart->x_axis, SGL_LINECHART_AXIS_FLAG_SHOW_LABELS) && x_font)) {
+    if (chart->x_axis.flag_bits.show_grid || (chart->x_axis.flag_bits.show_labels && x_font)) {
         int32_t step = sgl_linechart_get_effective_step(&chart->x_axis);
         int32_t v = chart->x_axis.min;
         uint8_t tick_idx = 0;
@@ -727,8 +721,8 @@ static void sgl_linechart_draw_grid_and_labels(sgl_surf_t *surf, sgl_obj_t *obj,
         while (tick_idx < SGL_LINECHART_MAX_AUTO_TICKS && v <= chart->x_axis.max) {
             int16_t x = plot_rect->x1 + (int32_t)(v - chart->x_axis.min) * plot_w / x_range;
 
-            if (SGL_LINECHART_AXIS_HAS(&chart->x_axis, SGL_LINECHART_AXIS_FLAG_SHOW_GRID) && grid_alpha) {
-                if (SGL_LINECHART_AXIS_HAS(&chart->x_axis, SGL_LINECHART_AXIS_FLAG_GRID_DASHED)) {
+            if (chart->x_axis.flag_bits.show_grid && grid_alpha) {
+                if (chart->x_axis.flag_bits.grid_dashed) {
                     sgl_linechart_draw_dashed_line(surf, &grid_area,
                                                    x, plot_rect->y1,
                                                    x, plot_rect->y2,
@@ -742,7 +736,7 @@ static void sgl_linechart_draw_grid_and_labels(sgl_surf_t *surf, sgl_obj_t *obj,
                 }
             }
 
-            if (SGL_LINECHART_AXIS_HAS(&chart->x_axis, SGL_LINECHART_AXIS_FLAG_SHOW_LABELS) && x_font && label_alpha && x_label_area.y2 > x_label_area.y1) {
+            if (chart->x_axis.flag_bits.show_labels && x_font && label_alpha && x_label_area.y2 > x_label_area.y1) {
                 const char *label_str = NULL;
  
                 if (chart->x_labels && tick_idx < chart->x_label_count && chart->x_labels[tick_idx]) {
@@ -779,7 +773,7 @@ static void sgl_linechart_draw_grid_and_labels(sgl_surf_t *surf, sgl_obj_t *obj,
                                 x_font);
             }
 
-            if (SGL_LINECHART_AXIS_HAS(&chart->x_axis, SGL_LINECHART_AXIS_FLAG_SHOW_TICKS) && grid_alpha && x_tick_area.y2 >= x_tick_area.y1) {
+            if (chart->x_axis.flag_bits.show_ticks && grid_alpha && x_tick_area.y2 >= x_tick_area.y1) {
                 sgl_draw_fill_vline(surf, &x_tick_area, x,
                                     (int16_t)(plot_rect->y2 + 1),
                                     (int16_t)(plot_rect->y2 + SGL_LINECHART_TICK_LEN),
@@ -819,7 +813,7 @@ static void sgl_linechart_draw_series(sgl_surf_t *surf, sgl_obj_t *obj,
     int16_t pad_x = 0;
     for (uint8_t si = 0; si < chart->series_count; si++) {
         sgl_linechart_series_t *s = &chart->series[si];
-        if (SGL_LINECHART_SERIES_HAS(s, SGL_LINECHART_SERIES_FLAG_SHOW_POINTS) && s->point_radius > pad_x) {
+        if (s->style_bits.show_points && s->point_radius > pad_x) {
             pad_x = s->point_radius;
         }
     }
@@ -865,7 +859,7 @@ static void sgl_linechart_draw_series(sgl_surf_t *surf, sgl_obj_t *obj,
             int16_t y = plot_rect->y2 - (int32_t)(vy - chart->y_axis.min) * plot_h / y_range;
  
             if (prev_valid) {
-                if (SGL_LINECHART_SERIES_HAS(s, SGL_LINECHART_SERIES_FLAG_FILL_UNDER) && fill_alpha) {
+                if (s->style_bits.fill_under && fill_alpha) {
                     sgl_linechart_fill_segment_under(surf, plot_clip,
                                                      prev_x, prev_y,
                                                      x, y,
@@ -874,7 +868,7 @@ static void sgl_linechart_draw_series(sgl_surf_t *surf, sgl_obj_t *obj,
                                                      fill_alpha);
                 }
  
-                if (SGL_LINECHART_SERIES_HAS(s, SGL_LINECHART_SERIES_FLAG_SHOW_LINE)) {
+                if (s->style_bits.show_line) {
                     sgl_linechart_draw_segment_line(surf, plot_clip,
                                                     prev_x, prev_y,
                                                     x, y,
@@ -884,10 +878,10 @@ static void sgl_linechart_draw_series(sgl_surf_t *surf, sgl_obj_t *obj,
                 }
             }
  
-            if (SGL_LINECHART_SERIES_HAS(s, SGL_LINECHART_SERIES_FLAG_SHOW_POINTS)) {
+            if (s->style_bits.show_points) {
                 sgl_linechart_draw_point_marker(surf, plot_clip,
                                                 x, y,
-                                                SGL_LINECHART_SERIES_GET_POINT_SHAPE(s),
+                                                (sgl_linechart_point_shape_t)s->style_bits.point_shape,
                                                 s->point_radius,
                                                 s->line_color,
                                                 eff_line_alpha);
@@ -942,7 +936,7 @@ static void sgl_linechart_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_eve
  
     sgl_area_t plot_rect;
  
-    if (SGL_LINECHART_HAS(chart, SGL_LINECHART_FLAG_CUSTOM_PLOT_RECT)) {
+    if (chart->option_bits.custom_plot_rect) {
         /* User-defined plot area (relative to widget top-left) */
         plot_rect.x1 = (int16_t)(full_rect.x1 + chart->plot_rel_rect.x1);
         plot_rect.y1 = (int16_t)(full_rect.y1 + chart->plot_rel_rect.y1);
@@ -961,10 +955,10 @@ static void sgl_linechart_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_eve
         int16_t bottom_margin = 4;
         int16_t left_margin   = 4;
  
-        if (SGL_LINECHART_AXIS_HAS(&chart->x_axis, SGL_LINECHART_AXIS_FLAG_SHOW_LABELS) && x_font) {
+        if (chart->x_axis.flag_bits.show_labels && x_font) {
             bottom_margin += (int16_t)x_font->font_height + 4;
         }
-        if (SGL_LINECHART_AXIS_HAS(&chart->y_axis, SGL_LINECHART_AXIS_FLAG_SHOW_LABELS) && y_font) {
+        if (chart->y_axis.flag_bits.show_labels && y_font) {
             left_margin += 40; /* fixed width area for Y labels */
         }
  
@@ -984,11 +978,11 @@ static void sgl_linechart_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_eve
     /* Handle open animation (clip visible plot area) */
     sgl_area_t plot_clip = plot_rect;
 
-    if (SGL_LINECHART_HAS(chart, SGL_LINECHART_FLAG_OPEN_ANIM_ENABLE)) {
+    if (chart->option_bits.open_anim_enable) {
         bool anim_active = true;
 
-        if (!SGL_LINECHART_HAS(chart, SGL_LINECHART_FLAG_OPEN_ANIM_PLAYING)) {
-            SGL_LINECHART_SET(chart, SGL_LINECHART_FLAG_OPEN_ANIM_PLAYING, true);
+        if (!chart->option_bits.open_anim_playing) {
+            chart->option_bits.open_anim_playing = 1U;
             chart->open_anim_start_tick = sgl_tick_get();
         }
 
@@ -996,8 +990,8 @@ static void sgl_linechart_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_eve
         uint32_t elaps = now - chart->open_anim_start_tick;
 
         if (elaps >= SGL_LINECHART_OPEN_ANIM_DURATION) {
-            SGL_LINECHART_SET(chart, SGL_LINECHART_FLAG_OPEN_ANIM_ENABLE, false);
-            SGL_LINECHART_SET(chart, SGL_LINECHART_FLAG_OPEN_ANIM_PLAYING, false);
+            chart->option_bits.open_anim_enable = 0U;
+            chart->option_bits.open_anim_playing = 0U;
             anim_active              = false;
         }
         else {
@@ -1018,7 +1012,7 @@ static void sgl_linechart_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_eve
             int16_t w = plot_rect.x2 - plot_rect.x1 + 1;
             int16_t h = plot_rect.y2 - plot_rect.y1 + 1;
 
-            if (SGL_LINECHART_GET_OPEN_ANIM_DIR(chart) == SGL_LINECHART_OPEN_ANIM_FROM_LEFT) {
+            if (chart->option_bits.open_anim_dir == SGL_LINECHART_OPEN_ANIM_FROM_LEFT) {
                 int16_t visible_w = (int16_t)((int32_t)w * extent / 1000);
                 if (visible_w <= 0) {
                     /* nothing visible yet, but keep requesting next frame so animation can progress */
@@ -1029,7 +1023,7 @@ static void sgl_linechart_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_eve
                 }
                 plot_clip.x2 = (int16_t)(plot_rect.x1 + visible_w - 1);
             }
-            else if (SGL_LINECHART_GET_OPEN_ANIM_DIR(chart) == SGL_LINECHART_OPEN_ANIM_FROM_TOP) {
+            else if (chart->option_bits.open_anim_dir == SGL_LINECHART_OPEN_ANIM_FROM_TOP) {
                 int16_t visible_h = (int16_t)((int32_t)h * extent / 1000);
                 if (visible_h <= 0) {
                     /* nothing visible yet, but keep requesting next frame so animation can progress */

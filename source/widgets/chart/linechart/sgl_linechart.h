@@ -86,49 +86,30 @@ typedef enum sgl_linechart_open_anim_dir {
     SGL_LINECHART_OPEN_ANIM_FROM_TOP  = 2, /**< Reveal from top to bottom */
 } sgl_linechart_open_anim_dir_t;
 
-#ifndef SGL_BITS_GET
-#define SGL_BITS_GET(value, mask) (((value) & (mask)) != 0U)
-#define SGL_BITS_SET(value, mask) ((value) |= (uint8_t)(mask))
-#define SGL_BITS_CLR(value, mask) ((value) &= (uint8_t)(~(mask)))
-#define SGL_BITS_SET_TO(value, mask, enable) do { if (enable) SGL_BITS_SET((value), (mask)); else SGL_BITS_CLR((value), (mask)); } while (0)
-#define SGL_BITS_FIELD_GET(value, mask, shift) (((value) & (mask)) >> (shift))
-#define SGL_BITS_FIELD_SET(value, mask, shift, field_value) \
-    ((value) = (uint8_t)(((value) & (uint8_t)(~(mask))) | ((((uint8_t)(field_value)) << (shift)) & (mask))))
-#endif
+typedef struct sgl_linechart_axis_bits {
+    uint8_t auto_scale  : 1;
+    uint8_t show_grid   : 1;
+    uint8_t grid_dashed : 1;
+    uint8_t show_labels : 1;
+    uint8_t show_ticks  : 1;
+    uint8_t reserved    : 3;
+} sgl_linechart_axis_bits_t;
 
-#define SGL_LINECHART_AXIS_FLAG_AUTO_SCALE    (1U << 0)
-#define SGL_LINECHART_AXIS_FLAG_SHOW_GRID     (1U << 1)
-#define SGL_LINECHART_AXIS_FLAG_GRID_DASHED   (1U << 2)
-#define SGL_LINECHART_AXIS_FLAG_SHOW_LABELS   (1U << 3)
-#define SGL_LINECHART_AXIS_FLAG_SHOW_TICKS    (1U << 4)
+typedef struct sgl_linechart_series_bits {
+    uint8_t show_line   : 1;
+    uint8_t show_points : 1;
+    uint8_t fill_under  : 1;
+    uint8_t point_shape : 2;
+    uint8_t reserved    : 3;
+} sgl_linechart_series_bits_t;
 
-#define SGL_LINECHART_SERIES_FLAG_SHOW_LINE   (1U << 0)
-#define SGL_LINECHART_SERIES_FLAG_SHOW_POINTS (1U << 1)
-#define SGL_LINECHART_SERIES_FLAG_FILL_UNDER  (1U << 2)
-#define SGL_LINECHART_SERIES_POINT_SHAPE_SHIFT 3U
-#define SGL_LINECHART_SERIES_POINT_SHAPE_MASK  (0x3U << SGL_LINECHART_SERIES_POINT_SHAPE_SHIFT)
-
-#define SGL_LINECHART_FLAG_CUSTOM_PLOT_RECT   (1U << 0)
-#define SGL_LINECHART_FLAG_OPEN_ANIM_ENABLE   (1U << 1)
-#define SGL_LINECHART_FLAG_OPEN_ANIM_PLAYING  (1U << 2)
-#define SGL_LINECHART_OPEN_ANIM_DIR_SHIFT     3U
-#define SGL_LINECHART_OPEN_ANIM_DIR_MASK      (0x3U << SGL_LINECHART_OPEN_ANIM_DIR_SHIFT)
-
-#define SGL_LINECHART_AXIS_HAS(axis, flag) SGL_BITS_GET((axis)->flags, (flag))
-#define SGL_LINECHART_AXIS_SET(axis, flag, enable) SGL_BITS_SET_TO((axis)->flags, (flag), (enable))
-#define SGL_LINECHART_SERIES_HAS(series, flag) SGL_BITS_GET((series)->style, (flag))
-#define SGL_LINECHART_SERIES_SET(series, flag, enable) SGL_BITS_SET_TO((series)->style, (flag), (enable))
-#define SGL_LINECHART_SERIES_GET_POINT_SHAPE(series) \
-    ((sgl_linechart_point_shape_t)SGL_BITS_FIELD_GET((series)->style, SGL_LINECHART_SERIES_POINT_SHAPE_MASK, SGL_LINECHART_SERIES_POINT_SHAPE_SHIFT))
-#define SGL_LINECHART_SERIES_SET_POINT_SHAPE(series, shape) \
-    SGL_BITS_FIELD_SET((series)->style, SGL_LINECHART_SERIES_POINT_SHAPE_MASK, SGL_LINECHART_SERIES_POINT_SHAPE_SHIFT, (shape))
-#define SGL_LINECHART_HAS(chart, flag) SGL_BITS_GET((chart)->options, (flag))
-#define SGL_LINECHART_SET(chart, flag, enable) SGL_BITS_SET_TO((chart)->options, (flag), (enable))
-#define SGL_LINECHART_GET_OPEN_ANIM_DIR(chart) \
-    ((sgl_linechart_open_anim_dir_t)SGL_BITS_FIELD_GET((chart)->options, SGL_LINECHART_OPEN_ANIM_DIR_MASK, SGL_LINECHART_OPEN_ANIM_DIR_SHIFT))
-#define SGL_LINECHART_SET_OPEN_ANIM_DIR(chart, dir) \
-    SGL_BITS_FIELD_SET((chart)->options, SGL_LINECHART_OPEN_ANIM_DIR_MASK, SGL_LINECHART_OPEN_ANIM_DIR_SHIFT, (dir))
-
+typedef struct sgl_linechart_option_bits {
+    uint8_t custom_plot_rect  : 1;
+    uint8_t open_anim_enable  : 1;
+    uint8_t open_anim_playing : 1;
+    uint8_t open_anim_dir     : 2;
+    uint8_t reserved          : 3;
+} sgl_linechart_option_bits_t;
 
 /**
  * @brief Axis configuration of linechart
@@ -147,13 +128,13 @@ typedef enum sgl_linechart_open_anim_dir {
  * @label_alpha:   label text alpha
  */
 typedef struct sgl_linechart_axis {
+    sgl_linechart_axis_bits_t flag_bits;
+    const sgl_font_t *label_font;
     int32_t           min;
     int32_t           max;
     int32_t           step;
-    const sgl_font_t *label_font;
     sgl_color_t       grid_color;
     sgl_color_t       label_color;
-    uint8_t           flags;
     uint8_t           auto_divisions;
     uint8_t           grid_alpha;
     uint8_t           label_alpha;
@@ -178,13 +159,13 @@ typedef struct sgl_linechart_axis {
  * @label:        optional series label text, must be persistent string
  */
 typedef struct sgl_linechart_series {
+    sgl_linechart_series_bits_t style_bits;
     const int32_t    *x_data;
     const int32_t    *y_data;
     const char       *label;
     sgl_color_t       line_color;
     sgl_color_t       fill_color;
     uint16_t          point_count;
-    uint8_t           style;
     uint8_t           line_width;
     uint8_t           point_radius;
     uint8_t           line_alpha;
@@ -211,22 +192,22 @@ typedef struct sgl_linechart_series {
  */
 typedef struct sgl_linechart {
     sgl_obj_t             obj;
-    uint8_t               alpha;
-    sgl_color_t           bg_color;
-    uint8_t               bg_alpha;
-    sgl_color_t           border_color;
     sgl_linechart_axis_t  x_axis;
     sgl_linechart_axis_t  y_axis;
-    uint8_t               series_count;
+    sgl_area_t            plot_rel_rect;   /**< Custom plot area relative to widget (x1,y1,x2,y2) */
+    sgl_linechart_option_bits_t option_bits;   /**< packed plot/layout/animation flags */
     sgl_linechart_series_t *series;
     const char           **x_labels;       /**< Optional X axis labels, array of persistent strings */
-    uint8_t               x_label_count;   /**< Number of X axis labels */
-    sgl_area_t            plot_rel_rect;   /**< Custom plot area relative to widget (x1,y1,x2,y2) */
-    uint8_t               options;         /**< packed plot/layout/animation flags */
+    sgl_color_t           bg_color;
+    sgl_color_t           border_color;
     uint32_t              open_anim_start_tick;
 #if (CONFIG_SGL_ANIMATION)
     sgl_anim_path_algo_t  open_anim_path;
 #endif
+    uint8_t               alpha;
+    uint8_t               bg_alpha;
+    uint8_t               series_count;
+    uint8_t               x_label_count;   /**< Number of X axis labels */
 } sgl_linechart_t;
 
 
@@ -313,7 +294,7 @@ static inline void sgl_linechart_set_axis_range(sgl_obj_t *obj, sgl_linechart_ax
     sgl_linechart_axis_t *a = sgl_linechart_get_axis(chart, axis);
     a->min = min;
     a->max = max;
-    SGL_LINECHART_AXIS_SET(a, SGL_LINECHART_AXIS_FLAG_AUTO_SCALE, false);
+    a->flag_bits.auto_scale = 0U;
     sgl_obj_set_dirty(obj);
 }
 
@@ -326,7 +307,7 @@ static inline void sgl_linechart_enable_axis_auto_scale(sgl_obj_t *obj, sgl_line
     SGL_ASSERT(obj != NULL);
     sgl_linechart_t *chart = sgl_container_of(obj, sgl_linechart_t, obj);
     sgl_linechart_axis_t *a = sgl_linechart_get_axis(chart, axis);
-    SGL_LINECHART_AXIS_SET(a, SGL_LINECHART_AXIS_FLAG_AUTO_SCALE, enable);
+    a->flag_bits.auto_scale = enable ? 1U : 0U;
     sgl_obj_set_dirty(obj);
 }
 
@@ -365,7 +346,7 @@ static inline void sgl_linechart_enable_axis_grid(sgl_obj_t *obj, sgl_linechart_
     SGL_ASSERT(obj != NULL);
     sgl_linechart_t *chart = sgl_container_of(obj, sgl_linechart_t, obj);
     sgl_linechart_axis_t *a = sgl_linechart_get_axis(chart, axis);
-    SGL_LINECHART_AXIS_SET(a, SGL_LINECHART_AXIS_FLAG_SHOW_GRID, enable);
+    a->flag_bits.show_grid = enable ? 1U : 0U;
     sgl_obj_set_dirty(obj);
 }
 
@@ -379,7 +360,7 @@ static inline void sgl_linechart_set_axis_grid_style(sgl_obj_t *obj, sgl_linecha
     SGL_ASSERT(obj != NULL);
     sgl_linechart_t *chart = sgl_container_of(obj, sgl_linechart_t, obj);
     sgl_linechart_axis_t *a = sgl_linechart_get_axis(chart, axis);
-    SGL_LINECHART_AXIS_SET(a, SGL_LINECHART_AXIS_FLAG_GRID_DASHED, dashed != 0U);
+    a->flag_bits.grid_dashed = (dashed != 0U) ? 1U : 0U;
     sgl_obj_set_dirty(obj);
 }
 
@@ -407,7 +388,7 @@ static inline void sgl_linechart_enable_axis_labels(sgl_obj_t *obj, sgl_linechar
     SGL_ASSERT(obj != NULL);
     sgl_linechart_t *chart = sgl_container_of(obj, sgl_linechart_t, obj);
     sgl_linechart_axis_t *a = sgl_linechart_get_axis(chart, axis);
-    SGL_LINECHART_AXIS_SET(a, SGL_LINECHART_AXIS_FLAG_SHOW_LABELS, enable);
+    a->flag_bits.show_labels = enable ? 1U : 0U;
     sgl_obj_set_dirty(obj);
 }
 
@@ -448,7 +429,7 @@ static inline void sgl_linechart_enable_axis_ticks(sgl_obj_t *obj, sgl_linechart
     SGL_ASSERT(obj != NULL);
     sgl_linechart_t *chart = sgl_container_of(obj, sgl_linechart_t, obj);
     sgl_linechart_axis_t *a = sgl_linechart_get_axis(chart, axis);
-    SGL_LINECHART_AXIS_SET(a, SGL_LINECHART_AXIS_FLAG_SHOW_TICKS, enable);
+    a->flag_bits.show_ticks = enable ? 1U : 0U;
     sgl_obj_set_dirty(obj);
 }
 
@@ -526,7 +507,7 @@ static inline void sgl_linechart_set_plot_area_rel(sgl_obj_t *obj,
     sgl_linechart_t *chart = sgl_container_of(obj, sgl_linechart_t, obj);
 
     if (width <= 0 || height <= 0) {
-        SGL_LINECHART_SET(chart, SGL_LINECHART_FLAG_CUSTOM_PLOT_RECT, false);
+        chart->option_bits.custom_plot_rect = 0U;
         sgl_obj_set_dirty(obj);
         return;
     }
@@ -535,7 +516,7 @@ static inline void sgl_linechart_set_plot_area_rel(sgl_obj_t *obj,
     chart->plot_rel_rect.y1 = offset_top;
     chart->plot_rel_rect.x2 = (int16_t)(offset_left + width - 1);
     chart->plot_rel_rect.y2 = (int16_t)(offset_top + height - 1);
-    SGL_LINECHART_SET(chart, SGL_LINECHART_FLAG_CUSTOM_PLOT_RECT, true);
+    chart->option_bits.custom_plot_rect = 1U;
     sgl_obj_set_dirty(obj);
 }
 
@@ -547,7 +528,7 @@ static inline void sgl_linechart_reset_plot_area(sgl_obj_t *obj)
 {
     SGL_ASSERT(obj != NULL);
     sgl_linechart_t *chart = sgl_container_of(obj, sgl_linechart_t, obj);
-    SGL_LINECHART_SET(chart, SGL_LINECHART_FLAG_CUSTOM_PLOT_RECT, false);
+    chart->option_bits.custom_plot_rect = 0U;
     sgl_obj_set_dirty(obj);
 }
 
@@ -569,16 +550,16 @@ static inline void sgl_linechart_set_series_mode(sgl_obj_t *obj, uint8_t index, 
     switch (mode) {
     default:
     case SGL_LINECHART_SERIES_MODE_LINE:
-        SGL_LINECHART_SERIES_SET(s, SGL_LINECHART_SERIES_FLAG_SHOW_LINE, true);
-        SGL_LINECHART_SERIES_SET(s, SGL_LINECHART_SERIES_FLAG_SHOW_POINTS, false);
+        s->style_bits.show_line = 1U;
+        s->style_bits.show_points = 0U;
         break;
     case SGL_LINECHART_SERIES_MODE_SCATTER:
-        SGL_LINECHART_SERIES_SET(s, SGL_LINECHART_SERIES_FLAG_SHOW_LINE, false);
-        SGL_LINECHART_SERIES_SET(s, SGL_LINECHART_SERIES_FLAG_SHOW_POINTS, true);
+        s->style_bits.show_line = 0U;
+        s->style_bits.show_points = 1U;
         break;
     case SGL_LINECHART_SERIES_MODE_LINE_AND_POINT:
-        SGL_LINECHART_SERIES_SET(s, SGL_LINECHART_SERIES_FLAG_SHOW_LINE, true);
-        SGL_LINECHART_SERIES_SET(s, SGL_LINECHART_SERIES_FLAG_SHOW_POINTS, true);
+        s->style_bits.show_line = 1U;
+        s->style_bits.show_points = 1U;
         break;
     }
     sgl_obj_set_dirty(obj);
@@ -644,7 +625,7 @@ static inline void sgl_linechart_enable_series_points(sgl_obj_t *obj, uint8_t in
         SGL_LOG_ERROR("sgl_linechart_enable_series_points: invalid index %d", index);
         return;
     }
-    SGL_LINECHART_SERIES_SET(&chart->series[index], SGL_LINECHART_SERIES_FLAG_SHOW_POINTS, enable);
+    chart->series[index].style_bits.show_points = enable ? 1U : 0U;
     sgl_obj_set_dirty(obj);
 }
 
@@ -663,7 +644,7 @@ static inline void sgl_linechart_set_series_point_style(sgl_obj_t *obj, uint8_t 
         return;
     }
     sgl_linechart_series_t *s = &chart->series[index];
-    SGL_LINECHART_SERIES_SET_POINT_SHAPE(s, shape);
+    s->style_bits.point_shape = (uint8_t)shape;
     if (radius) {
         s->point_radius = radius;
     }
@@ -682,7 +663,7 @@ static inline void sgl_linechart_enable_series_fill(sgl_obj_t *obj, uint8_t inde
         SGL_LOG_ERROR("sgl_linechart_enable_series_fill: invalid index %d", index);
         return;
     }
-    SGL_LINECHART_SERIES_SET(&chart->series[index], SGL_LINECHART_SERIES_FLAG_FILL_UNDER, enable);
+    chart->series[index].style_bits.fill_under = enable ? 1U : 0U;
     sgl_obj_set_dirty(obj);
 }
 
@@ -732,8 +713,8 @@ static inline void sgl_linechart_enable_open_anim(sgl_obj_t *obj, bool enable)
 {
     SGL_ASSERT(obj != NULL);
     sgl_linechart_t *chart = sgl_container_of(obj, sgl_linechart_t, obj);
-    SGL_LINECHART_SET(chart, SGL_LINECHART_FLAG_OPEN_ANIM_ENABLE, enable);
-    SGL_LINECHART_SET(chart, SGL_LINECHART_FLAG_OPEN_ANIM_PLAYING, false);
+    chart->option_bits.open_anim_enable = enable ? 1U : 0U;
+    chart->option_bits.open_anim_playing = 0U;
     sgl_obj_set_dirty(obj);
 }
 
@@ -745,7 +726,7 @@ static inline void sgl_linechart_set_open_anim_dir(sgl_obj_t *obj, sgl_linechart
 {
     SGL_ASSERT(obj != NULL);
     sgl_linechart_t *chart = sgl_container_of(obj, sgl_linechart_t, obj);
-    SGL_LINECHART_SET_OPEN_ANIM_DIR(chart, dir);
+    chart->option_bits.open_anim_dir = (uint8_t)dir;
     sgl_obj_set_dirty(obj);
 }
 

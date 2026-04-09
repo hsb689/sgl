@@ -65,34 +65,32 @@ sgl_obj_t *sgl_barchart_create(sgl_obj_t *parent)
     chart->x_axis.min = 0;
     chart->x_axis.max = 5;
     chart->x_axis.step = 1;
-    chart->x_axis.flags = 0;
-    SGL_BARCHART_AXIS_SET(&chart->x_axis, SGL_BARCHART_AXIS_FLAG_AUTO_SCALE, false);
-    SGL_BARCHART_AXIS_SET(&chart->x_axis, SGL_BARCHART_AXIS_FLAG_SHOW_GRID, false);
-    SGL_BARCHART_AXIS_SET(&chart->x_axis, SGL_BARCHART_AXIS_FLAG_GRID_DASHED, true);
-    SGL_BARCHART_AXIS_SET(&chart->x_axis, SGL_BARCHART_AXIS_FLAG_SHOW_LABELS, true);
+    chart->x_axis.flag_bits.auto_scale = 0U;
+    chart->x_axis.flag_bits.show_grid = 0U;
+    chart->x_axis.flag_bits.grid_dashed = 1U;
+    chart->x_axis.flag_bits.show_labels = 1U;
     chart->x_axis.auto_divisions = SGL_BARCHART_DEFAULT_DIVISIONS;
     chart->x_axis.grid_color = sgl_rgb(60, 60, 60);
     chart->x_axis.grid_alpha = 80;
     chart->x_axis.label_font = sgl_get_system_font();
     chart->x_axis.label_color = SGL_THEME_TEXT_COLOR;
     chart->x_axis.label_alpha = SGL_ALPHA_MAX;
-    SGL_BARCHART_AXIS_SET(&chart->x_axis, SGL_BARCHART_AXIS_FLAG_SHOW_TICKS, true);
+    chart->x_axis.flag_bits.show_ticks = 1U;
 
     chart->y_axis.min = 0;
     chart->y_axis.max = 100;
     chart->y_axis.step = 0;
-    chart->y_axis.flags = 0;
-    SGL_BARCHART_AXIS_SET(&chart->y_axis, SGL_BARCHART_AXIS_FLAG_AUTO_SCALE, true);
-    SGL_BARCHART_AXIS_SET(&chart->y_axis, SGL_BARCHART_AXIS_FLAG_SHOW_GRID, true);
-    SGL_BARCHART_AXIS_SET(&chart->y_axis, SGL_BARCHART_AXIS_FLAG_GRID_DASHED, true);
-    SGL_BARCHART_AXIS_SET(&chart->y_axis, SGL_BARCHART_AXIS_FLAG_SHOW_LABELS, true);
+    chart->y_axis.flag_bits.auto_scale = 1U;
+    chart->y_axis.flag_bits.show_grid = 1U;
+    chart->y_axis.flag_bits.grid_dashed = 1U;
+    chart->y_axis.flag_bits.show_labels = 1U;
     chart->y_axis.auto_divisions = SGL_BARCHART_DEFAULT_DIVISIONS;
     chart->y_axis.grid_color = sgl_rgb(60, 60, 60);
     chart->y_axis.grid_alpha = 80;
     chart->y_axis.label_font = sgl_get_system_font();
     chart->y_axis.label_color = SGL_THEME_TEXT_COLOR;
     chart->y_axis.label_alpha = SGL_ALPHA_MAX;
-    SGL_BARCHART_AXIS_SET(&chart->y_axis, SGL_BARCHART_AXIS_FLAG_SHOW_TICKS, true);
+    chart->y_axis.flag_bits.show_ticks = 1U;
 
     chart->layout_left_margin = 44;
     chart->layout_top_margin = 4;
@@ -100,8 +98,7 @@ sgl_obj_t *sgl_barchart_create(sgl_obj_t *parent)
     chart->layout_bottom_margin = 24;
     chart->bar_gap = 4;
     chart->category_gap = 10;
-    chart->options = 0;
-    SGL_BARCHART_SET_OPEN_ANIM_DIR(chart, SGL_BARCHART_OPEN_ANIM_FROM_BOTTOM);
+    chart->option_bits.open_anim_dir = SGL_BARCHART_OPEN_ANIM_FROM_BOTTOM;
     chart->open_anim_duration = SGL_BARCHART_OPEN_ANIM_DURATION;
 
     return obj;
@@ -282,12 +279,12 @@ static void sgl_barchart_update_axis_auto(sgl_barchart_t *chart)
         }
     }
 
-    if (SGL_BARCHART_AXIS_HAS(&chart->x_axis, SGL_BARCHART_AXIS_FLAG_AUTO_SCALE)) {
+    if (chart->x_axis.flag_bits.auto_scale) {
         chart->x_axis.min = 0;
         chart->x_axis.max = (max_points > 0) ? (int32_t)(max_points - 1) : 0;
     }
 
-    if (!SGL_BARCHART_AXIS_HAS(&chart->y_axis, SGL_BARCHART_AXIS_FLAG_AUTO_SCALE)) return;
+    if (!chart->y_axis.flag_bits.auto_scale) return;
     if (data_min_y == INT32_MAX) {
         chart->y_axis.min = 0;
         chart->y_axis.max = 10;
@@ -313,7 +310,7 @@ static bool sgl_barchart_calc_plot_rect(sgl_obj_t *obj, sgl_barchart_t *chart,
                                         const sgl_area_t *full_rect,
                                         sgl_area_t *plot_rect)
 {
-    if (SGL_BARCHART_HAS(chart, SGL_BARCHART_FLAG_CUSTOM_PLOT_RECT)) {
+    if (chart->option_bits.custom_plot_rect) {
         plot_rect->x1 = (int16_t)(full_rect->x1 + chart->plot_rel_rect.x1);
         plot_rect->y1 = (int16_t)(full_rect->y1 + chart->plot_rel_rect.y1);
         plot_rect->x2 = (int16_t)(full_rect->x1 + chart->plot_rel_rect.x2);
@@ -321,7 +318,7 @@ static bool sgl_barchart_calc_plot_rect(sgl_obj_t *obj, sgl_barchart_t *chart,
     } else {
         const sgl_font_t *x_font = chart->x_axis.label_font ? chart->x_axis.label_font : sgl_get_system_font();
         int16_t bottom = chart->layout_bottom_margin;
-        if (SGL_BARCHART_AXIS_HAS(&chart->x_axis, SGL_BARCHART_AXIS_FLAG_SHOW_LABELS) && x_font) {
+        if (chart->x_axis.flag_bits.show_labels && x_font) {
             int16_t font_h = (int16_t)x_font->font_height + 4;
             if (bottom < font_h) bottom = font_h;
         }
@@ -357,8 +354,7 @@ static void sgl_barchart_draw_grid_and_labels(sgl_surf_t *surf, sgl_obj_t *obj,
     uint8_t base_alpha = chart->alpha ? chart->alpha : SGL_ALPHA_MAX;
     char buf[16];
 
-    if (SGL_BARCHART_AXIS_HAS(&chart->y_axis, SGL_BARCHART_AXIS_FLAG_SHOW_GRID) ||
-        SGL_BARCHART_AXIS_HAS(&chart->y_axis, SGL_BARCHART_AXIS_FLAG_SHOW_LABELS)) {
+    if (chart->y_axis.flag_bits.show_grid || chart->y_axis.flag_bits.show_labels) {
         int32_t step = sgl_barchart_get_effective_step(&chart->y_axis);
         int32_t v = chart->y_axis.min;
         uint8_t tick_idx = 0;
@@ -373,8 +369,8 @@ static void sgl_barchart_draw_grid_and_labels(sgl_surf_t *surf, sgl_obj_t *obj,
 
         while (tick_idx < SGL_BARCHART_MAX_AUTO_TICKS && v <= chart->y_axis.max) {
             int16_t y = plot_rect->y2 - (int32_t)(v - chart->y_axis.min) * plot_h / y_range;
-            if (SGL_BARCHART_AXIS_HAS(&chart->y_axis, SGL_BARCHART_AXIS_FLAG_SHOW_GRID) && grid_alpha) {
-                if (SGL_BARCHART_AXIS_HAS(&chart->y_axis, SGL_BARCHART_AXIS_FLAG_GRID_DASHED)) {
+            if (chart->y_axis.flag_bits.show_grid && grid_alpha) {
+                if (chart->y_axis.flag_bits.grid_dashed) {
                     sgl_barchart_draw_dashed_line(surf, &grid_area, plot_rect->x1, y, plot_rect->x2, y,
                                                   6, 4, chart->y_axis.grid_color, grid_alpha);
                 } else {
@@ -382,7 +378,7 @@ static void sgl_barchart_draw_grid_and_labels(sgl_surf_t *surf, sgl_obj_t *obj,
                                         1, chart->y_axis.grid_color, grid_alpha);
                 }
             }
-            if (SGL_BARCHART_AXIS_HAS(&chart->y_axis, SGL_BARCHART_AXIS_FLAG_SHOW_LABELS) && y_font && label_alpha && y_label_area.x2 > y_label_area.x1) {
+            if (chart->y_axis.flag_bits.show_labels && y_font && label_alpha && y_label_area.x2 > y_label_area.x1) {
                 sgl_barchart_format_value(buf, sizeof(buf), v);
                 sgl_draw_string(surf, &y_label_area,
                                 y_label_area.x1,
@@ -392,7 +388,7 @@ static void sgl_barchart_draw_grid_and_labels(sgl_surf_t *surf, sgl_obj_t *obj,
                                 label_alpha,
                                 y_font);
             }
-            if (SGL_BARCHART_AXIS_HAS(&chart->y_axis, SGL_BARCHART_AXIS_FLAG_SHOW_TICKS) && grid_alpha && y_tick_area.x2 >= y_tick_area.x1) {
+            if (chart->y_axis.flag_bits.show_ticks && grid_alpha && y_tick_area.x2 >= y_tick_area.x1) {
                 sgl_draw_fill_hline(surf, &y_tick_area, y,
                                     (int16_t)(plot_rect->x1 - SGL_BARCHART_TICK_LEN),
                                     (int16_t)(plot_rect->x1 - 1),
@@ -403,8 +399,7 @@ static void sgl_barchart_draw_grid_and_labels(sgl_surf_t *surf, sgl_obj_t *obj,
         }
     }
 
-    if (SGL_BARCHART_AXIS_HAS(&chart->x_axis, SGL_BARCHART_AXIS_FLAG_SHOW_GRID) ||
-        SGL_BARCHART_AXIS_HAS(&chart->x_axis, SGL_BARCHART_AXIS_FLAG_SHOW_LABELS)) {
+    if (chart->x_axis.flag_bits.show_grid || chart->x_axis.flag_bits.show_labels) {
         int32_t step = sgl_barchart_get_effective_step(&chart->x_axis);
         int32_t v = chart->x_axis.min;
         uint8_t tick_idx = 0;
@@ -419,8 +414,8 @@ static void sgl_barchart_draw_grid_and_labels(sgl_surf_t *surf, sgl_obj_t *obj,
 
         while (tick_idx < SGL_BARCHART_MAX_AUTO_TICKS && v <= chart->x_axis.max) {
             int16_t x = plot_rect->x1 + (int32_t)(v - chart->x_axis.min) * plot_w / x_range;
-            if (SGL_BARCHART_AXIS_HAS(&chart->x_axis, SGL_BARCHART_AXIS_FLAG_SHOW_GRID) && grid_alpha) {
-                if (SGL_BARCHART_AXIS_HAS(&chart->x_axis, SGL_BARCHART_AXIS_FLAG_GRID_DASHED)) {
+            if (chart->x_axis.flag_bits.show_grid && grid_alpha) {
+                if (chart->x_axis.flag_bits.grid_dashed) {
                     sgl_barchart_draw_dashed_line(surf, &grid_area, x, plot_rect->y1, x, plot_rect->y2,
                                                   6, 4, chart->x_axis.grid_color, grid_alpha);
                 } else {
@@ -428,7 +423,7 @@ static void sgl_barchart_draw_grid_and_labels(sgl_surf_t *surf, sgl_obj_t *obj,
                                         1, chart->x_axis.grid_color, grid_alpha);
                 }
             }
-            if (SGL_BARCHART_AXIS_HAS(&chart->x_axis, SGL_BARCHART_AXIS_FLAG_SHOW_LABELS) && x_font && label_alpha && x_label_area.y2 > x_label_area.y1) {
+            if (chart->x_axis.flag_bits.show_labels && x_font && label_alpha && x_label_area.y2 > x_label_area.y1) {
                 const char *label_str = NULL;
                 if (chart->x_labels && tick_idx < chart->x_label_count && chart->x_labels[tick_idx]) {
                     label_str = chart->x_labels[tick_idx];
@@ -445,7 +440,7 @@ static void sgl_barchart_draw_grid_and_labels(sgl_surf_t *surf, sgl_obj_t *obj,
                                 label_alpha,
                                 x_font);
             }
-            if (SGL_BARCHART_AXIS_HAS(&chart->x_axis, SGL_BARCHART_AXIS_FLAG_SHOW_TICKS) && grid_alpha && x_tick_area.y2 >= x_tick_area.y1) {
+            if (chart->x_axis.flag_bits.show_ticks && grid_alpha && x_tick_area.y2 >= x_tick_area.y1) {
                 sgl_draw_fill_vline(surf, &x_tick_area, x,
                                     (int16_t)(plot_rect->y2 + 1),
                                     (int16_t)(plot_rect->y2 + SGL_BARCHART_TICK_LEN),
@@ -487,7 +482,7 @@ static bool sgl_barchart_get_bar_rect(const sgl_barchart_t *chart,
     if (bar_w < 1) bar_w = 1;
 
     int32_t value = chart->series[series_index].y_data ? chart->series[series_index].y_data[point_index] : 0;
-    if (SGL_BARCHART_GET_ORIENTATION(chart) == SGL_BARCHART_ORIENTATION_HORIZONTAL) {
+    if (chart->option_bits.orientation == SGL_BARCHART_ORIENTATION_HORIZONTAL) {
         int16_t cat_y1;
         int16_t y1;
         int16_t y2;
@@ -596,17 +591,17 @@ static void sgl_barchart_construct_cb(sgl_surf_t *surf, sgl_obj_t *obj, sgl_even
     if (!sgl_barchart_calc_plot_rect(obj, chart, &full_rect, &plot_rect)) return;
 
     sgl_area_t plot_clip = plot_rect;
-    if (SGL_BARCHART_HAS(chart, SGL_BARCHART_FLAG_OPEN_ANIM_ENABLE)) {
+    if (chart->option_bits.open_anim_enable) {
         bool anim_active = true;
         uint16_t duration = chart->open_anim_duration ? chart->open_anim_duration : SGL_BARCHART_OPEN_ANIM_DURATION;
-        if (!SGL_BARCHART_HAS(chart, SGL_BARCHART_FLAG_OPEN_ANIM_PLAYING)) {
-            SGL_BARCHART_SET(chart, SGL_BARCHART_FLAG_OPEN_ANIM_PLAYING, true);
+        if (!chart->option_bits.open_anim_playing) {
+            chart->option_bits.open_anim_playing = 1U;
             chart->open_anim_start_tick = sgl_tick_get();
         }
         uint32_t elaps = sgl_tick_get() - chart->open_anim_start_tick;
         if (elaps >= duration) {
-            SGL_BARCHART_SET(chart, SGL_BARCHART_FLAG_OPEN_ANIM_ENABLE, false);
-            SGL_BARCHART_SET(chart, SGL_BARCHART_FLAG_OPEN_ANIM_PLAYING, false);
+            chart->option_bits.open_anim_enable = 0U;
+            chart->option_bits.open_anim_playing = 0U;
             anim_active = false;
         } else {
             int32_t extent;
@@ -621,8 +616,8 @@ static void sgl_barchart_construct_cb(sgl_surf_t *surf, sgl_obj_t *obj, sgl_even
             if (extent < 0) extent = 0;
             if (extent > 1000) extent = 1000;
 
-            if (SGL_BARCHART_GET_ORIENTATION(chart) == SGL_BARCHART_ORIENTATION_HORIZONTAL) {
-                if (SGL_BARCHART_GET_OPEN_ANIM_DIR(chart) == SGL_BARCHART_OPEN_ANIM_FROM_BOTTOM) {
+            if (chart->option_bits.orientation == SGL_BARCHART_ORIENTATION_HORIZONTAL) {
+                if (chart->option_bits.open_anim_dir == SGL_BARCHART_OPEN_ANIM_FROM_BOTTOM) {
                     int16_t visible_h = (int16_t)(((plot_rect.y2 - plot_rect.y1 + 1) * extent) / 1000);
                     if (visible_h <= 0) {
                         if (anim_active) sgl_obj_set_dirty(obj);
@@ -638,7 +633,7 @@ static void sgl_barchart_construct_cb(sgl_surf_t *surf, sgl_obj_t *obj, sgl_even
                     plot_clip.x2 = (int16_t)(plot_rect.x1 + visible_w - 1);
                 }
             } else {
-                if (SGL_BARCHART_GET_OPEN_ANIM_DIR(chart) == SGL_BARCHART_OPEN_ANIM_FROM_LEFT) {
+                if (chart->option_bits.open_anim_dir == SGL_BARCHART_OPEN_ANIM_FROM_LEFT) {
                     int16_t visible_w = (int16_t)(((plot_rect.x2 - plot_rect.x1 + 1) * extent) / 1000);
                     if (visible_w <= 0) {
                         if (anim_active) sgl_obj_set_dirty(obj);
