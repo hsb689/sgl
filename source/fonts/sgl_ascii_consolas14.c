@@ -638,7 +638,7 @@ static const sgl_font_table_t sgl_ascii_consolas14_tab[] = {
     {.bitmap_index = 2106, .adv_w = 192, .box_w = 12, .box_h = 13, .ofs_x = 0, .ofs_y = -2}
 };
 
-static const uint32_t unicode_list_1[] = {
+static const uint16_t unicode_list_1[] = {
     0x0, 0x175a
 };
 

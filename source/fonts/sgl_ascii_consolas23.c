@@ -1174,7 +1174,7 @@ static const sgl_font_table_t sgl_ascii_consolas23_tab[] = {
     {.bitmap_index = 6193, .adv_w = 336, .box_w = 21, .box_h = 21, .ofs_x = 0, .ofs_y = -3}
 };
 
-static const uint32_t unicode_list_1[] = {
+static const uint16_t unicode_list_1[] = {
     0x0, 0x175a
 };
 

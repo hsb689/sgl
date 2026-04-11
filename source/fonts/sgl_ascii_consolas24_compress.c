@@ -1158,7 +1158,7 @@ static const sgl_font_table_t font_table[] = {
     {.bitmap_index = 6116, .adv_w = 384, .box_w = 24, .box_h = 24, .ofs_x = 0, .ofs_y = -4}
 };
 
-static const uint32_t unicode_list_1[] = {
+static const uint16_t unicode_list_1[] = {
     0x00, 0x20
 };
 

@@ -146,7 +146,7 @@ static const sgl_font_table_t font_table[] = {
     {.bitmap_index = 711, .adv_w = 368, .box_w = 8, .box_h = 12, .ofs_x = 8, .ofs_y = 2}
 };
 
-static const uint32_t unicode_list_0[] = {
+static const uint16_t unicode_list_0[] = {
     0x0000, 0xe81e, 0xe866, 0xe997, 0xe998, 0xea0a, 0xea0b
 };
 
