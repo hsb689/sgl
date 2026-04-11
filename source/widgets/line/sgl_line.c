@@ -204,3 +204,73 @@ void sgl_line_set_pos(sgl_obj_t *obj, int16_t x1, int16_t y1, int16_t x2, int16_
 
 	sgl_obj_set_dirty(obj);
 }
+
+/**
+ * @brief set line color
+ * @param obj line object
+ * @param color line color
+ * @return none
+ */
+void sgl_line_set_color(sgl_obj_t *obj, sgl_color_t color)
+{
+    sgl_line_t *line = sgl_container_of(obj, sgl_line_t, obj);
+    line->color = color;
+    sgl_obj_set_dirty(obj);
+}
+
+/**
+ * @brief set line alpha
+ * @param obj line object
+ * @param alpha line alpha
+ * @return none
+ */
+void sgl_line_set_alpha(sgl_obj_t *obj, uint8_t alpha)
+{
+    SGL_ASSERT(obj != NULL);
+    sgl_line_t *line = sgl_container_of(obj, sgl_line_t, obj);
+    line->alpha = alpha;
+    sgl_obj_set_dirty(obj);
+}
+
+/**
+ * @brief set line dashed or solid
+ * @param obj line object
+ * @param dashed 0: solid line, non-zero: dashed line
+ * @return none
+ */
+void sgl_line_set_dashed(sgl_obj_t *obj, uint8_t dashed)
+{
+    SGL_ASSERT(obj != NULL);
+    sgl_line_t *line = sgl_container_of(obj, sgl_line_t, obj);
+    line->dashed = dashed;
+    sgl_obj_set_dirty(obj);
+}
+
+/**
+ * @brief set line dash pattern when dashed
+ * @param obj line object
+ * @param dash_len length of solid segment in pixels
+ * @param gap_len length of space segment in pixels
+ * @return none
+ */
+void sgl_line_set_dash_pattern(sgl_obj_t *obj, uint16_t dash_len, uint16_t gap_len)
+{
+    SGL_ASSERT(obj != NULL);
+    sgl_line_t *line = sgl_container_of(obj, sgl_line_t, obj);
+    line->dash_length = dash_len;
+    line->gap_length = gap_len;
+    sgl_obj_set_dirty(obj);
+}
+
+/**
+ * @brief set line width
+ * @param obj line object
+ * @param width line width
+ * @return none
+ */
+void sgl_line_set_width(sgl_obj_t *obj, uint8_t width)
+{
+	SGL_ASSERT(obj != NULL);
+	obj->border = width << 1;
+	sgl_obj_set_dirty(obj);
+}

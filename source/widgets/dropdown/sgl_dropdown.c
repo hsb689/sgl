@@ -192,6 +192,131 @@ sgl_obj_t* sgl_dropdown_create(sgl_obj_t* parent)
 }
 
 /**
+ * @brief set dropdown object's color
+ * @param obj dropdown object
+ * @param color color
+ */
+void sgl_dropdown_set_color(sgl_obj_t *obj, sgl_color_t color)
+{
+    sgl_dropdown_t *dropdown = sgl_container_of(obj, sgl_dropdown_t, obj);
+    dropdown->body_desc.color = color;
+    sgl_obj_set_dirty(obj);
+}
+
+/**
+ * @brief set dropdown object's border width
+ * @param obj dropdown object
+ * @param width border width
+ */
+void sgl_dropdown_set_border_width(sgl_obj_t *obj, uint8_t width)
+{
+    sgl_dropdown_t *dropdown = sgl_container_of(obj, sgl_dropdown_t, obj);
+    dropdown->body_desc.border = width;
+    sgl_obj_set_border_width(obj, width);
+    sgl_obj_set_dirty(obj);
+}
+
+/**
+ * @brief set dropdown object's border color
+ * @param obj dropdown object
+ * @param color border color
+ */
+void sgl_dropdown_set_border_color(sgl_obj_t *obj, sgl_color_t color)
+{
+    sgl_dropdown_t *dropdown = sgl_container_of(obj, sgl_dropdown_t, obj);
+    dropdown->body_desc.border_color = color;
+    sgl_obj_set_dirty(obj);
+}
+
+/**
+ * @brief set dropdown object's radius
+ * @param obj dropdown object
+ * @param radius radius
+ */
+void sgl_dropdown_set_radius(sgl_obj_t *obj, uint8_t radius)
+{
+    sgl_dropdown_t *dropdown = sgl_container_of(obj, sgl_dropdown_t, obj);
+    sgl_obj_set_radius(obj, radius);
+    dropdown->body_desc.radius = obj->radius;
+    sgl_obj_set_dirty(obj);
+}
+
+/**
+ * @brief set dropdown object's pixmap
+ * @param obj dropdown object
+ * @param pixmap pixmap
+ */
+void sgl_dropdown_set_pixmap(sgl_obj_t *obj, const sgl_pixmap_t *pixmap)
+{
+    sgl_dropdown_t *dropdown = sgl_container_of(obj, sgl_dropdown_t, obj);
+    dropdown->body_desc.pixmap = pixmap;
+    sgl_obj_set_dirty(obj);
+}
+
+/**
+ * @brief set dropdown object's alpha
+ * @param obj dropdown object
+ * @param alpha alpha
+ */
+void sgl_dropdown_set_alpha(sgl_obj_t *obj, uint8_t alpha)
+{
+    sgl_dropdown_t *dropdown = sgl_container_of(obj, sgl_dropdown_t, obj);
+    dropdown->body_desc.alpha = alpha;
+    sgl_obj_set_dirty(obj);
+}
+
+/**
+ * @brief set dropdown object's text color
+ * @param obj dropdown object
+ * @param color text color
+ */
+void sgl_dropdown_set_text_color(sgl_obj_t *obj, sgl_color_t color)
+{
+    sgl_dropdown_t *dropdown = sgl_container_of(obj, sgl_dropdown_t, obj);
+    dropdown->text_color = color;
+    sgl_obj_set_dirty(obj);
+}
+
+/**
+ * @brief set dropdown object's text font
+ * @param obj dropdown object
+ * @param font text font
+ * @return none
+ * @note font must be initialized
+ */
+void sgl_dropdown_set_text_font(sgl_obj_t *obj, const sgl_font_t* font)
+{
+    sgl_dropdown_t *dropdown = sgl_container_of(obj, sgl_dropdown_t, obj);
+    dropdown->font = font;
+    sgl_obj_set_dirty(obj);
+}
+
+/**
+ * @brief set dropdown object's selected index
+ * @param obj dropdown object
+ * @param index selected index
+ * @return none
+ */
+void sgl_dropdown_set_selected_index(sgl_obj_t *obj, int index)
+{
+    sgl_dropdown_t *dropdown = sgl_container_of(obj, sgl_dropdown_t, obj);
+    SGL_ASSERT(obj != NULL && index >= 0 && index < dropdown->option_num);
+    dropdown->selected = index;
+    sgl_obj_set_dirty(obj);
+}
+
+/**
+ * @brief get dropdown object's selected index
+ * @param obj dropdown object
+ * @return selected index
+ */
+int sgl_dropdown_get_selected_index(sgl_obj_t *obj)
+{
+    sgl_dropdown_t *dropdown = sgl_container_of(obj, sgl_dropdown_t, obj);
+    return dropdown->selected;
+}
+
+/**
  * @brief get the selected text of the dropdown
  * @param obj pointer to the dropdown object
  * @return pointer to the selected text

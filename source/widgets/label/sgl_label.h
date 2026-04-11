@@ -67,12 +67,7 @@ typedef struct sgl_label {
  */
 sgl_obj_t* sgl_label_create(sgl_obj_t* parent);
 
-static inline void sgl_label_set_text(sgl_obj_t *obj, char *text)
-{
-    sgl_label_t *label = sgl_container_of(obj, sgl_label_t, obj);
-    label->text = text;
-    sgl_obj_set_dirty(obj);
-}
+void sgl_label_set_text(sgl_obj_t *obj, char *text);
 
 /**
  * @brief set the text of the label with format
@@ -88,12 +83,7 @@ void sgl_label_set_text_fmt(sgl_obj_t* obj, const char *fmt, ...);
  * @param font pointer to the font
  * @return none
  */
-static inline void sgl_label_set_font(sgl_obj_t *obj, const sgl_font_t *font)
-{
-    sgl_label_t *label = sgl_container_of(obj, sgl_label_t, obj);
-    label->font = font;
-    sgl_obj_set_dirty(obj);
-}
+void sgl_label_set_font(sgl_obj_t *obj, const sgl_font_t *font);
 
 /**
  * @brief set label text color
@@ -101,12 +91,7 @@ static inline void sgl_label_set_font(sgl_obj_t *obj, const sgl_font_t *font)
  * @param color color to be set
  * @return none
  */
-static inline void sgl_label_set_text_color(sgl_obj_t *obj, sgl_color_t color)
-{
-    sgl_label_t *label = sgl_container_of(obj, sgl_label_t, obj);
-    label->color = color;
-    sgl_obj_set_dirty(obj);
-}
+void sgl_label_set_text_color(sgl_obj_t *obj, sgl_color_t color);
 
 /**
  * @brief set label background color
@@ -114,13 +99,7 @@ static inline void sgl_label_set_text_color(sgl_obj_t *obj, sgl_color_t color)
  * @param color color to be set
  * @return none
  */
-static inline void sgl_label_set_bg_color(sgl_obj_t *obj, sgl_color_t color)
-{
-    sgl_label_t *label = sgl_container_of(obj, sgl_label_t, obj);
-    label->bg_color = color;
-    label->bg_flag = 1;
-    sgl_obj_set_dirty(obj);
-}
+void sgl_label_set_bg_color(sgl_obj_t *obj, sgl_color_t color);
 
 /**
  * @brief set label radius
@@ -128,11 +107,7 @@ static inline void sgl_label_set_bg_color(sgl_obj_t *obj, sgl_color_t color)
  * @param radius radius to be set
  * @return none
  */
-static inline void sgl_label_set_radius(sgl_obj_t *obj, uint8_t radius)
-{
-    sgl_obj_set_radius(obj, radius);
-    sgl_obj_set_dirty(obj);
-}
+void sgl_label_set_radius(sgl_obj_t *obj, uint8_t radius);
 
 /**
  * @brief set label text align
@@ -140,12 +115,7 @@ static inline void sgl_label_set_radius(sgl_obj_t *obj, uint8_t radius)
  * @param align align to be set
  * @return none
  */
-static inline void sgl_label_set_text_align(sgl_obj_t *obj, sgl_align_type_t align)
-{
-    sgl_label_t *label = sgl_container_of(obj, sgl_label_t, obj);
-    label->align = align;
-    sgl_obj_set_dirty(obj);
-}
+void sgl_label_set_text_align(sgl_obj_t *obj, sgl_align_type_t align);
 
 /**
  * @brief set label alpha
@@ -153,12 +123,7 @@ static inline void sgl_label_set_text_align(sgl_obj_t *obj, sgl_align_type_t ali
  * @param alpha alpha to be set
  * @return none
  */
-static inline void sgl_label_set_alpha(sgl_obj_t *obj, uint8_t alpha)
-{
-    sgl_label_t *label = sgl_container_of(obj, sgl_label_t, obj);
-    label->alpha = alpha;
-    sgl_obj_set_dirty(obj);
-}
+void sgl_label_set_alpha(sgl_obj_t *obj, uint8_t alpha);
 
 /**
  * @brief set label text offset
@@ -167,13 +132,7 @@ static inline void sgl_label_set_alpha(sgl_obj_t *obj, uint8_t alpha)
  * @param offset_y offset_y to be set
  * @return none
  */
-static inline void sgl_label_set_text_offset(sgl_obj_t *obj, int8_t offset_x, int8_t offset_y)
-{
-    sgl_label_t *label = sgl_container_of(obj, sgl_label_t, obj);
-    label->transform.offset.offset_x = offset_x;
-    label->transform.offset.offset_y = offset_y;
-    sgl_obj_set_dirty(obj);
-}
+void sgl_label_set_text_offset(sgl_obj_t *obj, int8_t offset_x, int8_t offset_y);
 
 /**
  * @brief set label text rotation
@@ -181,14 +140,6 @@ static inline void sgl_label_set_text_offset(sgl_obj_t *obj, int8_t offset_x, in
  * @param text_rotation text rotation angle (0-360 degree)
  * @return none
  */
-static inline void sgl_label_set_text_rotation(sgl_obj_t *obj, int16_t text_rotation)
-{
-    sgl_label_t *label = sgl_container_of(obj, sgl_label_t, obj);
-    label->transform.rotation = text_rotation % 360;
-    if (label->transform.rotation < 0) label->transform.rotation += 360;
-    label->rota = label->transform.rotation ? 1 : 0;
-    sgl_obj_set_dirty(obj);
-}
-
+void sgl_label_set_text_rotation(sgl_obj_t *obj, int16_t text_rotation);
 
 #endif // !__SGL_LABEL_H__

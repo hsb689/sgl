@@ -100,3 +100,173 @@ sgl_obj_t* sgl_progress_create(sgl_obj_t* parent)
 
     return obj;
 }
+
+/**
+ * @brief set progress track color
+ * @param obj progress object
+ * @param color track color
+ * @return none
+ */
+void sgl_progress_set_track_color(sgl_obj_t *obj, sgl_color_t color)
+{
+    sgl_progress_t *progress = sgl_container_of(obj, sgl_progress_t, obj);
+    progress->body.color = color;
+    sgl_obj_set_dirty(obj);
+}
+
+/**
+ * @brief set progress track alpha
+ * @param obj progress object
+ * @param alpha track alpha
+ * @return none
+ */
+void sgl_progress_set_track_alpha(sgl_obj_t *obj, uint8_t alpha)
+{
+    sgl_progress_t *progress = sgl_container_of(obj, sgl_progress_t, obj);
+    progress->body.alpha = alpha;
+    sgl_obj_set_dirty(obj);
+}
+
+/**
+ * @brief set progress fill color
+ * @param obj progress object
+ * @param color fill color
+ * @return none
+ */
+void sgl_progress_set_fill_color(sgl_obj_t *obj, sgl_color_t color)
+{
+    sgl_progress_t *progress = sgl_container_of(obj, sgl_progress_t, obj);
+    progress->color = color;
+    sgl_obj_set_dirty(obj);
+}
+
+/**
+ * @brief set progress fill alpha
+ * @param obj progress object
+ * @param alpha fill alpha
+ * @return none
+ */
+void sgl_progress_set_fill_alpha(sgl_obj_t *obj, uint8_t alpha)
+{
+    sgl_progress_t *progress = sgl_container_of(obj, sgl_progress_t, obj);
+    progress->alpha = alpha;
+    sgl_obj_set_dirty(obj);
+}
+
+/**
+ * @brief set progress radius
+ * @param obj progress object
+ * @param radius progress radius
+ * @return none
+ */
+void sgl_progress_set_radius(sgl_obj_t *obj, uint8_t radius)
+{
+    sgl_progress_t *progress = sgl_container_of(obj, sgl_progress_t, obj);
+    sgl_obj_set_radius(obj, radius);
+    progress->body.radius = obj->radius;
+    sgl_obj_set_dirty(obj);
+}
+
+/**
+ * @brief set progress border width
+ * @param obj progress object
+ * @param width progress border width
+ * @return none
+ */
+void sgl_progress_set_border_width(sgl_obj_t *obj, uint8_t width)
+{
+    sgl_progress_t *progress = sgl_container_of(obj, sgl_progress_t, obj);
+    progress->body.border = width;
+    sgl_obj_set_border_width(obj, width);
+    sgl_obj_set_dirty(obj);
+}
+
+/**
+ * @brief set progress border color
+ * @param obj progress object
+ * @param color progress border color
+ * @return none
+ */
+void sgl_progress_set_border_color(sgl_obj_t *obj, sgl_color_t color)
+{
+    sgl_progress_t *progress = sgl_container_of(obj, sgl_progress_t, obj);
+    progress->body.border_color = color;
+    sgl_obj_set_dirty(obj);
+}
+
+/**
+ * @brief set progress pixmap
+ * @param obj progress object
+ * @param pixmap progress pixmap
+ * @return none
+ */
+void sgl_progress_set_pixmap(sgl_obj_t *obj, const sgl_pixmap_t *pixmap)
+{
+    sgl_progress_t *progress = sgl_container_of(obj, sgl_progress_t, obj);
+    progress->body.pixmap = pixmap;
+    sgl_obj_set_dirty(obj);
+}
+
+/**
+ * @brief set progress fill gap size
+ * @param obj progress object
+ * @param gap progress fill gap size
+ * @return none
+ */
+void sgl_progress_set_fill_gap(sgl_obj_t *obj, uint8_t gap)
+{
+    sgl_progress_t *progress = sgl_container_of(obj, sgl_progress_t, obj);
+    progress->interval = gap;
+    sgl_obj_set_dirty(obj);
+}
+
+/**
+ * @brief set progress fill radius
+ * @param obj progress object
+ * @param radius progress fill radius
+ * @return none
+ */
+void sgl_progress_set_fill_radius(sgl_obj_t *obj, uint8_t radius)
+{
+    sgl_progress_t *progress = sgl_container_of(obj, sgl_progress_t, obj);
+    progress->knob_radius = radius;
+    sgl_obj_set_dirty(obj);
+}
+
+/**
+ * @brief set progress fill width
+ * @param obj progress object
+ * @param width progress fill width
+ * @return none
+ */
+void sgl_progress_set_fill_width(sgl_obj_t *obj, uint8_t width)
+{
+    sgl_progress_t *progress = sgl_container_of(obj, sgl_progress_t, obj);
+    progress->knob_width = width;
+    sgl_obj_set_dirty(obj);
+}
+
+/**
+ * @brief set progress value
+ * @param obj progress object
+ * @param value progress value
+ * @return none
+ */
+void sgl_progress_set_value(sgl_obj_t *obj, uint8_t value)
+{
+    sgl_progress_t *progress = sgl_container_of(obj, sgl_progress_t, obj);
+    progress->value = sgl_min(value, 100);
+    progress->shift ++;
+    sgl_obj_set_dirty(obj);
+}
+
+/**
+ * @brief get progress value
+ * @param obj progress object
+ * @return progress value
+ */
+uint8_t sgl_progress_get_value(sgl_obj_t *obj)
+{
+    sgl_progress_t *progress = sgl_container_of(obj, sgl_progress_t, obj);
+    return progress->value;
+}

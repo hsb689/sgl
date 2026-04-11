@@ -54,19 +54,13 @@ typedef struct sgl_2dball {
  */
 sgl_obj_t* sgl_2dball_create(sgl_obj_t* parent);
 
-
 /**
  * @brief set the color of the 2dball
  * @param obj 2dball object
  * @param color color
  * @return none
  */
-static inline void sgl_2dball_set_color(sgl_obj_t *obj, sgl_color_t color)
-{
-    sgl_2dball_t *ball = sgl_container_of(obj, sgl_2dball_t, obj);
-    ball->color = color;
-    sgl_obj_set_dirty(obj);
-}
+void sgl_2dball_set_color(sgl_obj_t *obj, sgl_color_t color);
 
 /**
  * @brief set the background color of the 2dball
@@ -74,12 +68,7 @@ static inline void sgl_2dball_set_color(sgl_obj_t *obj, sgl_color_t color)
  * @param color background color
  * @return none
  */
-static inline void sgl_2dball_set_bg_color(sgl_obj_t *obj, sgl_color_t color)
-{
-    sgl_2dball_t *ball = sgl_container_of(obj, sgl_2dball_t, obj);
-    ball->bg_color = color;
-    sgl_obj_set_dirty(obj);
-}
+void sgl_2dball_set_bg_color(sgl_obj_t *obj, sgl_color_t color);
 
 /**
  * @brief set the alpha of the 2dball
@@ -87,12 +76,7 @@ static inline void sgl_2dball_set_bg_color(sgl_obj_t *obj, sgl_color_t color)
  * @param alpha alpha
  * @return none
  */
-static inline void sgl_2dball_set_alpha(sgl_obj_t *obj, uint8_t alpha)
-{
-    sgl_2dball_t *ball = sgl_container_of(obj, sgl_2dball_t, obj);
-    ball->alpha = alpha;
-    sgl_obj_set_dirty(obj);
-}
+void sgl_2dball_set_alpha(sgl_obj_t *obj, uint8_t alpha);
 
 /**
  * @brief set the radius of the 2dball
@@ -100,10 +84,6 @@ static inline void sgl_2dball_set_alpha(sgl_obj_t *obj, uint8_t alpha)
  * @param radius radius
  * @return none
  */
-static inline void sgl_2dball_set_radius(sgl_obj_t *obj, uint16_t radius)
-{
-    sgl_obj_set_radius(obj, radius);
-    sgl_obj_set_dirty(obj);
-}
+void sgl_2dball_set_radius(sgl_obj_t *obj, uint16_t radius);
 
 #endif // !__SGL_2DBALL_H__

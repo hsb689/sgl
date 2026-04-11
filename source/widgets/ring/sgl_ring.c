@@ -84,3 +84,45 @@ sgl_obj_t* sgl_ring_create(sgl_obj_t* parent)
     return obj;
 }
 
+/**
+ * @brief Set the ring color
+ * @param obj The ring object
+ * @param color The ring color
+ * @return none
+ */
+void sgl_ring_set_color(sgl_obj_t *obj, sgl_color_t color)
+{
+    sgl_ring_t *ring = sgl_container_of(obj, sgl_ring_t, obj);
+    ring->color = color;
+    sgl_obj_set_dirty(obj);
+}
+
+/**
+ * @brief Set the ring alpha
+ * @param obj The ring object
+ * @param alpha The ring alpha
+ * @return none
+ * @note The alpha value range is 0~255
+ */
+void sgl_ring_set_alpha(sgl_obj_t *obj, uint8_t alpha)
+{
+    sgl_ring_t *ring = sgl_container_of(obj, sgl_ring_t, obj);
+    ring->alpha = alpha;
+    sgl_obj_set_dirty(obj);
+}
+
+/**
+ * @brief Set the ring radius
+ * @param obj The ring object
+ * @param radius_in The ring inner radius
+ * @param radius_out The ring outer radius
+ * @return none
+ */
+void sgl_ring_set_radius(sgl_obj_t *obj, uint16_t radius_in, uint16_t radius_out)
+{
+    sgl_ring_t *ring = sgl_container_of(obj, sgl_ring_t, obj);
+    ring->radius_in = radius_in;
+    sgl_obj_set_radius(obj, radius_out);
+    ring->radius_out = obj->radius;
+    sgl_obj_set_dirty(obj);
+}

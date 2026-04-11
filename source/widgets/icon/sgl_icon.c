@@ -79,3 +79,56 @@ sgl_obj_t* sgl_icon_create(sgl_obj_t* parent)
 
     return obj;
 }
+
+
+/**
+ * @brief set icon color
+ * @param obj pointer to icon object
+ * @param color icon color
+ * @return none
+ */
+void sgl_icon_set_color(sgl_obj_t *obj, sgl_color_t color)
+{
+    sgl_icon_t *icon = sgl_container_of(obj, sgl_icon_t, obj);
+    icon->color = color;
+    sgl_obj_set_dirty(obj);
+}
+
+/**
+ * @brief set icon alpha
+ * @param obj pointer to icon object
+ * @param alpha icon alpha
+ * @return none
+ */
+void sgl_icon_set_alpha(sgl_obj_t *obj, uint8_t alpha)
+{
+    sgl_icon_t *icon = sgl_container_of(obj, sgl_icon_t, obj);
+    icon->alpha = alpha;
+    sgl_obj_set_dirty(obj);
+}
+
+/**
+ * @brief set icon pixmap
+ * @param obj pointer to icon object
+ * @param icon pointer to icon pixmap
+ * @return none
+ */
+void sgl_icon_set_icon(sgl_obj_t *obj, const sgl_icon_pixmap_t *icon)
+{
+    sgl_icon_t *icon_obj = sgl_container_of(obj, sgl_icon_t, obj);
+    icon_obj->icon = icon;
+    sgl_obj_set_dirty(obj);
+}
+
+/**
+ * @brief set icon align
+ * @param obj pointer to icon object
+ * @param align icon align
+ * @return none
+ */
+void sgl_icon_set_align(sgl_obj_t *obj, sgl_align_type_t align)
+{
+    sgl_icon_t *icon_obj = sgl_container_of(obj, sgl_icon_t, obj);
+    icon_obj->align = align;
+    sgl_obj_set_dirty(obj);
+}

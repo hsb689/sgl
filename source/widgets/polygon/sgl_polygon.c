@@ -367,13 +367,3 @@ void sgl_polygon_set_text_color(sgl_obj_t* obj, sgl_color_t color)
     polygon->text_color = color;
     sgl_obj_set_dirty(obj);
 }
-
-
-
-
-
-
-
-
-
-

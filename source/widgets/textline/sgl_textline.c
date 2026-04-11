@@ -86,3 +86,121 @@ sgl_obj_t* sgl_textline_create(sgl_obj_t* parent)
 
     return obj;
 }
+
+/**
+ * @brief set textline text
+ * @param obj textline object
+ * @param text text
+ * @return none
+ */
+void sgl_textline_set_text(sgl_obj_t *obj, const char *text)
+{
+    sgl_textline_t *textline = sgl_container_of(obj, sgl_textline_t, obj);
+    textline->text = text;
+    sgl_obj_set_dirty(obj);
+}
+
+/**
+ * @brief set textline font
+ * @param obj textline object
+ * @param font font
+ * @return none
+ */
+void sgl_textline_set_text_font(sgl_obj_t *obj, const sgl_font_t *font)
+{
+    sgl_textline_t *textline = sgl_container_of(obj, sgl_textline_t, obj);
+    textline->font = font;
+    sgl_obj_set_dirty(obj);
+}
+
+/**
+ * @brief set textline text color
+ * @param obj textline object
+ * @param color color of text
+ * @return none
+ */
+void sgl_textline_set_text_color(sgl_obj_t *obj, sgl_color_t color)
+{
+    sgl_textline_t *textline = sgl_container_of(obj, sgl_textline_t, obj);
+    textline->color = color;
+    sgl_obj_set_dirty(obj);
+}
+
+/**
+ * @brief set textline background color
+ * @param obj textline object
+ * @param color color of background
+ * @return none
+ */
+void sgl_textline_set_bg_color(sgl_obj_t *obj, sgl_color_t color)
+{
+    sgl_textline_t *textline = sgl_container_of(obj, sgl_textline_t, obj);
+    textline->bg_color = color;
+    textline->bg_flag = true;
+    sgl_obj_set_dirty(obj);
+}
+
+/**
+ * @brief set textline background transparent
+ * @param obj textline object
+ * @return none
+ */
+void sgl_textline_set_bg_transparent(sgl_obj_t *obj)
+{
+    sgl_textline_t *textline = sgl_container_of(obj, sgl_textline_t, obj);
+    textline->bg_flag = false;
+    sgl_obj_set_dirty(obj);
+}
+
+/**
+ * @brief set textline radius
+ * @param obj textline object
+ * @param radius radius of textline
+ * @return none
+ */
+void sgl_textline_set_radius(sgl_obj_t *obj, uint8_t radius)
+{
+    sgl_textline_t *textline = sgl_container_of(obj, sgl_textline_t, obj);
+    sgl_obj_set_radius(obj, radius);
+    textline->obj.radius = obj->radius;
+    sgl_obj_set_dirty(obj);
+}
+
+/**
+ * @brief set textline alpha
+ * @param obj textline object
+ * @param alpha alpha of textline
+ * @return none
+ */
+void sgl_textline_set_alpha(sgl_obj_t *obj, uint8_t alpha)
+{
+    sgl_textline_t *textline = sgl_container_of(obj, sgl_textline_t, obj);
+    textline->alpha = alpha;
+    sgl_obj_set_dirty(obj);
+}
+
+/**
+ * @brief set textline edge margin
+ * @param obj textline object
+ * @param margin margin of textline
+ * @return none
+ */
+void sgl_textline_set_edge_margin(sgl_obj_t *obj, uint8_t margin)
+{
+    sgl_textline_t *textline = sgl_container_of(obj, sgl_textline_t, obj);
+    textline->edge_margin = margin;
+    sgl_obj_set_dirty(obj);
+}
+
+/**
+ * @brief set textline text line margin
+ * @param obj textline object
+ * @param margin margin of textline
+ * @return none
+ */
+void sgl_textline_set_line_margin(sgl_obj_t *obj, uint8_t margin)
+{
+    sgl_textline_t *textline = sgl_container_of(obj, sgl_textline_t, obj);
+    textline->line_margin = margin;
+    sgl_obj_set_dirty(obj);
+}

@@ -50,7 +50,6 @@ typedef struct sgl_textline {
     uint8_t          bg_flag : 1;
 } sgl_textline_t;
 
-
 /**
  * @brief create a textline object
  * @param parent parent of the textline
@@ -58,19 +57,13 @@ typedef struct sgl_textline {
  */
 sgl_obj_t* sgl_textline_create(sgl_obj_t* parent);
 
-
 /**
  * @brief set textline text
  * @param obj textline object
  * @param text text
  * @return none
  */
-static inline void sgl_textline_set_text(sgl_obj_t *obj, const char *text)
-{
-    sgl_textline_t *textline = sgl_container_of(obj, sgl_textline_t, obj);
-    textline->text = text;
-    sgl_obj_set_dirty(obj);
-}
+void sgl_textline_set_text(sgl_obj_t *obj, const char *text);
 
 /**
  * @brief set textline font
@@ -78,12 +71,7 @@ static inline void sgl_textline_set_text(sgl_obj_t *obj, const char *text)
  * @param font font
  * @return none
  */
-static inline void sgl_textline_set_text_font(sgl_obj_t *obj, const sgl_font_t *font)
-{
-    sgl_textline_t *textline = sgl_container_of(obj, sgl_textline_t, obj);
-    textline->font = font;
-    sgl_obj_set_dirty(obj);
-}
+void sgl_textline_set_text_font(sgl_obj_t *obj, const sgl_font_t *font);
 
 /**
  * @brief set textline text color
@@ -91,12 +79,7 @@ static inline void sgl_textline_set_text_font(sgl_obj_t *obj, const sgl_font_t *
  * @param color color of text
  * @return none
  */
-static inline void sgl_textline_set_text_color(sgl_obj_t *obj, sgl_color_t color)
-{
-    sgl_textline_t *textline = sgl_container_of(obj, sgl_textline_t, obj);
-    textline->color = color;
-    sgl_obj_set_dirty(obj);
-}
+void sgl_textline_set_text_color(sgl_obj_t *obj, sgl_color_t color);
 
 /**
  * @brief set textline background color
@@ -104,25 +87,14 @@ static inline void sgl_textline_set_text_color(sgl_obj_t *obj, sgl_color_t color
  * @param color color of background
  * @return none
  */
-static inline void sgl_textline_set_bg_color(sgl_obj_t *obj, sgl_color_t color)
-{
-    sgl_textline_t *textline = sgl_container_of(obj, sgl_textline_t, obj);
-    textline->bg_color = color;
-    textline->bg_flag = true;
-    sgl_obj_set_dirty(obj);
-}
+void sgl_textline_set_bg_color(sgl_obj_t *obj, sgl_color_t color);
 
 /**
  * @brief set textline background transparent
  * @param obj textline object
  * @return none
  */
-static inline void sgl_textline_set_bg_transparent(sgl_obj_t *obj)
-{
-    sgl_textline_t *textline = sgl_container_of(obj, sgl_textline_t, obj);
-    textline->bg_flag = false;
-    sgl_obj_set_dirty(obj);
-}
+void sgl_textline_set_bg_transparent(sgl_obj_t *obj);
 
 /**
  * @brief set textline radius
@@ -130,13 +102,7 @@ static inline void sgl_textline_set_bg_transparent(sgl_obj_t *obj)
  * @param radius radius of textline
  * @return none
  */
-static inline void sgl_textline_set_radius(sgl_obj_t *obj, uint8_t radius)
-{
-    sgl_textline_t *textline = sgl_container_of(obj, sgl_textline_t, obj);
-    sgl_obj_set_radius(obj, radius);
-    textline->obj.radius = obj->radius;
-    sgl_obj_set_dirty(obj);
-}
+void sgl_textline_set_radius(sgl_obj_t *obj, uint8_t radius);
 
 /**
  * @brief set textline alpha
@@ -144,12 +110,7 @@ static inline void sgl_textline_set_radius(sgl_obj_t *obj, uint8_t radius)
  * @param alpha alpha of textline
  * @return none
  */
-static inline void sgl_textline_set_alpha(sgl_obj_t *obj, uint8_t alpha)
-{
-    sgl_textline_t *textline = sgl_container_of(obj, sgl_textline_t, obj);
-    textline->alpha = alpha;
-    sgl_obj_set_dirty(obj);
-}
+void sgl_textline_set_alpha(sgl_obj_t *obj, uint8_t alpha);
 
 /**
  * @brief set textline edge margin
@@ -157,12 +118,7 @@ static inline void sgl_textline_set_alpha(sgl_obj_t *obj, uint8_t alpha)
  * @param margin margin of textline
  * @return none
  */
-static inline void sgl_textline_set_edge_margin(sgl_obj_t *obj, uint8_t margin)
-{
-    sgl_textline_t *textline = sgl_container_of(obj, sgl_textline_t, obj);
-    textline->edge_margin = margin;
-    sgl_obj_set_dirty(obj);
-}
+void sgl_textline_set_edge_margin(sgl_obj_t *obj, uint8_t margin);
 
 /**
  * @brief set textline text line margin
@@ -170,12 +126,6 @@ static inline void sgl_textline_set_edge_margin(sgl_obj_t *obj, uint8_t margin)
  * @param margin margin of textline
  * @return none
  */
-static inline void sgl_textline_set_line_margin(sgl_obj_t *obj, uint8_t margin)
-{
-    sgl_textline_t *textline = sgl_container_of(obj, sgl_textline_t, obj);
-    textline->line_margin = margin;
-    sgl_obj_set_dirty(obj);
-}
-
+void sgl_textline_set_line_margin(sgl_obj_t *obj, uint8_t margin);
 
 #endif // !__SGL_TEXTLINE_H__

@@ -100,3 +100,176 @@ sgl_obj_t* sgl_win_create(sgl_obj_t* parent)
 
     return obj;
 }
+
+/**
+ * @brief set window color
+ * @param obj window object
+ * @param color color
+ * @return none
+ */
+void sgl_win_set_color(sgl_obj_t *obj, sgl_color_t color)
+{
+    sgl_win_t *win = sgl_container_of(obj, sgl_win_t, obj);
+    win->bg.color = color;
+    sgl_obj_set_dirty(obj);
+}
+
+/**
+ * @brief set window radius
+ * @param obj window object
+ * @param radius radius
+ * @return none
+ */
+void sgl_win_set_radius(sgl_obj_t *obj, uint8_t radius)
+{
+    sgl_win_t *win = sgl_container_of(obj, sgl_win_t, obj);
+    win->bg.radius = radius;
+    sgl_obj_set_radius(obj, radius);
+    sgl_obj_set_dirty(obj);
+}
+
+/**
+ * @brief set window alpha
+ * @param obj window object
+ * @param alpha alpha
+ * @return none
+ */
+void sgl_win_set_alpha(sgl_obj_t *obj, uint8_t alpha)
+{
+    sgl_win_t *win = sgl_container_of(obj, sgl_win_t, obj);
+    win->bg.alpha = alpha;
+    sgl_obj_set_dirty(obj);
+}
+
+/**
+ * @brief set window border width
+ * @param obj window object
+ * @param width border width
+ * @return none
+ */
+void sgl_win_set_border_width(sgl_obj_t *obj, uint8_t width)
+{
+    sgl_win_t *win = sgl_container_of(obj, sgl_win_t, obj);
+    win->bg.border = width;
+    sgl_obj_set_border_width(obj, width);
+    sgl_obj_set_dirty(obj);
+}
+
+/**
+ * @brief set window border color
+ * @param obj window object
+ * @param color border color
+ * @return none
+ */
+void sgl_win_set_border_color(sgl_obj_t *obj, sgl_color_t color)
+{
+    sgl_win_t *win = sgl_container_of(obj, sgl_win_t, obj);
+    win->bg.border_color = color;
+    sgl_obj_set_dirty(obj);
+}
+
+/**
+ * @brief set window pixmap
+ * @param obj window object
+ * @param pixmap pixmap
+ * @return none
+ */
+void sgl_win_set_pixmap(sgl_obj_t *obj, const sgl_pixmap_t *pixmap)
+{
+    sgl_win_t *win = sgl_container_of(obj, sgl_win_t, obj);
+    win->bg.pixmap = pixmap;
+    sgl_obj_set_dirty(obj);
+}
+
+/**
+ * @brief set window title text
+ * @param obj window object
+ * @param text title text
+ * @return none
+ */
+void sgl_win_set_title_text(sgl_obj_t *obj, const char *text)
+{
+    sgl_area_t area = obj->area;
+    sgl_win_t *win = sgl_container_of(obj, sgl_win_t, obj);
+    win->title_text = text;
+    area.y2 = area.y1 + win->title_h;
+    sgl_obj_update_area(&area);
+}
+
+/**
+ * @brief set window title text color
+ * @param obj window object
+ * @param color text color
+ * @return none
+ */
+void sgl_win_set_title_text_color(sgl_obj_t *obj, sgl_color_t color)
+{
+    sgl_win_t *win = sgl_container_of(obj, sgl_win_t, obj);
+    win->title_text_color = color;
+    sgl_obj_set_dirty(obj);
+}
+
+/**
+ * @brief set window title font
+ * @param obj window object
+ * @param font title font
+ * @return none
+ */
+void sgl_win_set_title_font(sgl_obj_t *obj, const sgl_font_t *font)
+{
+    sgl_win_t *win = sgl_container_of(obj, sgl_win_t, obj);
+    win->title_font = font;
+    sgl_obj_set_dirty(obj);
+}
+
+/**
+ * @brief set window title height
+ * @param obj window object
+ * @param height title height
+ * @return none
+ */
+void sgl_win_set_title_height(sgl_obj_t *obj, uint16_t height)
+{
+    sgl_win_t *win = sgl_container_of(obj, sgl_win_t, obj);
+    win->title_h = height;
+    sgl_obj_set_dirty(obj);
+}
+
+/**
+ * @brief set window title text align
+ * @param obj window object
+ * @param align text align
+ * @return none
+ */
+void sgl_win_set_title_text_align(sgl_obj_t *obj, uint8_t align)
+{
+    sgl_win_t *win = sgl_container_of(obj, sgl_win_t, obj);
+    win->title_align = align;
+    sgl_obj_set_dirty(obj);
+}
+
+/**
+ * @brief set window title background color
+ * @param obj window object
+ * @param color title background color
+ * @return none
+ */
+void sgl_win_set_title_bg_color(sgl_obj_t *obj, sgl_color_t color)
+{
+    sgl_win_t *win = sgl_container_of(obj, sgl_win_t, obj);
+    win->title_bg_color = color;
+    sgl_obj_set_dirty(obj);
+}
+
+/**
+ * @brief set window close button color
+ * @param obj window object
+ * @param color close button color
+ * @return none
+ */
+void sgl_win_set_close_btn_color(sgl_obj_t *obj, sgl_color_t color)
+{
+    sgl_win_t *win = sgl_container_of(obj, sgl_win_t, obj);
+    win->close_color = color;
+    sgl_obj_set_dirty(obj);
+}

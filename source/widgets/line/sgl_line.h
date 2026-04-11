@@ -68,12 +68,7 @@ sgl_obj_t* sgl_line_create(sgl_obj_t* parent);
  * @param color line color
  * @return none
  */
-static inline void sgl_line_set_color(sgl_obj_t *obj, sgl_color_t color)
-{
-    sgl_line_t *line = sgl_container_of(obj, sgl_line_t, obj);
-    line->color = color;
-    sgl_obj_set_dirty(obj);
-}
+void sgl_line_set_color(sgl_obj_t *obj, sgl_color_t color);
 
 /**
  * @brief set line alpha
@@ -81,13 +76,7 @@ static inline void sgl_line_set_color(sgl_obj_t *obj, sgl_color_t color)
  * @param alpha line alpha
  * @return none
  */
-static inline void sgl_line_set_alpha(sgl_obj_t *obj, uint8_t alpha)
-{
-    SGL_ASSERT(obj != NULL);
-    sgl_line_t *line = sgl_container_of(obj, sgl_line_t, obj);
-    line->alpha = alpha;
-    sgl_obj_set_dirty(obj);
-}
+void sgl_line_set_alpha(sgl_obj_t *obj, uint8_t alpha);
 
 /**
  * @brief set line dashed or solid
@@ -95,13 +84,7 @@ static inline void sgl_line_set_alpha(sgl_obj_t *obj, uint8_t alpha)
  * @param dashed 0: solid line, non-zero: dashed line
  * @return none
  */
-static inline void sgl_line_set_dashed(sgl_obj_t *obj, uint8_t dashed)
-{
-    SGL_ASSERT(obj != NULL);
-    sgl_line_t *line = sgl_container_of(obj, sgl_line_t, obj);
-    line->dashed = dashed;
-    sgl_obj_set_dirty(obj);
-}
+void sgl_line_set_dashed(sgl_obj_t *obj, uint8_t dashed);
 
 /**
  * @brief set line dash pattern when dashed
@@ -110,14 +93,7 @@ static inline void sgl_line_set_dashed(sgl_obj_t *obj, uint8_t dashed)
  * @param gap_len length of space segment in pixels
  * @return none
  */
-static inline void sgl_line_set_dash_pattern(sgl_obj_t *obj, uint16_t dash_len, uint16_t gap_len)
-{
-    SGL_ASSERT(obj != NULL);
-    sgl_line_t *line = sgl_container_of(obj, sgl_line_t, obj);
-    line->dash_length = dash_len;
-    line->gap_length = gap_len;
-    sgl_obj_set_dirty(obj);
-}
+void sgl_line_set_dash_pattern(sgl_obj_t *obj, uint16_t dash_len, uint16_t gap_len);
  
 /**
  * @brief set line start position
@@ -134,12 +110,6 @@ void sgl_line_set_pos(sgl_obj_t *obj, int16_t x1, int16_t y1, int16_t x2, int16_
  * @param width line width
  * @return none
  */
-static inline void sgl_line_set_width(sgl_obj_t *obj, uint8_t width)
-{
-	SGL_ASSERT(obj != NULL);
-	obj->border = width << 1;
-	sgl_obj_set_dirty(obj);
-}
-
+void sgl_line_set_width(sgl_obj_t *obj, uint8_t width);
 
 #endif // !__SGL_LINE_H__

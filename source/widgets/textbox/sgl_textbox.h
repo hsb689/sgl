@@ -59,18 +59,12 @@ typedef struct sgl_textbox {
  */
 sgl_obj_t* sgl_textbox_create(sgl_obj_t* parent);
 
-
 /**
  * @brief set text of the textbox
  * @param obj textbox object
  * @param text text to be set
  */
-static inline void sgl_textbox_set_text(sgl_obj_t *obj, const char *text)
-{
-    sgl_textbox_t *textbox = sgl_container_of(obj, sgl_textbox_t, obj);
-    textbox->text = text;
-    sgl_obj_set_dirty(obj);
-}
+void sgl_textbox_set_text(sgl_obj_t *obj, const char *text);
 
 /**
  * @brief set text color of the textbox
@@ -78,12 +72,7 @@ static inline void sgl_textbox_set_text(sgl_obj_t *obj, const char *text)
  * @param color text color to be set
  * @return none
  */
-static inline void sgl_textbox_set_text_color(sgl_obj_t *obj, sgl_color_t color)
-{
-    sgl_textbox_t *textbox = sgl_container_of(obj, sgl_textbox_t, obj);
-    textbox->text_color = color;
-    sgl_obj_set_dirty(obj);
-}
+void sgl_textbox_set_text_color(sgl_obj_t *obj, sgl_color_t color);
 
 /**
  * @brief set text font of the textbox
@@ -91,12 +80,7 @@ static inline void sgl_textbox_set_text_color(sgl_obj_t *obj, sgl_color_t color)
  * @param font font of text
  * @return none
  */
-static inline void sgl_textbox_set_text_font(sgl_obj_t *obj, const sgl_font_t *font)
-{
-    sgl_textbox_t *textbox = sgl_container_of(obj, sgl_textbox_t, obj);
-    textbox->font = font;
-    sgl_obj_set_dirty(obj);
-}
+void sgl_textbox_set_text_font(sgl_obj_t *obj, const sgl_font_t *font);
 
 /**
  * @brief set background color of the textbox
@@ -104,12 +88,7 @@ static inline void sgl_textbox_set_text_font(sgl_obj_t *obj, const sgl_font_t *f
  * @param color background color to be set
  * @return none
  */
-static inline void sgl_textbox_set_bg_color(sgl_obj_t *obj, sgl_color_t color)
-{
-    sgl_textbox_t *textbox = sgl_container_of(obj, sgl_textbox_t, obj);
-    textbox->bg.color = color;
-    sgl_obj_set_dirty(obj);
-}
+void sgl_textbox_set_bg_color(sgl_obj_t *obj, sgl_color_t color);
 
 /**
  * @brief set radius of the textbox
@@ -117,13 +96,7 @@ static inline void sgl_textbox_set_bg_color(sgl_obj_t *obj, sgl_color_t color)
  * @param radius radius to be set
  * @return none
  */
-static inline void sgl_textbox_set_radius(sgl_obj_t *obj, uint8_t radius)
-{
-    sgl_textbox_t *textbox = sgl_container_of(obj, sgl_textbox_t, obj);
-    sgl_obj_set_radius(obj, radius);
-    textbox->bg.radius = obj->radius;
-    sgl_obj_set_dirty(obj);
-}
+void sgl_textbox_set_radius(sgl_obj_t *obj, uint8_t radius);
 
 /**
  * @brief set border color of the textbox
@@ -131,12 +104,7 @@ static inline void sgl_textbox_set_radius(sgl_obj_t *obj, uint8_t radius)
  * @param color border color to be set
  * @return none
  */
-static inline void sgl_textbox_set_border_color(sgl_obj_t *obj, sgl_color_t color)
-{
-    sgl_textbox_t *textbox = sgl_container_of(obj, sgl_textbox_t, obj);
-    textbox->bg.border_color = color;
-    sgl_obj_set_dirty(obj);
-}
+void sgl_textbox_set_border_color(sgl_obj_t *obj, sgl_color_t color);
 
 /**
  * @brief set border width of the textbox
@@ -144,13 +112,7 @@ static inline void sgl_textbox_set_border_color(sgl_obj_t *obj, sgl_color_t colo
  * @param width border width to be set
  * @return none
  */
-static inline void sgl_textbox_set_border_width(sgl_obj_t *obj, uint8_t width)
-{
-    sgl_textbox_t *textbox = sgl_container_of(obj, sgl_textbox_t, obj);
-    textbox->bg.border = width;
-    sgl_obj_set_border_width(obj, width);
-    sgl_obj_set_dirty(obj);
-}
+void sgl_textbox_set_border_width(sgl_obj_t *obj, uint8_t width);
 
 /**
  * @brief set textbox pixmap
@@ -158,12 +120,7 @@ static inline void sgl_textbox_set_border_width(sgl_obj_t *obj, uint8_t width)
  * @param pixmap pixmap to be set
  * @return none
  */
-static inline void sgl_textbox_set_pixmap(sgl_obj_t *obj, const sgl_pixmap_t *pixmap)
-{
-    sgl_textbox_t *textbox = sgl_container_of(obj, sgl_textbox_t, obj);
-    textbox->bg.pixmap = pixmap;
-    sgl_obj_set_dirty(obj);
-}
+void sgl_textbox_set_pixmap(sgl_obj_t *obj, const sgl_pixmap_t *pixmap);
 
 /**
  * @brief set textbox line margin
@@ -171,12 +128,6 @@ static inline void sgl_textbox_set_pixmap(sgl_obj_t *obj, const sgl_pixmap_t *pi
  * @param margin line margin to be set
  * @return none
  */
-static inline void sgl_textbox_set_line_margin(sgl_obj_t *obj, uint8_t margin)
-{
-    sgl_textbox_t *textbox = sgl_container_of(obj, sgl_textbox_t, obj);
-    textbox->line_margin = margin;
-    sgl_obj_set_dirty(obj);
-}
-
+void sgl_textbox_set_line_margin(sgl_obj_t *obj, uint8_t margin);
 
 #endif // !__SGL_TEXTBOX_H__

@@ -61,19 +61,13 @@ typedef struct sgl_keyboard {
  */
 sgl_obj_t* sgl_keyboard_create(sgl_obj_t* parent);
 
-
 /**
  * @brief set keyboard color
  * @param obj keyboard object
  * @param color color
  * @return none
  */
-static inline void sgl_keyboard_set_color(sgl_obj_t *obj, sgl_color_t color)
-{
-    sgl_keyboard_t *keyboard = sgl_container_of(obj, sgl_keyboard_t, obj);
-    keyboard->body_desc.color = color;
-    sgl_obj_set_dirty(obj);
-}
+void sgl_keyboard_set_color(sgl_obj_t *obj, sgl_color_t color);
 
 /**
  * @brief set keyboard alpha
@@ -81,12 +75,7 @@ static inline void sgl_keyboard_set_color(sgl_obj_t *obj, sgl_color_t color)
  * @param alpha alpha [0 ~ 255]
  * @return none
  */
-static inline void sgl_keyboard_set_alpha(sgl_obj_t *obj, uint8_t alpha)
-{
-    sgl_keyboard_t *keyboard = sgl_container_of(obj, sgl_keyboard_t, obj);
-    keyboard->body_desc.alpha = alpha;
-    sgl_obj_set_dirty(obj);
-}
+void sgl_keyboard_set_alpha(sgl_obj_t *obj, uint8_t alpha);
 
 /**
  * @brief set keyboard radius
@@ -94,13 +83,7 @@ static inline void sgl_keyboard_set_alpha(sgl_obj_t *obj, uint8_t alpha)
  * @param radius radius [0 ~ 255]
  * @return none
  */
-static inline void sgl_keyboard_set_radius(sgl_obj_t *obj, uint8_t radius)
-{
-    sgl_keyboard_t *keyboard = sgl_container_of(obj, sgl_keyboard_t, obj);
-    sgl_obj_set_radius(obj, radius);
-    keyboard->body_desc.radius = obj->radius;
-    sgl_obj_set_dirty(obj);
-}
+void sgl_keyboard_set_radius(sgl_obj_t *obj, uint8_t radius);
 
 /**
  * @brief set keyboard pixmap
@@ -108,12 +91,7 @@ static inline void sgl_keyboard_set_radius(sgl_obj_t *obj, uint8_t radius)
  * @param pixmap pixmap
  * @return none
  */
-static inline void sgl_keyboard_set_pixmap(sgl_obj_t *obj, const sgl_pixmap_t *pixmap)
-{
-    sgl_keyboard_t *keyboard = sgl_container_of(obj, sgl_keyboard_t, obj);
-    keyboard->body_desc.pixmap = pixmap;
-    sgl_obj_set_dirty(obj);
-}
+void sgl_keyboard_set_pixmap(sgl_obj_t *obj, const sgl_pixmap_t *pixmap);
 
 /**
  * @brief set keyboard border color
@@ -122,12 +100,7 @@ static inline void sgl_keyboard_set_pixmap(sgl_obj_t *obj, const sgl_pixmap_t *p
  * @return none
  * 
  */
-static inline void sgl_keyboard_set_border_color(sgl_obj_t *obj, sgl_color_t color)
-{
-    sgl_keyboard_t *keyboard = sgl_container_of(obj, sgl_keyboard_t, obj);
-    keyboard->body_desc.border_color = color;
-    sgl_obj_set_dirty(obj);
-}
+void sgl_keyboard_set_border_color(sgl_obj_t *obj, sgl_color_t color);
 
 /**
  * @brief set keyboard border width
@@ -135,13 +108,7 @@ static inline void sgl_keyboard_set_border_color(sgl_obj_t *obj, sgl_color_t col
  * @param width border width [0 ~ 255]
  * @return none
  */
-static inline void sgl_keyboard_set_border_width(sgl_obj_t *obj, uint8_t width)
-{
-    sgl_keyboard_t *keyboard = sgl_container_of(obj, sgl_keyboard_t, obj);
-    keyboard->btn_desc.border = width;
-    sgl_obj_set_border_width(obj, width);
-    sgl_obj_set_dirty(obj);
-}
+void sgl_keyboard_set_border_width(sgl_obj_t *obj, uint8_t width);
 
 /**
  * @brief set keyboard text color
@@ -149,12 +116,7 @@ static inline void sgl_keyboard_set_border_width(sgl_obj_t *obj, uint8_t width)
  * @param color text color
  * @return none
  */
-static inline void sgl_keyboard_set_text_color(sgl_obj_t *obj, sgl_color_t color)
-{
-    sgl_keyboard_t *keyboard = sgl_container_of(obj, sgl_keyboard_t, obj);
-    keyboard->text_color = color;
-    sgl_obj_set_dirty(obj);
-}
+void sgl_keyboard_set_text_color(sgl_obj_t *obj, sgl_color_t color);
 
 /**
  * @brief set keyboard text font
@@ -162,12 +124,7 @@ static inline void sgl_keyboard_set_text_color(sgl_obj_t *obj, sgl_color_t color
  * @param font text font
  * @return none
  */
-static inline void sgl_keyboard_set_text_font(sgl_obj_t *obj, const sgl_font_t *font)
-{
-    sgl_keyboard_t *keyboard = sgl_container_of(obj, sgl_keyboard_t, obj);
-    keyboard->font = font;
-    sgl_obj_set_dirty(obj);
-}
+void sgl_keyboard_set_text_font(sgl_obj_t *obj, const sgl_font_t *font);
 
 /**
  * @brief set keyboard button radius
@@ -175,12 +132,7 @@ static inline void sgl_keyboard_set_text_font(sgl_obj_t *obj, const sgl_font_t *
  * @param radius button radius [0 ~ 255]
  * @return none
  */
-static inline void sgl_keyboard_set_btn_radius(sgl_obj_t *obj, uint8_t radius)
-{
-    sgl_keyboard_t *keyboard = sgl_container_of(obj, sgl_keyboard_t, obj);
-    keyboard->btn_desc.radius = radius;
-    sgl_obj_set_dirty(obj);
-}
+void sgl_keyboard_set_btn_radius(sgl_obj_t *obj, uint8_t radius);
 
 /**
  * @brief set keyboard button alpha
@@ -188,12 +140,7 @@ static inline void sgl_keyboard_set_btn_radius(sgl_obj_t *obj, uint8_t radius)
  * @param alpha button alpha [0 ~ 255]
  * @return none
  */
-static inline void sgl_keyboard_set_btn_alpha(sgl_obj_t *obj, uint8_t alpha)
-{
-    sgl_keyboard_t *keyboard = sgl_container_of(obj, sgl_keyboard_t, obj);
-    keyboard->btn_desc.alpha = alpha;
-    sgl_obj_set_dirty(obj);
-}
+void sgl_keyboard_set_btn_alpha(sgl_obj_t *obj, uint8_t alpha);
 
 /**
  * @brief set keyboard button color
@@ -201,12 +148,7 @@ static inline void sgl_keyboard_set_btn_alpha(sgl_obj_t *obj, uint8_t alpha)
  * @param color button color
  * @return none
  */
-static inline void sgl_keyboard_set_btn_color(sgl_obj_t *obj, sgl_color_t color)
-{
-    sgl_keyboard_t *keyboard = sgl_container_of(obj, sgl_keyboard_t, obj);
-    keyboard->btn_desc.color = color;
-    sgl_obj_set_dirty(obj);
-}
+void sgl_keyboard_set_btn_color(sgl_obj_t *obj, sgl_color_t color);
 
 /**
  * @brief set keyboard button pixmap
@@ -214,12 +156,7 @@ static inline void sgl_keyboard_set_btn_color(sgl_obj_t *obj, sgl_color_t color)
  * @param pixmap button pixmap
  * @return none
  */
-static inline void sgl_keyboard_set_btn_pixmap(sgl_obj_t *obj, const sgl_pixmap_t *pixmap)
-{
-    sgl_keyboard_t *keyboard = sgl_container_of(obj, sgl_keyboard_t, obj);
-    keyboard->btn_desc.pixmap = pixmap;
-    sgl_obj_set_dirty(obj);
-}
+void sgl_keyboard_set_btn_pixmap(sgl_obj_t *obj, const sgl_pixmap_t *pixmap);
 
 /**
  * @brief set keyboard button border color
@@ -227,12 +164,7 @@ static inline void sgl_keyboard_set_btn_pixmap(sgl_obj_t *obj, const sgl_pixmap_
  * @param color button border color
  * @return none
  */
-static inline void sgl_keyboard_set_btn_border_color(sgl_obj_t *obj, sgl_color_t color)
-{
-    sgl_keyboard_t *keyboard = sgl_container_of(obj, sgl_keyboard_t, obj);
-    keyboard->btn_desc.border_color = color;
-    sgl_obj_set_dirty(obj);
-}
+void sgl_keyboard_set_btn_border_color(sgl_obj_t *obj, sgl_color_t color);
 
 /**
  * @brief set keyboard button border width
@@ -240,23 +172,14 @@ static inline void sgl_keyboard_set_btn_border_color(sgl_obj_t *obj, sgl_color_t
  * @param width button border width [0 ~ 255]
  * @return none
  */
-static inline void sgl_keyboard_set_btn_border_width(sgl_obj_t *obj, uint8_t width)
-{
-    sgl_keyboard_t *keyboard = sgl_container_of(obj, sgl_keyboard_t, obj);
-    keyboard->btn_desc.border = width;
-    sgl_obj_set_dirty(obj);
-}
+void sgl_keyboard_set_btn_border_width(sgl_obj_t *obj, uint8_t width);
 
 /**
  * @brief get keyboard opcode
  * @param obj keyboard object
  * @return opcode [0 ~ 255]
  */
-static inline uint8_t sgl_keyboard_get_opcode(sgl_obj_t *obj)
-{
-    return ((sgl_keyboard_t*)obj)->opcode;
-}
-
+uint8_t sgl_keyboard_get_opcode(sgl_obj_t *obj);
 
 /**
  * @brief set keyboard text buffer
@@ -264,12 +187,6 @@ static inline uint8_t sgl_keyboard_get_opcode(sgl_obj_t *obj)
  * @param buffer edit buffer
  * @param buf_max_len edit buffer max length
  */
-static inline void sgl_keyboard_set_textarea(sgl_obj_t *obj, char *buffer, int buf_max_len)
-{
-    sgl_keyboard_t *keyboard = sgl_container_of(obj, sgl_keyboard_t, obj);
-    keyboard->edit = buffer;
-    keyboard->edit_max_len = buf_max_len;
-}
-
+void sgl_keyboard_set_textarea(sgl_obj_t *obj, char *buffer, int buf_max_len);
 
 #endif // !__SGL_KEYBOARD_H__

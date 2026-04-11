@@ -56,19 +56,13 @@ typedef struct sgl_ring {
  */
 sgl_obj_t* sgl_ring_create(sgl_obj_t* parent);
 
-
 /**
  * @brief Set the ring color
  * @param obj The ring object
  * @param color The ring color
  * @return none
  */
-static inline void sgl_ring_set_color(sgl_obj_t *obj, sgl_color_t color)
-{
-    sgl_ring_t *ring = sgl_container_of(obj, sgl_ring_t, obj);
-    ring->color = color;
-    sgl_obj_set_dirty(obj);
-}
+void sgl_ring_set_color(sgl_obj_t *obj, sgl_color_t color);
 
 /**
  * @brief Set the ring alpha
@@ -77,12 +71,7 @@ static inline void sgl_ring_set_color(sgl_obj_t *obj, sgl_color_t color)
  * @return none
  * @note The alpha value range is 0~255
  */
-static inline void sgl_ring_set_alpha(sgl_obj_t *obj, uint8_t alpha)
-{
-    sgl_ring_t *ring = sgl_container_of(obj, sgl_ring_t, obj);
-    ring->alpha = alpha;
-    sgl_obj_set_dirty(obj);
-}
+void sgl_ring_set_alpha(sgl_obj_t *obj, uint8_t alpha);
 
 /**
  * @brief Set the ring radius
@@ -91,13 +80,6 @@ static inline void sgl_ring_set_alpha(sgl_obj_t *obj, uint8_t alpha)
  * @param radius_out The ring outer radius
  * @return none
  */
-static inline void sgl_ring_set_radius(sgl_obj_t *obj, uint16_t radius_in, uint16_t radius_out)
-{
-    sgl_ring_t *ring = sgl_container_of(obj, sgl_ring_t, obj);
-    ring->radius_in = radius_in;
-    sgl_obj_set_radius(obj, radius_out);
-    ring->radius_out = obj->radius;
-    sgl_obj_set_dirty(obj);
-}
+void sgl_ring_set_radius(sgl_obj_t *obj, uint16_t radius_in, uint16_t radius_out);
 
 #endif // !__SGL_RING_H__

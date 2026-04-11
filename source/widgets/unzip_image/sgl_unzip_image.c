@@ -235,3 +235,58 @@ sgl_obj_t* sgl_unzip_img_create(sgl_obj_t* parent)
 
     return obj;
 }
+
+/**
+ * @brief Set image color
+ * @param obj Image object pointer
+ * @param color Image color
+ * @return none
+ */
+void sgl_unzip_img_set_color(sgl_obj_t *obj, sgl_color_t color)
+{
+    sgl_unzip_img_t *img = sgl_container_of(obj, sgl_unzip_img_t, obj);
+    img->desc.color = color;
+    sgl_obj_set_dirty(obj);
+}
+
+/**
+ * @brief Set image alpha value
+ * @param obj Image object pointer
+ * @param alpha Image alpha value
+ * @return none
+ */
+void sgl_unzip_img_set_alpha(sgl_obj_t *obj, uint8_t alpha)
+{
+    sgl_unzip_img_t *img = sgl_container_of(obj, sgl_unzip_img_t, obj);
+    img->desc.alpha = alpha;
+    sgl_obj_set_dirty(obj);
+}
+
+/**
+ * @brief Set image alignment type
+ * @param obj Image object pointer
+ * @param align Image alignment type
+ * @return none
+ */
+void sgl_unzip_img_set_align(sgl_obj_t *obj, sgl_align_type_t align)
+{
+    sgl_unzip_img_t *img = sgl_container_of(obj, sgl_unzip_img_t, obj);
+    img->desc.align = align;
+    sgl_obj_set_dirty(obj);
+}
+
+/**
+ * @brief Set image compressed image data
+ * @param obj Image object pointer
+ * @param unzip_img Compressed image data
+ * @return none
+ */
+void sgl_unzip_img_set_img(sgl_obj_t *obj, const sgl_unzip_img_pixmap_t *unzip_img)
+{
+    sgl_unzip_img_t *img = sgl_container_of(obj, sgl_unzip_img_t, obj);
+    img->desc.unzip_img = unzip_img;
+    if (img->desc.unzip_img != NULL) {
+        sgl_obj_set_size(obj, img->desc.unzip_img->width, img->desc.unzip_img->height);
+    }
+    sgl_obj_set_dirty(obj);
+}

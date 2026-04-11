@@ -126,3 +126,140 @@ sgl_obj_t* sgl_bar_create(sgl_obj_t* parent)
 
     return obj;
 }
+
+/**
+ * @brief set the fill color of the bar
+ * @param obj bar object
+ * @param color fill color
+ * @return none
+ */
+void sgl_bar_set_fill_color(sgl_obj_t *obj, sgl_color_t color)
+{
+    sgl_bar_t *bar = sgl_container_of(obj, sgl_bar_t, obj);
+    bar->fill_color = color;
+    sgl_obj_set_dirty(obj);
+}
+
+/**
+ * @brief set the fill alpha of the bar
+ * @param obj bar object
+ * @param alpha fill alpha
+ * @return none
+ */
+void sgl_bar_set_fill_alpha(sgl_obj_t *obj, uint8_t alpha)
+{
+    sgl_bar_t *bar = sgl_container_of(obj, sgl_bar_t, obj);
+    bar->alpha = alpha;
+    sgl_obj_set_dirty(obj);
+}
+
+/**
+ * @brief set the track color of the bar
+ * @param obj bar object
+ * @param color track color
+ * @return none
+ */
+void sgl_bar_set_track_color(sgl_obj_t *obj, sgl_color_t color)
+{
+    sgl_bar_t *bar = sgl_container_of(obj, sgl_bar_t, obj);
+    bar->track_color = color;
+    sgl_obj_set_dirty(obj);
+}
+
+/**
+ * @brief set the track alpha of the bar
+ * @param obj bar object
+ * @param alpha track alpha
+ * @return none
+ */
+void sgl_bar_set_track_alpha(sgl_obj_t *obj, uint8_t alpha)
+{
+    sgl_bar_t *bar = sgl_container_of(obj, sgl_bar_t, obj);
+    bar->alpha = alpha;
+    sgl_obj_set_dirty(obj);
+}
+
+/**
+ * @brief set the bar direction
+ * @param obj bar object
+ * @param direct bar direction
+ * @return none
+ * @note direct : SGL_DIRECT_HORIZONTAL or SGL_DIRECT_VERTICAL
+ */
+void sgl_bar_set_direct(sgl_obj_t *obj, uint8_t direct)
+{
+    sgl_bar_t *bar = sgl_container_of(obj, sgl_bar_t, obj);
+    bar->direct = direct;
+    sgl_obj_set_dirty(obj);
+}
+
+/**
+ * @brief set the bar radius
+ * @param obj bar object
+ * @param radius bar radius
+ * @return none
+ */
+void sgl_bar_set_radius(sgl_obj_t *obj, uint8_t radius)
+{
+    sgl_obj_set_radius(obj, radius);
+    sgl_obj_set_dirty(obj);
+}
+
+/**
+ * @brief set the bar value
+ * @param obj bar object
+ * @param value bar value
+ * @return none
+ */
+void sgl_bar_set_value(sgl_obj_t *obj, uint8_t value)
+{
+    sgl_bar_t *bar = sgl_container_of(obj, sgl_bar_t, obj);
+    bar->value = value;
+    sgl_obj_set_dirty(obj);
+}
+
+/**
+ * @brief get the bar value
+ * @param obj bar object
+ * @return bar value
+ */
+uint8_t sgl_bar_get_value(sgl_obj_t *obj)
+{
+    sgl_bar_t *bar = sgl_container_of(obj, sgl_bar_t, obj);
+    return bar->value;
+}
+
+/**
+ * @brief set the bar border width
+ * @param obj bar object
+ * @param width border width
+ */
+void sgl_bar_set_border_width(sgl_obj_t *obj, uint8_t width)
+{
+    sgl_obj_set_border_width(obj, width);
+    sgl_obj_set_dirty(obj);
+}
+
+/**
+ * @brief set the bar border color
+ * @param obj bar object
+ * @param color border color
+ */
+void sgl_bar_set_border_color(sgl_obj_t *obj, sgl_color_t color)
+{
+    sgl_bar_t *bar = sgl_container_of(obj, sgl_bar_t, obj);
+    bar->border_color = color;
+    sgl_obj_set_dirty(obj);
+}
+
+/**
+ * @brief set the bar pixmap
+ * @param obj bar object
+ * @param pixmap pixmap
+ */
+void sgl_bar_set_pixmap(sgl_obj_t *obj, const sgl_pixmap_t *pixmap)
+{
+    sgl_bar_t *bar = sgl_container_of(obj, sgl_bar_t, obj);
+    bar->pixmap = pixmap;
+    sgl_obj_set_dirty(obj);
+}
