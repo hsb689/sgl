@@ -59,7 +59,6 @@ static void sgl_arc_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_event_t *
         }
 
         sgl_obj_set_dirty(obj);
-        SGL_LOG_INFO("sgl_arc_construct_cb: x1 = %d, x2 = %d, y1 = %d, y2 = %d, %d", obj->area.x1, obj->area.x2, obj->area.y1, obj->area.y2, arc->desc.end_angle);
     }
     else if(SGL_EVENT_DRAW_INIT) {
         if(arc->desc.radius_out < 0) {
