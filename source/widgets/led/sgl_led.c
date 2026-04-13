@@ -119,7 +119,6 @@ sgl_obj_t* sgl_led_create(sgl_obj_t* parent)
     led->on_color = SGL_THEME_COLOR;
     led->off_color = SGL_THEME_BG_COLOR;
     led->bg_color = SGL_THEME_BG_COLOR;
-    obj->radius = SGL_RADIUS_INVALID;
 
     return obj;
 }
@@ -133,7 +132,7 @@ sgl_obj_t* sgl_led_create(sgl_obj_t* parent)
 void sgl_led_set_radius(sgl_obj_t *obj, uint8_t radius)
 {
     obj->radius > 0 ? sgl_obj_size_zoom(obj, radius - obj->radius) : 0;
-    obj->radius = radius;
+    obj->radius = sgl_is_odd(radius) ? radius : radius - 1;;
     sgl_obj_set_dirty(obj);
 }
 

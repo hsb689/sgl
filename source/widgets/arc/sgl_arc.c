@@ -205,4 +205,3 @@ void sgl_arc_set_end_angle(sgl_obj_t *obj, int16_t angle)
     arc->desc.end_angle = angle;
     sgl_obj_set_dirty(obj);
 }
-
