@@ -449,8 +449,9 @@ void sgl_obj_set_radius(sgl_obj_t *obj, size_t radius)
  */
 void sgl_obj_set_circle_radius(sgl_obj_t *obj, size_t radius)
 {
-    obj->coords.x2 = obj->coords.x1 + radius * 2 - 1;
-    obj->coords.y2 = obj->coords.y1 + radius * 2 - 1;
+    SGL_ASSERT(obj != NULL);
+    obj->coords.x2 = obj->coords.x1 + radius * 2;
+    obj->coords.y2 = obj->coords.y1 + radius * 2;
     obj->radius = radius & 0xFFF;
 }
 
