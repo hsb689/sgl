@@ -119,7 +119,6 @@ sgl_obj_t* sgl_led_create(sgl_obj_t* parent)
     led->on_color = SGL_THEME_COLOR;
     led->off_color = SGL_THEME_BG_COLOR;
     led->bg_color = SGL_THEME_BG_COLOR;
-    obj->radius = SGL_RADIUS_INVALID;
 
     return obj;
 }

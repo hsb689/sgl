@@ -1617,6 +1617,16 @@ void sgl_obj_set_radius(sgl_obj_t *obj, size_t radius);
 
 
 /**
+ * @brief set object circle radius
+ * @param obj point to object
+ * @param radius circle radius
+ * @return none
+ * @note the function is only for type of circle widget
+ */
+void sgl_obj_set_circle_radius(sgl_obj_t *obj, size_t radius);
+
+
+/**
  * @brief get the radius of object
  * @param obj object
  * @return object radius

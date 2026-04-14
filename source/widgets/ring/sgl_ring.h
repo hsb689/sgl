@@ -46,7 +46,7 @@ typedef struct sgl_ring {
     int16_t          radius_in;
     int16_t          radius_out;
     uint8_t          alpha;
-}sgl_ring_t;
+} sgl_ring_t;
 
 
 /**

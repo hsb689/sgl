@@ -440,6 +440,22 @@ void sgl_obj_set_radius(sgl_obj_t *obj, size_t radius)
 }
 
 
+/**
+ * @brief set object circle radius
+ * @param obj point to object
+ * @param radius circle radius
+ * @return none
+ * @note the function is only for type of circle widget
+ */
+void sgl_obj_set_circle_radius(sgl_obj_t *obj, size_t radius)
+{
+    SGL_ASSERT(obj != NULL);
+    obj->coords.x2 = obj->coords.x1 + radius * 2;
+    obj->coords.y2 = obj->coords.y1 + radius * 2;
+    obj->radius = radius & 0xFFF;
+}
+
+
 #if (CONFIG_SGL_OBJ_USE_NAME && CONFIG_SGL_DEBUG)
 /**
  * @brief print object name that include this all child
