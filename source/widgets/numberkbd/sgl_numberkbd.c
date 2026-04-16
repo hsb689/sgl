@@ -165,7 +165,7 @@ static void sgl_numberkbd_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_eve
                 else {
                     sgl_draw_rect(surf, &btn, &btn, &numberkbd->btn_desc);
                     text_x = btn.x1 + ((box_w -  sgl_font_get_string_width("0", numberkbd->font)) / 2);
-                    sgl_draw_character(surf, &obj->area, text_x, text_y, kbd_digits[btn_row][btn_col] - 32, numberkbd->text_color, numberkbd->btn_desc.alpha, numberkbd->font);
+                    sgl_draw_character(surf, &obj->area, text_x, text_y, kbd_digits[btn_row][btn_col] - 31, numberkbd->text_color, numberkbd->btn_desc.alpha, numberkbd->font);
                 }
                 btn_col ++;
             }
@@ -285,7 +285,7 @@ sgl_obj_t* sgl_numberkbd_create(sgl_obj_t* parent)
 void sgl_numberkbd_set_color(sgl_obj_t *obj, sgl_color_t color)
 {
     sgl_numberkbd_t *numberkbd = sgl_container_of(obj, sgl_numberkbd_t, obj);
-    numberkbd->text_color = color;
+    numberkbd->body_desc.color = color;
     sgl_obj_set_dirty(obj);
 }
 
