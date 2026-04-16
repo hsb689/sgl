@@ -63,7 +63,6 @@ void sgl_draw_fill_ring(sgl_surf_t *surf, sgl_area_t *area, int16_t cx, int16_t 
     uint8_t edge_alpha;
     sgl_color_t edge_c;
     sgl_color_t *blend, *buf = sgl_surf_get_buf(surf, clip.x1 - surf->x1, clip.y1 - surf->y1);
-    const int stride = surf->w;
     int dx2, dy2;
 
     for (int y = clip.y1; y <= clip.y2; y++) {
@@ -100,6 +99,6 @@ void sgl_draw_fill_ring(sgl_surf_t *surf, sgl_area_t *area, int16_t cx, int16_t 
                 *blend = use_alpha ? sgl_color_mixer(edge_c, *blend, alpha) : edge_c;
             }
         }
-        buf += stride;
+        buf += surf->w;
     }
 }
