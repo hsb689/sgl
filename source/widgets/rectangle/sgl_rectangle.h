@@ -45,6 +45,7 @@ typedef struct sgl_rectangle {
     sgl_color_t     color;
     sgl_color_t     border_color;
     uint8_t         alpha;
+    uint8_t         border_alpha;
 } sgl_rectangle_t;
 
 
@@ -94,6 +95,14 @@ void sgl_rect_set_border_width(sgl_obj_t *obj, uint8_t width);
  * @retval none
  */
 void sgl_rect_set_border_color(sgl_obj_t *obj, sgl_color_t color);
+
+/**
+ * @brief  set rectangle border alpha
+ * @param  obj: rectangle object
+ * @param  alpha: rectangle border alpha
+ * @retval none
+ */
+void sgl_rect_set_border_alpha(sgl_obj_t *obj, uint8_t alpha);
 
 /**
  * @brief  set rectangle pixmap

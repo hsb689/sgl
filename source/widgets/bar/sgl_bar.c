@@ -66,7 +66,7 @@ static void sgl_bar_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_event_t *
 
         sgl_draw_rect(surf, &obj->area, &obj->coords, &desc);
         if (obj->border) {
-            sgl_draw_fill_rect_with_border(surf, &knob, &obj->coords, obj->radius, bar->fill_color, bar->border_color, obj->border, bar->alpha);
+            sgl_draw_fill_rect_with_border(surf, &knob, &obj->coords, obj->radius, bar->fill_color, bar->border_color, obj->border, bar->alpha, bar->alpha);
         }
         else {
             sgl_draw_fill_rect(surf, &knob, &obj->coords, obj->radius, bar->fill_color, bar->alpha);

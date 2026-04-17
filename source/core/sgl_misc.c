@@ -79,7 +79,7 @@ static void sgl_logo_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_event_t 
             rect.x2 = sgl_logo_s[i][2] * scale_x + obj->area.x1 - 1;
             rect.y2 = sgl_logo_s[i][3] * scale_y + obj->area.y1 - 1;
 
-            sgl_draw_fill_rect_with_border(surf, &clip, &rect, obj->radius, SGL_COLOR_RED, SGL_COLOR_BLUE, 0, logo->alpha);
+            sgl_draw_fill_rect(surf, &clip, &rect, obj->radius, SGL_COLOR_RED, logo->alpha);
         }
 
         for (uint32_t i = 0; i < SGL_ARRAY_SIZE(sgl_logo_g); i++) {
@@ -88,7 +88,7 @@ static void sgl_logo_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_event_t 
             rect.x2 = sgl_logo_g[i][2] * scale_x + obj->area.x1 - 1;
             rect.y2 = sgl_logo_g[i][3] * scale_y + obj->area.y1 - 1;
 
-            sgl_draw_fill_rect_with_border(surf, &clip, &rect, obj->radius, SGL_COLOR_GREEN, SGL_COLOR_BLUE, 0, logo->alpha);
+            sgl_draw_fill_rect(surf, &clip, &rect, obj->radius, SGL_COLOR_GREEN, logo->alpha);
         }
 
         for (uint32_t i = 0; i < SGL_ARRAY_SIZE(sgl_logo_l); i++) {
@@ -97,7 +97,7 @@ static void sgl_logo_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_event_t 
             rect.x2 = sgl_logo_l[i][2] * scale_x + obj->area.x1 - 1;
             rect.y2 = sgl_logo_l[i][3] * scale_y + obj->area.y1 - 1;
 
-            sgl_draw_fill_rect_with_border(surf, &clip, &rect, obj->radius, SGL_COLOR_BLUE, SGL_COLOR_BLUE, 0, logo->alpha);
+            sgl_draw_fill_rect(surf, &clip, &rect, obj->radius, SGL_COLOR_BLUE, logo->alpha);
         }
     }
 }

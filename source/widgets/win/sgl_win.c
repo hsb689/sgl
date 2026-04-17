@@ -45,7 +45,7 @@ static void sgl_win_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_event_t *
     if (evt->type == SGL_EVENT_DRAW_MAIN) {
         sgl_draw_rect(surf, &obj->area, &bg, &win->bg);
         sgl_draw_fill_rect_with_border(surf, &title_bg, &bg, obj->radius, win->title_bg_color, 
-                                             win->bg.border_color, win->bg.border, win->bg.alpha
+                                             win->bg.border_color, win->bg.border, win->bg.alpha, win->bg.alpha
                                       );
 
         align_pos = sgl_get_text_pos(&title_bg, win->title_font, win->title_text, 0, (sgl_align_type_t)win->title_align);

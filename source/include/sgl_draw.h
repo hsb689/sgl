@@ -44,6 +44,7 @@ extern "C" {
  * @brief rect description
  * @color: color of rect
  * @alpha: alpha of rect
+ * @border_alpha: alpha of border
  * @border: border of rect
  * @border_color: border color of rect
  * @pixmap: pixmap of rect
@@ -51,6 +52,7 @@ extern "C" {
 typedef struct sgl_draw_rect {
     uint8_t                 alpha;
     uint8_t                 border;
+    uint8_t                 border_alpha;
     sgl_color_t             color;
     int16_t                 radius;
     sgl_color_t             border_color;
@@ -271,9 +273,10 @@ void sgl_draw_fill_rect(sgl_surf_t *surf, sgl_area_t *area, sgl_area_t *rect, in
  * @param border_color color of border
  * @param border_width width of border
  * @param alpha alpha of rectangle
+ * @param border_alpha alpha of border
  * @return none
  */
-void sgl_draw_fill_rect_with_border(sgl_surf_t *surf, sgl_area_t *area, sgl_area_t *rect, int16_t radius, sgl_color_t color, sgl_color_t border_color, uint8_t border_width, uint8_t alpha);
+void sgl_draw_fill_rect_with_border(sgl_surf_t *surf, sgl_area_t *area, sgl_area_t *rect, int16_t radius, sgl_color_t color, sgl_color_t border_color, uint8_t border_width, uint8_t alpha, uint8_t border_alpha);
 
 
 /**

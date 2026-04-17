@@ -46,6 +46,7 @@ static void sgl_rectangle_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_eve
     sgl_draw_rect_t desc = {
         .color = rect->color,
         .alpha = rect->alpha,
+        .border_alpha = rect->border_alpha,
         .border = obj->border,
         .border_color = rect->border_color,
         .pixmap = rect->pixmap,
@@ -95,6 +96,7 @@ sgl_obj_t* sgl_rect_create(sgl_obj_t* parent)
     obj->construct_fn = sgl_rectangle_construct_cb;
 
     rect->alpha = SGL_THEME_ALPHA;
+    rect->border_alpha = SGL_THEME_ALPHA;
     rect->color = SGL_THEME_COLOR;
     rect->border_color = SGL_THEME_BORDER_COLOR;
     rect->pixmap = NULL;
@@ -162,6 +164,19 @@ void sgl_rect_set_border_color(sgl_obj_t *obj, sgl_color_t color)
 {
     sgl_rectangle_t *rect = sgl_container_of(obj, sgl_rectangle_t, obj);
     rect->border_color = color;
+    sgl_obj_set_dirty(obj);
+}
+
+/**
+ * @brief  set rectangle border alpha
+ * @param  obj: rectangle object
+ * @param  alpha: rectangle border alpha
+ * @retval none
+ */
+void sgl_rect_set_border_alpha(sgl_obj_t *obj, uint8_t alpha)
+{
+    sgl_rectangle_t *rect = sgl_container_of(obj, sgl_rectangle_t, obj);
+    rect->border_alpha = alpha;
     sgl_obj_set_dirty(obj);
 }
 
