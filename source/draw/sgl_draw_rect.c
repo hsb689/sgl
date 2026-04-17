@@ -63,7 +63,7 @@ void sgl_draw_wireframe(sgl_surf_t *surf, sgl_area_t *area, sgl_area_t *rect, in
  */
 void sgl_draw_fill_rect(sgl_surf_t *surf, sgl_area_t *area, sgl_area_t *rect, int16_t radius, sgl_color_t color, uint8_t alpha)
 {
-    sgl_area_t clip;
+    sgl_area_t clip = SGL_AREA_INVALID;
     sgl_color_t *buf = NULL, *blend = NULL;
     
     if (!sgl_surf_clip(surf, area, &clip)) return;
@@ -148,7 +148,7 @@ void sgl_draw_fill_rect(sgl_surf_t *surf, sgl_area_t *area, sgl_area_t *rect, in
  */
 void sgl_draw_fill_rect_with_border(sgl_surf_t *surf, sgl_area_t *area, sgl_area_t *rect, int16_t radius, sgl_color_t color, sgl_color_t border_color, uint8_t border_width, uint8_t alpha)
 {
-    sgl_area_t clip;
+    sgl_area_t clip = SGL_AREA_INVALID;
     sgl_color_t *buf = NULL, *blend = NULL;
 
     if (!sgl_surf_clip(surf, area, &clip)) return;
@@ -288,6 +288,7 @@ void sgl_draw_fill_rect_pixmap(sgl_surf_t *surf, sgl_area_t *area, sgl_area_t *r
             }
             buf += surf->w;
         }
+        return;
     }
 
     const int cx1 = rect->x1 + radius;
