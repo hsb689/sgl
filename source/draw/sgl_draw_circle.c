@@ -49,7 +49,7 @@ void sgl_draw_fill_circle(sgl_surf_t *surf, sgl_area_t *area, int16_t cx, int16_
     int dx2 = 0, dy2 = 0;
     const int diameter = radius << 1;
     const int r2_max = sgl_pow2(diameter);
-    const int r2 = sgl_max(sgl_pow2(diameter - 4), 0); 
+    const int r2 = sgl_max(sgl_pow2(diameter - 3), 0); 
     const int r2_fix_diff = (SGL_ALPHA_MAX  << SGL_FIXED_SHIFT) / sgl_max(r2_max - r2, 1);
     sgl_color_t *blend, *buf = sgl_surf_get_buf(surf, clip.x1 - surf->x1, clip.y1 - surf->y1);
 
@@ -101,7 +101,7 @@ void sgl_draw_fill_circle_pixmap(sgl_surf_t *surf, sgl_area_t *area, int16_t cx,
     int dx2 = 0, dy2 = 0;
     const int diameter = radius << 1;
     const int r2_max = sgl_pow2(diameter);
-    const int r2 = sgl_max(sgl_pow2(diameter - 4), 0); 
+    const int r2 = sgl_max(sgl_pow2(diameter - 3), 0); 
     const int r2_fix_diff = (SGL_ALPHA_MAX  << SGL_FIXED_SHIFT) / sgl_max(r2_max - r2, 1);
     sgl_color_t *blend, *pbuf, *buf = sgl_surf_get_buf(surf, clip.x1 - surf->x1, clip.y1 - surf->y1);
 
@@ -148,7 +148,7 @@ void sgl_draw_fill_circle_pixmap(sgl_surf_t *surf, sgl_area_t *area, int16_t cx,
     int dx2 = 0, dy2 = 0;
     const int diameter = radius << 1;
     const int r2_max = sgl_pow2(diameter);
-    const int r2 = sgl_max(sgl_pow2(diameter - 4), 0); 
+    const int r2 = sgl_max(sgl_pow2(diameter - 3), 0); 
     const int r2_fix_diff = (SGL_ALPHA_MAX  << SGL_FIXED_SHIFT) / sgl_max(r2_max - r2, 1);
     sgl_color_t ip_color, *blend, *buf = sgl_surf_get_buf(surf, clip.x1 - surf->x1, clip.y1 - surf->y1), *pbuf = (sgl_color_t *)pixmap->bitmap.array;
 
@@ -209,11 +209,11 @@ void sgl_draw_fill_circle_with_border(sgl_surf_t *surf, sgl_area_t *area, int16_
 
     const int out_diameter = radius << 1;
     const int out_r2_max   = sgl_pow2(out_diameter);
-    const int out_r2       = sgl_max(sgl_pow2(out_diameter - 4), 0);
+    const int out_r2       = sgl_max(sgl_pow2(out_diameter - 3), 0);
 
     const int in_diameter  = radius_in << 1;
     const int in_r2_max    = sgl_pow2(in_diameter);
-    const int in_r2        = sgl_max(sgl_pow2(in_diameter - 4), 0);
+    const int in_r2        = sgl_max(sgl_pow2(in_diameter - 3), 0);
 
     const int out_fix = (SGL_ALPHA_MAX << SGL_FIXED_SHIFT) / sgl_max(out_r2_max - out_r2, 1);
     const int in_fix  = (SGL_ALPHA_MAX << SGL_FIXED_SHIFT) / sgl_max(in_r2_max - in_r2, 1);
