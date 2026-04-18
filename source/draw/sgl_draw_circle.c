@@ -42,6 +42,13 @@ void sgl_draw_fill_circle(sgl_surf_t *surf, sgl_area_t *area, int16_t cx, int16_
 {
     sgl_area_t clip = SGL_AREA_MAX;
     sgl_surf_clip_area_return(surf, area, &clip);
+    sgl_area_t c_rect = {
+        .x1 = cx - radius,
+        .x2 = cx + radius,
+        .y1 = cy - radius,
+        .y2 = cy + radius
+    };
+    if (!sgl_area_selfclip(&clip, &c_rect)) return;
 
     uint8_t edge_alpha;
     int cx2 = 2 * cx + 1;
@@ -93,6 +100,13 @@ void sgl_draw_fill_circle_pixmap(sgl_surf_t *surf, sgl_area_t *area, int16_t cx,
 {
     sgl_area_t clip = SGL_AREA_MAX;
     sgl_surf_clip_area_return(surf, area, &clip);
+    sgl_area_t c_rect = {
+        .x1 = cx - radius,
+        .x2 = cx + radius,
+        .y1 = cy - radius,
+        .y2 = cy + radius
+    };
+    if (!sgl_area_selfclip(&clip, &c_rect)) return;
 
     uint8_t edge_alpha = 0;
     int s_x = cx - radius, s_y = cy - radius;
@@ -140,6 +154,13 @@ void sgl_draw_fill_circle_pixmap(sgl_surf_t *surf, sgl_area_t *area, int16_t cx,
 {
     sgl_area_t clip = SGL_AREA_MAX;
     sgl_surf_clip_area_return(surf, area, &clip);
+    sgl_area_t c_rect = {
+        .x1 = cx - radius,
+        .x2 = cx + radius,
+        .y1 = cy - radius,
+        .y2 = cy + radius
+    };
+    if (!sgl_area_selfclip(&clip, &c_rect)) return;
 
     uint8_t edge_alpha = 0;
     int s_x = cx - radius, s_y = cy - radius;
@@ -202,6 +223,13 @@ void sgl_draw_fill_circle_with_border(sgl_surf_t *surf, sgl_area_t *area, int16_
 {
     sgl_area_t clip = SGL_AREA_MAX;
     sgl_surf_clip_area_return(surf, area, &clip);
+    sgl_area_t c_rect = {
+        .x1 = cx - radius,
+        .x2 = cx + radius,
+        .y1 = cy - radius,
+        .y2 = cy + radius
+    };
+    if (!sgl_area_selfclip(&clip, &c_rect)) return;
 
     int cx2 = 2 * cx + 1;
     int cy2 = 2 * cy + 1;

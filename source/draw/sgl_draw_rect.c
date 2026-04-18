@@ -67,7 +67,7 @@ void sgl_draw_fill_rect(sgl_surf_t *surf, sgl_area_t *area, sgl_area_t *rect, in
     sgl_color_t *buf = NULL, *blend = NULL;
     uint8_t solid_alpha = (alpha == SGL_ALPHA_MAX);
 
-    if (!sgl_surf_clip(surf, area, &clip)) return;
+    sgl_surf_clip_area_return(surf, area, &clip);
     if (!sgl_area_selfclip(&clip, rect)) return;
 
     int pixel_count = clip.x2 - clip.x1 + 1;
@@ -170,7 +170,7 @@ void sgl_draw_fill_rect_with_border(sgl_surf_t *surf, sgl_area_t *area, sgl_area
     sgl_area_t clip = SGL_AREA_INVALID;
     sgl_color_t *buf = NULL, *blend = NULL;
 
-    if (!sgl_surf_clip(surf, area, &clip)) return;
+    sgl_surf_clip_area_return(surf, area, &clip);
     if (!sgl_area_selfclip(&clip, rect)) return;
 
     buf = sgl_surf_get_buf(surf, clip.x1 - surf->x1, clip.y1 - surf->y1);
@@ -286,7 +286,7 @@ void sgl_draw_fill_rect_pixmap(sgl_surf_t *surf, sgl_area_t *area, sgl_area_t *r
     sgl_area_t clip = SGL_AREA_INVALID;
     sgl_color_t *buf = NULL, *blend = NULL, *pbuf = (sgl_color_t *)pixmap->bitmap.array;
     
-    if (!sgl_surf_clip(surf, area, &clip)) return;
+    sgl_surf_clip_area_return(surf, area, &clip);
     if (!sgl_area_selfclip(&clip, rect)) return;
 
     const int32_t rect_w = rect->x2 - rect->x1 + 1;
@@ -379,7 +379,7 @@ void sgl_draw_fill_rect_pixmap(sgl_surf_t *surf, sgl_area_t *area, sgl_area_t *r
     sgl_area_t clip = SGL_AREA_INVALID;
     sgl_color_t *buf = NULL, *blend = NULL, *pbuf = (sgl_color_t *)pixmap->bitmap.array, ip_color;
     
-    if (!sgl_surf_clip(surf, area, &clip)) return;
+    sgl_surf_clip_area_return(surf, area, &clip);
     if (!sgl_area_selfclip(&clip, rect)) return;
 
     int cx_tmp = 0, fx = 0;
