@@ -134,7 +134,7 @@ void sgl_draw_fill_rect(sgl_surf_t *surf, sgl_area_t *area, sgl_area_t *rect, in
                     real_r2 = sgl_pow2(x - cx_tmp) + dy2;
 
                     if (real_r2 >= r2_max) {
-                        continue;
+                        if(x > cx_tmp) break; else continue;
                     }
                     else if (real_r2 >= r2) {
                         edge_alpha = ((r2_max - real_r2) * r2_fix_diff) >> SGL_FIXED_SHIFT;
@@ -244,7 +244,7 @@ void sgl_draw_fill_rect_with_border(sgl_surf_t *surf, sgl_area_t *area, sgl_area
                     real_r2 = sgl_pow2(x - cx_tmp) + dy2;
 
                     if (real_r2 >= out_r2_max) {
-                        continue;
+                        if(x > cx_tmp) break; else continue;
                     }
                     else if (real_r2 < in_r2) {
                         *blend = (alpha == SGL_ALPHA_MAX) ? color : sgl_color_mixer(color, *blend, alpha);
@@ -347,7 +347,7 @@ void sgl_draw_fill_rect_pixmap(sgl_surf_t *surf, sgl_area_t *area, sgl_area_t *r
                     cx_tmp = (x < cx1) ? cx1 : cx2;
                     real_r2 = sgl_pow2(x - cx_tmp) + dy2;
                     if (real_r2 >= r2_max) {
-                        continue;
+                        if(x > cx_tmp) break; else continue;
                     }
                     else if (real_r2 >= r2) {
                         edge_alpha = ((r2_max - real_r2) * r2_fix_diff) >> SGL_FIXED_SHIFT;
@@ -441,7 +441,7 @@ void sgl_draw_fill_rect_pixmap(sgl_surf_t *surf, sgl_area_t *area, sgl_area_t *r
                     cx_tmp = (x < cx1) ? cx1 : cx2;
                     real_r2 = sgl_pow2(x - cx_tmp) + dy2;
                     if (real_r2 >= r2_max) {
-                        continue;
+                        if(x > cx_tmp) break; else continue;
                     }
                     else if (real_r2 >= r2) {
                         edge_alpha = ((r2_max - real_r2) * r2_fix_diff) >> SGL_FIXED_SHIFT;
