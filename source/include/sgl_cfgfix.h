@@ -65,10 +65,6 @@ extern "C" {
 #define CONFIG_SGL_EVENT_QUEUE_SIZE                                (16)  /* Max input event queue size */
 #endif
 
-#ifndef CONFIG_SGL_EVENT_CLICK_INTERVAL
-#define CONFIG_SGL_EVENT_CLICK_INTERVAL                            (10)  /* Input click interval (ms) */
-#endif
-
 #ifndef CONFIG_SGL_DIRTY_AREA_NUM_MAX
 #define CONFIG_SGL_DIRTY_AREA_NUM_MAX                              (16)  /* Max dirty regions for partial refresh */
 #endif

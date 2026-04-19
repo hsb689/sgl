@@ -380,9 +380,11 @@ void sgl_event_task(void)
  */
 void sgl_event_pos_input(int16_t x, int16_t y, bool flag)
 {
-    static sgl_event_pos_t last_press, last_motion;
-    static uint32_t act_count = 0;
-    sgl_event_pos_t pos = { .x = x, .y = y };
+    static sgl_event_pos_t first_pos, curr_pos;
+    static uint32_t start_ms;
+    static bool touch;
+    const uint32_t tick = sgl_tick_get();
+    int16_t dx, dy;
 
     /* rotate touch position */
 #if (CONFIG_SGL_FBDEV_ROTATION != 0)
@@ -401,37 +403,41 @@ void sgl_event_pos_input(int16_t x, int16_t y, bool flag)
 #endif //!CONFIG_SGL_FBDEV_ROTATION
 
     if (flag) {
-        if (!act_count) {
-            act_count = 1;
-            sgl_event_send_pos(pos, SGL_EVENT_PRESSED);
-            last_press = pos;
-            SGL_LOG_INFO("Touch SGL_EVENT_PRESSED x: %d, y: %d", pos.x, pos.y);
+        if (!touch) {
+            touch = true;
+            first_pos.x = x; first_pos.y = y;
+            curr_pos = first_pos;
+            start_ms = tick;
+            sgl_event_send_pos(first_pos, SGL_EVENT_PRESSED);
+            SGL_LOG_INFO("Tcouch PRESSED: pos: %d, %d", x, y);
         }
         else {
-            sgl_event_send_pos(pos, SGL_EVENT_MOTION);
-            last_motion = pos;
-            SGL_LOG_INFO("Touch SGL_EVENT_MOTION x: %d, y: %d", pos.x, pos.y);
+            dx = x - curr_pos.x;
+            dy = y - curr_pos.y;
+            if (sgl_square_sum(dx, dy) > sgl_pow2(SGL_EVENT_MOVE_THRESHOLD)) {
+                curr_pos.x = x;
+                curr_pos.y = y;
+                sgl_event_send_pos(curr_pos, SGL_EVENT_MOTION);
+                SGL_LOG_INFO("Tcouch MOTION: pos: %d, %d", x, y);
+            }
         }
-
-        act_count ++;
     }
     else {
-        if (act_count) {
-            SGL_LOG_INFO("Touch action count: %d", act_count);
-            if (last_press.x == last_motion.x && last_press.y == last_motion.y) {
-                if (act_count < SGL_EVENT_CLICK_INTERVAL) {
-                    sgl_event_send_pos(last_press, SGL_EVENT_CLICKED);
-                    SGL_LOG_INFO("Touch SGL_EVENT_CLICKED x: %d, y: %d", last_press.x, last_press.y);
-                }
-                else {
-                    sgl_event_send_pos(last_press, SGL_EVENT_LONG_CLICKED);
-                    SGL_LOG_INFO("Touch SGL_EVENT_LONG_CLICKED x: %d, y: %d", last_press.x, last_press.y);
+        if (touch) {
+            touch = false;
+            dx = first_pos.x - curr_pos.x;
+            dy = first_pos.y - curr_pos.y;
+            if (sgl_square_sum(dx, dy) <= sgl_pow2(SGL_EVENT_MOVE_THRESHOLD)) {
+                if (tick - start_ms < SGL_EVENT_CLICK_INTERVAL) {
+                    sgl_event_send_pos(first_pos, SGL_EVENT_CLICKED);
+                    SGL_LOG_INFO("Tcouch CLICKED: pos: %d, %d", first_pos.x, first_pos.y);
+                } else {
+                    sgl_event_send_pos(first_pos, SGL_EVENT_LONG_CLICKED);
+                    SGL_LOG_INFO("Tcouch LONG_CLICKED: pos: %d, %d", first_pos.x, first_pos.y);
                 }
             }
-
-            act_count = 0;
-            sgl_event_send_pos(last_motion, SGL_EVENT_RELEASED);
-            SGL_LOG_INFO("Touch SGL_EVENT_RELEASED x: %d, y: %d", last_motion.x, last_motion.y);
+            sgl_event_send_pos(curr_pos, SGL_EVENT_RELEASED);
+            SGL_LOG_INFO("Tcouch RELEASED: pos: %d, %d", curr_pos.x, curr_pos.y);
         }
     }
 }

@@ -69,7 +69,8 @@ struct sgl_page;
 #define  sgl_event_type_t               uint8_t
 
 
-#define  SGL_EVENT_CLICK_INTERVAL       (CONFIG_SGL_EVENT_CLICK_INTERVAL)
+#define  SGL_EVENT_MOVE_THRESHOLD       (2)
+#define  SGL_EVENT_CLICK_INTERVAL       (500)
 
 /**
 * @brief Event location structure, Used to represent the coordinates of an event, 

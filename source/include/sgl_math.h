@@ -59,6 +59,8 @@ extern "C" {
 
 #define sgl_mid(a, b)                     (((a) + (b)) / 2)
 
+#define sgl_square_sum(x, y)              ((x*x) + (y*y))
+
 #define SGL_FIXED_SHIFT                   (15)
 #define SGL_FIXED_ONE                     (1 << SGL_FIXED_SHIFT)
 #define SGL_FIXED_MASK                    (SGL_FIXED_ONE - 1)
