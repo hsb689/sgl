@@ -45,8 +45,8 @@ extern "C" {
  */
 
 typedef struct {
-    uint16_t x;
-    uint16_t y;
+    int16_t x;
+    int16_t y;
 } sgl_polygon_pos_t;
 
 typedef struct {
@@ -88,7 +88,7 @@ void sgl_polygon_set_vertices(sgl_obj_t* obj, const sgl_polygon_pos_t* vertices,
  * @param count vertices count
  * @return none
  */
-void sgl_polygon_set_vertex_coords(sgl_obj_t* obj, const uint16_t* x_coords, const uint16_t* y_coords, uint16_t count);
+void sgl_polygon_set_vertex_coords(sgl_obj_t* obj, const int16_t* x_coords, const int16_t* y_coords, uint16_t count);
 
 /**
  * @brief set polygon vertices by 2D coordinate array
@@ -97,7 +97,7 @@ void sgl_polygon_set_vertex_coords(sgl_obj_t* obj, const uint16_t* x_coords, con
  * @param count vertices count
  * @return none
  */
-void sgl_polygon_set_vertex_array(sgl_obj_t* obj, const uint16_t (*coords)[2], uint16_t count);
+void sgl_polygon_set_vertex_array(sgl_obj_t* obj, const int16_t (*coords)[2], uint16_t count);
 
 /**
  * @brief set polygon fill color

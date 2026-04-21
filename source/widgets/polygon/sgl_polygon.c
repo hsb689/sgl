@@ -194,6 +194,11 @@ static void sgl_polygon_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_event
     if (polygon->vertex_count < 3) {
         return; // At least 3 vertices are required to form a polygon
     }
+
+    if (!sgl_area_clip(&obj->parent->area, &obj->coords, &obj->area)) {
+        sgl_area_init(&obj->area);
+        return;
+    }
     
     // Draw fill
     if (polygon->fill_color.full != 0) {
@@ -312,7 +317,7 @@ void sgl_polygon_set_vertices(sgl_obj_t* obj, const sgl_polygon_pos_t* vertices,
 }
 
 // Set polygon vertices by coordinate arrays
-void sgl_polygon_set_vertex_coords(sgl_obj_t* obj, const uint16_t* x_coords, const uint16_t* y_coords, uint16_t count)
+void sgl_polygon_set_vertex_coords(sgl_obj_t* obj, const int16_t* x_coords, const int16_t* y_coords, uint16_t count)
 {
     sgl_polygon_t *polygon = (sgl_polygon_t *)obj;
     if (polygon == NULL || x_coords == NULL || y_coords == NULL || count < 3 || count > SGL_POLYGON_VERTEX_MAX) {
@@ -331,7 +336,7 @@ void sgl_polygon_set_vertex_coords(sgl_obj_t* obj, const uint16_t* x_coords, con
 }
 
 // Set polygon vertices by 2D coordinate array
-void sgl_polygon_set_vertex_array(sgl_obj_t* obj, const uint16_t (*coords)[2], uint16_t count)
+void sgl_polygon_set_vertex_array(sgl_obj_t* obj, const int16_t (*coords)[2], uint16_t count)
 {
     sgl_polygon_t *polygon = (sgl_polygon_t *)obj;
     if (polygon == NULL || coords == NULL || count < 3 || count > SGL_POLYGON_VERTEX_MAX) {
