@@ -38,13 +38,20 @@
 extern "C" {
 #endif
 
+#define SGL_POLYGON_VERTEX_MAX 16
+
 /**
  * @brief sgl polygon struct
  */
 
 typedef struct {
+    uint16_t x;
+    uint16_t y;
+} sgl_polygon_pos_t;
+
+typedef struct {
     sgl_obj_t obj;              // Base object
-    sgl_pos_t *vertices;        // Array of vertex coordinates
+    sgl_polygon_pos_t vertices[SGL_POLYGON_VERTEX_MAX]; // Local vertex coordinates
     const sgl_pixmap_t *pixmap; // Background image
     const char *text;           // Display text
     const sgl_font_t *font;     // Font
@@ -71,7 +78,7 @@ sgl_obj_t* sgl_polygon_create(sgl_obj_t* parent);
  * @param count vertices count
  * @return none
  */
-void sgl_polygon_set_vertices(sgl_obj_t* obj, sgl_pos_t* vertices, uint16_t count);
+void sgl_polygon_set_vertices(sgl_obj_t* obj, const sgl_polygon_pos_t* vertices, uint16_t count);
 
 /**
  * @brief set polygon vertices by coordinate arrays
@@ -81,7 +88,7 @@ void sgl_polygon_set_vertices(sgl_obj_t* obj, sgl_pos_t* vertices, uint16_t coun
  * @param count vertices count
  * @return none
  */
-void sgl_polygon_set_vertex_coords(sgl_obj_t* obj, int16_t* x_coords, int16_t* y_coords, uint16_t count);
+void sgl_polygon_set_vertex_coords(sgl_obj_t* obj, const uint16_t* x_coords, const uint16_t* y_coords, uint16_t count);
 
 /**
  * @brief set polygon vertices by 2D coordinate array
@@ -90,7 +97,7 @@ void sgl_polygon_set_vertex_coords(sgl_obj_t* obj, int16_t* x_coords, int16_t* y
  * @param count vertices count
  * @return none
  */
-void sgl_polygon_set_vertex_array(sgl_obj_t* obj, int16_t (*coords)[2], uint16_t count);
+void sgl_polygon_set_vertex_array(sgl_obj_t* obj, const uint16_t (*coords)[2], uint16_t count);
 
 /**
  * @brief set polygon fill color

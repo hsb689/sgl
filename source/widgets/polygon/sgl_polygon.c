@@ -27,7 +27,11 @@
 
 static void sgl_polygon_blend_pixel(sgl_surf_t *surf, const sgl_area_t *clip, int16_t x, int16_t y, sgl_color_t color, uint8_t alpha)
 {
-    if (alpha == 0 || x < clip->x1 || x > clip->x2 || y < clip->y1 || y > clip->y2) {
+    if (surf == NULL || clip == NULL || alpha == 0 || x < clip->x1 || x > clip->x2 || y < clip->y1 || y > clip->y2) {
+        return;
+    }
+
+    if (x < surf->x1 || x > surf->x2 || y < surf->y1 || y > surf->y2) {
         return;
     }
 
@@ -128,7 +132,7 @@ static void sgl_polygon_draw_border_line(sgl_surf_t *surf,
     }
 }
 
-static bool sgl_polygon_point_inside_samples(const sgl_pos_t *vertices, uint16_t vertex_count, int32_t x_fp, int32_t y_fp)
+static bool sgl_polygon_point_inside_samples(const sgl_polygon_pos_t *vertices, uint16_t vertex_count, int32_t x_fp, int32_t y_fp)
 {
     bool inside = false;
 
@@ -150,15 +154,20 @@ static bool sgl_polygon_point_inside_samples(const sgl_pos_t *vertices, uint16_t
     return inside;
 }
 
-static uint8_t sgl_polygon_get_pixel_coverage(const sgl_pos_t *vertices, uint16_t vertex_count, int16_t rel_x, int16_t rel_y)
+static uint8_t sgl_polygon_get_pixel_coverage(const sgl_polygon_pos_t *vertices,
+                                              uint16_t vertex_count,
+                                              int16_t obj_x1,
+                                              int16_t obj_y1,
+                                              int16_t abs_x,
+                                              int16_t abs_y)
 {
     static const uint8_t sample_offsets[SGL_POLYGON_AA_SAMPLES] = {32, 96, 160, 224};
     uint16_t inside_count = 0;
 
     for (uint8_t sy = 0; sy < SGL_POLYGON_AA_SAMPLES; sy++) {
         for (uint8_t sx = 0; sx < SGL_POLYGON_AA_SAMPLES; sx++) {
-            int32_t x_fp = ((int32_t)rel_x << 8) + sample_offsets[sx];
-            int32_t y_fp = ((int32_t)rel_y << 8) + sample_offsets[sy];
+            int32_t x_fp = ((int32_t)(abs_x - obj_x1) << 8) + sample_offsets[sx];
+            int32_t y_fp = ((int32_t)(abs_y - obj_y1) << 8) + sample_offsets[sy];
             inside_count += sgl_polygon_point_inside_samples(vertices, vertex_count, x_fp, y_fp) ? 1 : 0;
         }
     }
@@ -173,11 +182,7 @@ static void sgl_polygon_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_event
     sgl_polygon_t *polygon = (sgl_polygon_t*)obj;
 
     if (evt->type == SGL_EVENT_DESTROYED) {
-        if (polygon->vertices != NULL) {
-            sgl_free(polygon->vertices);
-            polygon->vertices = NULL;
-            polygon->vertex_count = 0;
-        }
+        polygon->vertex_count = 0;
         sgl_area_init(&obj->area);
         return;
     }
@@ -186,7 +191,7 @@ static void sgl_polygon_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_event
         return;
     }
     
-    if (polygon->vertex_count < 3 || polygon->vertices == NULL) {
+    if (polygon->vertex_count < 3) {
         return; // At least 3 vertices are required to form a polygon
     }
     
@@ -196,11 +201,14 @@ static void sgl_polygon_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_event
         if (sgl_surf_clip(surf, &obj->area, &clip)) {
             for (int16_t y = clip.y1; y <= clip.y2; y++) {
                 sgl_color_t *buf = sgl_surf_get_buf(surf, clip.x1 - surf->x1, y - surf->y1);
-                int16_t rel_y = y - obj->coords.y1;
 
                 for (int16_t x = clip.x1; x <= clip.x2; x++) {
-                    int16_t rel_x = x - obj->coords.x1;
-                    uint8_t coverage = sgl_polygon_get_pixel_coverage(polygon->vertices, polygon->vertex_count, rel_x, rel_y);
+                    uint8_t coverage = sgl_polygon_get_pixel_coverage(polygon->vertices,
+                                                                     polygon->vertex_count,
+                                                                     obj->coords.x1,
+                                                                     obj->coords.y1,
+                                                                     x,
+                                                                     y);
 
                     if (coverage == 0) {
                         continue;
@@ -226,10 +234,10 @@ static void sgl_polygon_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_event
         for (uint16_t i = 0; i < polygon->vertex_count; i++) {
             sgl_polygon_draw_border_line(surf,
                                          &border_area,
-                                         polygon->vertices[i].x + obj->coords.x1,
-                                         polygon->vertices[i].y + obj->coords.y1,
-                                         polygon->vertices[(i + 1) % polygon->vertex_count].x + obj->coords.x1,
-                                         polygon->vertices[(i + 1) % polygon->vertex_count].y + obj->coords.y1,
+                                         obj->coords.x1 + (int16_t)polygon->vertices[i].x,
+                                         obj->coords.y1 + (int16_t)polygon->vertices[i].y,
+                                         obj->coords.x1 + (int16_t)polygon->vertices[(i + 1) % polygon->vertex_count].x,
+                                         obj->coords.y1 + (int16_t)polygon->vertices[(i + 1) % polygon->vertex_count].y,
                                          polygon->border_width,
                                          polygon->border_color,
                                          polygon->alpha);
@@ -241,8 +249,8 @@ static void sgl_polygon_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_event
         // Calculate center point of polygon
         int32_t center_x = 0, center_y = 0;
         for (uint16_t i = 0; i < polygon->vertex_count; i++) {
-            center_x += polygon->vertices[i].x + obj->coords.x1;
-            center_y += polygon->vertices[i].y + obj->coords.y1;
+            center_x += obj->coords.x1 + (int16_t)polygon->vertices[i].x;
+            center_y += obj->coords.y1 + (int16_t)polygon->vertices[i].y;
         }
         center_x /= polygon->vertex_count;
         center_y /= polygon->vertex_count;
@@ -274,7 +282,6 @@ sgl_obj_t* sgl_polygon_create(sgl_obj_t* parent)
     
     // Set default values
     polygon->vertex_count = 0;
-    polygon->vertices = NULL;
     polygon->fill_color = sgl_rgb(127, 127, 127);
     polygon->border_color = sgl_rgb(0, 0, 0);
     polygon->border_width = 1;
@@ -289,27 +296,15 @@ sgl_obj_t* sgl_polygon_create(sgl_obj_t* parent)
 }
 
 // Set polygon vertices
-void sgl_polygon_set_vertices(sgl_obj_t* obj, sgl_pos_t* vertices, uint16_t count)
+void sgl_polygon_set_vertices(sgl_obj_t* obj, const sgl_polygon_pos_t* vertices, uint16_t count)
 {
     sgl_polygon_t *polygon = (sgl_polygon_t *)obj;
-    if (polygon == NULL || vertices == NULL || count < 3) {
+    if (polygon == NULL || vertices == NULL || count < 3 || count > SGL_POLYGON_VERTEX_MAX) {
         return;
     }
-    
-    // Free old vertex data (if any)
-    if (polygon->vertices != NULL) {
-        sgl_free(polygon->vertices);
-    }
-    
-    // Allocate new vertex data
-    polygon->vertices = (sgl_pos_t*)sgl_malloc(sizeof(sgl_pos_t) * count);
-    if (polygon->vertices == NULL) {
-        polygon->vertex_count = 0;
-        return;
-    }
-    
+
     // Copy vertex data
-    memcpy(polygon->vertices, vertices, sizeof(sgl_pos_t) * count);
+    memcpy(polygon->vertices, vertices, sizeof(sgl_polygon_pos_t) * count);
     polygon->vertex_count = count;
     
     // Mark object as needing redraw
@@ -317,25 +312,13 @@ void sgl_polygon_set_vertices(sgl_obj_t* obj, sgl_pos_t* vertices, uint16_t coun
 }
 
 // Set polygon vertices by coordinate arrays
-void sgl_polygon_set_vertex_coords(sgl_obj_t* obj, int16_t* x_coords, int16_t* y_coords, uint16_t count)
+void sgl_polygon_set_vertex_coords(sgl_obj_t* obj, const uint16_t* x_coords, const uint16_t* y_coords, uint16_t count)
 {
     sgl_polygon_t *polygon = (sgl_polygon_t *)obj;
-    if (polygon == NULL || x_coords == NULL || y_coords == NULL || count < 3) {
+    if (polygon == NULL || x_coords == NULL || y_coords == NULL || count < 3 || count > SGL_POLYGON_VERTEX_MAX) {
         return;
     }
-    
-    // Free old vertex data (if any)
-    if (polygon->vertices != NULL) {
-        sgl_free(polygon->vertices);
-    }
-    
-    // Allocate new vertex data
-    polygon->vertices = (sgl_pos_t*)sgl_malloc(sizeof(sgl_pos_t) * count);
-    if (polygon->vertices == NULL) {
-        polygon->vertex_count = 0;
-        return;
-    }
-    
+
     // Build vertices from coordinate arrays
     for (uint16_t i = 0; i < count; i++) {
         polygon->vertices[i].x = x_coords[i];
@@ -348,25 +331,13 @@ void sgl_polygon_set_vertex_coords(sgl_obj_t* obj, int16_t* x_coords, int16_t* y
 }
 
 // Set polygon vertices by 2D coordinate array
-void sgl_polygon_set_vertex_array(sgl_obj_t* obj, int16_t (*coords)[2], uint16_t count)
+void sgl_polygon_set_vertex_array(sgl_obj_t* obj, const uint16_t (*coords)[2], uint16_t count)
 {
     sgl_polygon_t *polygon = (sgl_polygon_t *)obj;
-    if (polygon == NULL || coords == NULL || count < 3) {
+    if (polygon == NULL || coords == NULL || count < 3 || count > SGL_POLYGON_VERTEX_MAX) {
         return;
     }
-    
-    // Free old vertex data (if any)
-    if (polygon->vertices != NULL) {
-        sgl_free(polygon->vertices);
-    }
-    
-    // Allocate new vertex data
-    polygon->vertices = (sgl_pos_t*)sgl_malloc(sizeof(sgl_pos_t) * count);
-    if (polygon->vertices == NULL) {
-        polygon->vertex_count = 0;
-        return;
-    }
-    
+
     // Build vertices from 2D coordinate array
     for (uint16_t i = 0; i < count; i++) {
         polygon->vertices[i].x = coords[i][0];
