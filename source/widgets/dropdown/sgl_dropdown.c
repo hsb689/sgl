@@ -175,6 +175,7 @@ sgl_obj_t* sgl_dropdown_create(sgl_obj_t* parent)
     sgl_obj_set_movable(obj);
 
     dropdown->body_desc.alpha = SGL_THEME_ALPHA;
+    dropdown->body_desc.border_alpha = SGL_THEME_ALPHA;
     dropdown->body_desc.color = SGL_THEME_COLOR;
     dropdown->body_desc.radius = 5;
     dropdown->body_desc.border = 1;
