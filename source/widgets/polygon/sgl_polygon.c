@@ -23,11 +23,164 @@
  */
 #include "sgl_polygon.h"
 
+#define SGL_POLYGON_AA_SAMPLES 4
+
+static void sgl_polygon_blend_pixel(sgl_surf_t *surf, const sgl_area_t *clip, int16_t x, int16_t y, sgl_color_t color, uint8_t alpha)
+{
+    if (alpha == 0 || x < clip->x1 || x > clip->x2 || y < clip->y1 || y > clip->y2) {
+        return;
+    }
+
+    sgl_color_t *buf = sgl_surf_get_buf(surf, x - surf->x1, y - surf->y1);
+    *buf = (alpha == SGL_ALPHA_MAX) ? color : sgl_color_mixer(color, *buf, alpha);
+}
+
+static void sgl_polygon_draw_border_line(sgl_surf_t *surf,
+                                         const sgl_area_t *clip,
+                                         int16_t x1,
+                                         int16_t y1,
+                                         int16_t x2,
+                                         int16_t y2,
+                                         uint8_t width,
+                                         sgl_color_t color,
+                                         uint8_t alpha)
+{
+    int32_t bax = (int32_t)x2 - x1;
+    int32_t bay = (int32_t)y2 - y1;
+    int64_t len_sq = (int64_t)bax * bax + (int64_t)bay * bay;
+    int16_t extent;
+    sgl_area_t line_area;
+
+    if (width == 0 || alpha == 0) {
+        return;
+    }
+
+    if (len_sq == 0) {
+        int16_t radius = (width + 1) / 2;
+        for (int16_t py = y1 - radius; py <= y1 + radius; py++) {
+            for (int16_t px = x1 - radius; px <= x1 + radius; px++) {
+                int32_t dx = ((int32_t)px << 8) + 128 - (((int32_t)x1 << 8) + 128);
+                int32_t dy = ((int32_t)py << 8) + 128 - (((int32_t)y1 << 8) + 128);
+                int32_t dist = sgl_sqrt((uint32_t)(dx * dx + dy * dy));
+                int32_t radius_fp = width << 7;
+                int32_t fade = radius_fp + 128 - dist;
+                if (fade > 0) {
+                    uint8_t cov = (fade >= 255) ? 255 : (uint8_t)fade;
+                    uint8_t mix = (uint8_t)(((uint16_t)cov * alpha) >> 8);
+                    if (mix == 0 && cov != 0) mix = 1;
+                    sgl_polygon_blend_pixel(surf, clip, px, py, color, mix);
+                }
+            }
+        }
+        return;
+    }
+
+    extent = (int16_t)((width + 3) / 2);
+    line_area.x1 = sgl_min(x1, x2) - extent;
+    line_area.x2 = sgl_max(x1, x2) + extent;
+    line_area.y1 = sgl_min(y1, y2) - extent;
+    line_area.y2 = sgl_max(y1, y2) + extent;
+
+    if (!sgl_area_is_overlap((sgl_area_t *)clip, &line_area)) {
+        return;
+    }
+
+    if (!sgl_area_selfclip(&line_area, (sgl_area_t *)clip)) {
+        return;
+    }
+
+    for (int16_t py = line_area.y1; py <= line_area.y2; py++) {
+        for (int16_t px = line_area.x1; px <= line_area.x2; px++) {
+            int32_t pcx = ((int32_t)px << 8) + 128;
+            int32_t pcy = ((int32_t)py << 8) + 128;
+            int32_t ax = pcx - (((int32_t)x1 << 8) + 128);
+            int32_t ay = pcy - (((int32_t)y1 << 8) + 128);
+            int64_t dot = (int64_t)ax * ((int32_t)bax << 8) + (int64_t)ay * ((int32_t)bay << 8);
+            int32_t qx, qy;
+            int32_t dx, dy;
+            int32_t dist;
+            int32_t radius_fp = width << 7;
+            int32_t fade;
+
+            if (dot <= 0) {
+                qx = ((int32_t)x1 << 8) + 128;
+                qy = ((int32_t)y1 << 8) + 128;
+            } else if (dot >= (len_sq << 16)) {
+                qx = ((int32_t)x2 << 8) + 128;
+                qy = ((int32_t)y2 << 8) + 128;
+            } else {
+                qx = (((int32_t)x1 << 8) + 128) + (int32_t)((((int64_t)bax << 8) * dot) / (len_sq << 16));
+                qy = (((int32_t)y1 << 8) + 128) + (int32_t)((((int64_t)bay << 8) * dot) / (len_sq << 16));
+            }
+
+            dx = pcx - qx;
+            dy = pcy - qy;
+            dist = sgl_sqrt((uint32_t)((int64_t)dx * dx + (int64_t)dy * dy));
+            fade = radius_fp + 128 - dist;
+
+            if (fade > 0) {
+                uint8_t cov = (fade >= 255) ? 255 : (uint8_t)fade;
+                uint8_t mix = (uint8_t)(((uint16_t)cov * alpha) >> 8);
+                if (mix == 0 && cov != 0) mix = 1;
+                sgl_polygon_blend_pixel(surf, clip, px, py, color, mix);
+            }
+        }
+    }
+}
+
+static bool sgl_polygon_point_inside_samples(const sgl_pos_t *vertices, uint16_t vertex_count, int32_t x_fp, int32_t y_fp)
+{
+    bool inside = false;
+
+    for (uint16_t i = 0, j = vertex_count - 1; i < vertex_count; j = i++) {
+        int32_t xi = ((int32_t)vertices[i].x << 8) + 128;
+        int32_t yi = ((int32_t)vertices[i].y << 8) + 128;
+        int32_t xj = ((int32_t)vertices[j].x << 8) + 128;
+        int32_t yj = ((int32_t)vertices[j].y << 8) + 128;
+
+        if ((yi > y_fp) != (yj > y_fp)) {
+            int64_t lhs = ((int64_t)(xj - xi) * (y_fp - yi));
+            int64_t rhs = ((int64_t)(x_fp - xi) * (yj - yi));
+            if (((yj - yi) > 0) ? (rhs < lhs) : (rhs > lhs)) {
+                inside = !inside;
+            }
+        }
+    }
+
+    return inside;
+}
+
+static uint8_t sgl_polygon_get_pixel_coverage(const sgl_pos_t *vertices, uint16_t vertex_count, int16_t rel_x, int16_t rel_y)
+{
+    static const uint8_t sample_offsets[SGL_POLYGON_AA_SAMPLES] = {32, 96, 160, 224};
+    uint16_t inside_count = 0;
+
+    for (uint8_t sy = 0; sy < SGL_POLYGON_AA_SAMPLES; sy++) {
+        for (uint8_t sx = 0; sx < SGL_POLYGON_AA_SAMPLES; sx++) {
+            int32_t x_fp = ((int32_t)rel_x << 8) + sample_offsets[sx];
+            int32_t y_fp = ((int32_t)rel_y << 8) + sample_offsets[sy];
+            inside_count += sgl_polygon_point_inside_samples(vertices, vertex_count, x_fp, y_fp) ? 1 : 0;
+        }
+    }
+
+    return (uint8_t)((inside_count * SGL_ALPHA_MAX) / (SGL_POLYGON_AA_SAMPLES * SGL_POLYGON_AA_SAMPLES));
+}
+
 
 // Polygon construction callback function
 static void sgl_polygon_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_event_t *evt)
 {
     sgl_polygon_t *polygon = (sgl_polygon_t*)obj;
+
+    if (evt->type == SGL_EVENT_DESTROYED) {
+        if (polygon->vertices != NULL) {
+            sgl_free(polygon->vertices);
+            polygon->vertices = NULL;
+            polygon->vertex_count = 0;
+        }
+        sgl_area_init(&obj->area);
+        return;
+    }
     
     if (evt->type != SGL_EVENT_DRAW_MAIN) {
         return;
@@ -39,79 +192,28 @@ static void sgl_polygon_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_event
     
     // Draw fill
     if (polygon->fill_color.full != 0) {
-        // Calculate bounding box of polygon (using actual coordinates)
-        int16_t min_x = polygon->vertices[0].x, max_x = polygon->vertices[0].x;
-        int16_t min_y = polygon->vertices[0].y, max_y = polygon->vertices[0].y;
-        
-        for (uint16_t i = 1; i < polygon->vertex_count; i++) {
-            sgl_pos_t vertex = polygon->vertices[i];
-            min_x = sgl_min(min_x, vertex.x);
-            max_x = sgl_max(max_x, vertex.x);
-            min_y = sgl_min(min_y, vertex.y);
-            max_y = sgl_max(max_y, vertex.y);
-        }
-
-        // Adjust coordinates relative to parent object
-        sgl_area_t polygon_area = {
-            .x1 = min_x + obj->parent->coords.x1,  // Adjust to parent coordinates
-            .x2 = max_x + obj->parent->coords.x1,
-            .y1 = min_y + obj->parent->coords.y1,
-            .y2 = max_y + obj->parent->coords.y1
-        };
-        
         sgl_area_t clip;
-        if (sgl_surf_clip(surf, &polygon_area, &clip) && sgl_area_selfclip(&clip, &obj->area)) {
-            // Calculate intersections of scan lines with polygon
-            int intersections[64]; // Assume max 64 intersections per scan line
-            
-            for (int y = clip.y1; y <= clip.y2; y++) {
-                uint8_t count = 0;
-                
-                // Calculate intersections of scan line with polygon
-                for (uint16_t i = 0; i < polygon->vertex_count; i++) {
-                    // Adjust vertex coordinates relative to parent
-                    sgl_pos_t p1 = {polygon->vertices[i].x + obj->parent->coords.x1, 
-                                    polygon->vertices[i].y + obj->parent->coords.y1};
-                    sgl_pos_t p2 = {polygon->vertices[(i + 1) % polygon->vertex_count].x + obj->parent->coords.x1, 
-                                    polygon->vertices[(i + 1) % polygon->vertex_count].y + obj->parent->coords.y1};
-                    
-                    // Calculate intersection of scan line with edge
-                    if ((p1.y > y) != (p2.y > y)) {
-                        intersections[count++] = p1.x + (y - p1.y) * (p2.x - p1.x) / (p2.y - p1.y);
-                    }
-                }
-                
-                // Sort intersections (using optimized bubble sort)
-                for (uint8_t i = 0; i < count - 1; i++) {
-                    bool swapped = false;
-                    for (uint8_t j = 0; j < count - i - 1; j++) {
-                        if (intersections[j] > intersections[j + 1]) {
-                            int temp = intersections[j];
-                            intersections[j] = intersections[j + 1];
-                            intersections[j + 1] = temp;
-                            swapped = true;
-                        }
-                    }
-                    if (!swapped) break; // If no swaps occurred, sorting is complete
-                }
-                
-                // Fill scan line segments
+        if (sgl_surf_clip(surf, &obj->area, &clip)) {
+            for (int16_t y = clip.y1; y <= clip.y2; y++) {
                 sgl_color_t *buf = sgl_surf_get_buf(surf, clip.x1 - surf->x1, y - surf->y1);
-                for (uint8_t i = 0; i < count; i += 2) {
-                    int start = sgl_max(intersections[i], clip.x1);
-                    int end = sgl_min(intersections[i + 1], clip.x2);
-                    
-                    if (start <= end) {
-                        if (polygon->alpha == SGL_ALPHA_MAX) {
-                            for (int x = start; x <= end; x++) {
-                                buf[x - clip.x1] = polygon->fill_color;
-                            }
-                        } else {
-                            for (int x = start; x <= end; x++) {
-                                int buf_index = x - clip.x1;
-                                buf[buf_index] = sgl_color_mixer(polygon->fill_color, buf[buf_index], polygon->alpha);
-                            }
+                int16_t rel_y = y - obj->coords.y1;
+
+                for (int16_t x = clip.x1; x <= clip.x2; x++) {
+                    int16_t rel_x = x - obj->coords.x1;
+                    uint8_t coverage = sgl_polygon_get_pixel_coverage(polygon->vertices, polygon->vertex_count, rel_x, rel_y);
+
+                    if (coverage == 0) {
+                        continue;
+                    }
+
+                    if (polygon->alpha == SGL_ALPHA_MAX && coverage == SGL_ALPHA_MAX) {
+                        buf[x - clip.x1] = polygon->fill_color;
+                    } else {
+                        uint8_t mix_alpha = (uint8_t)(((uint16_t)coverage * polygon->alpha) >> 8);
+                        if (mix_alpha == 0 && coverage != 0 && polygon->alpha != 0) {
+                            mix_alpha = 1;
                         }
+                        buf[x - clip.x1] = sgl_color_mixer(polygon->fill_color, buf[x - clip.x1], mix_alpha);
                     }
                 }
             }
@@ -120,14 +222,17 @@ static void sgl_polygon_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_event
     
     // Draw border
     if (polygon->border_width > 0 && polygon->border_color.full != 0) {
+        sgl_area_t border_area = obj->area;
         for (uint16_t i = 0; i < polygon->vertex_count; i++) {
-            // Adjust vertex coordinates relative to parent
-            sgl_pos_t start = {polygon->vertices[i].x + obj->parent->coords.x1, 
-                               polygon->vertices[i].y + obj->parent->coords.y1};
-            sgl_pos_t end = {polygon->vertices[(i + 1) % polygon->vertex_count].x + obj->parent->coords.x1, 
-                             polygon->vertices[(i + 1) % polygon->vertex_count].y + obj->parent->coords.y1};
-
-            draw_line_fill_slanted(surf, &obj->area, start.x, start.y, end.x, end.y, polygon->border_width, polygon->border_color, polygon->alpha);
+            sgl_polygon_draw_border_line(surf,
+                                         &border_area,
+                                         polygon->vertices[i].x + obj->coords.x1,
+                                         polygon->vertices[i].y + obj->coords.y1,
+                                         polygon->vertices[(i + 1) % polygon->vertex_count].x + obj->coords.x1,
+                                         polygon->vertices[(i + 1) % polygon->vertex_count].y + obj->coords.y1,
+                                         polygon->border_width,
+                                         polygon->border_color,
+                                         polygon->alpha);
         }
     }
 
@@ -136,8 +241,8 @@ static void sgl_polygon_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_event
         // Calculate center point of polygon
         int32_t center_x = 0, center_y = 0;
         for (uint16_t i = 0; i < polygon->vertex_count; i++) {
-            center_x += polygon->vertices[i].x + obj->parent->coords.x1;  // Adjust to parent coordinates
-            center_y += polygon->vertices[i].y + obj->parent->coords.y1;
+            center_x += polygon->vertices[i].x + obj->coords.x1;
+            center_y += polygon->vertices[i].y + obj->coords.y1;
         }
         center_x /= polygon->vertex_count;
         center_y /= polygon->vertex_count;
@@ -178,6 +283,7 @@ sgl_obj_t* sgl_polygon_create(sgl_obj_t* parent)
     polygon->text = NULL;
     polygon->font = NULL;
     polygon->text_color = sgl_rgb(0, 0, 0);
+    sgl_area_init(&obj->area);
     
     return obj;
 }
