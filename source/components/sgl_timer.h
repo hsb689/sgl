@@ -56,9 +56,9 @@ struct sgl_timer {
     sgl_list_node_t node;
     sgl_timer_callback_t callback;
     void *user_data;
-    uint32_t interval;
     int32_t count;
-    uint32_t last_tick;
+    uint16_t interval;
+    uint16_t last_tick;
 };
 
 /**

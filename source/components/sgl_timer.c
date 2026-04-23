@@ -33,7 +33,9 @@ static SGL_LIST_HEAD(sgl_timer_head);
  */
 sgl_timer_t* sgl_timer_create(void)
 {
-    return (sgl_timer_t*)sgl_malloc(sizeof(sgl_timer_t));
+    sgl_timer_t* t = (sgl_timer_t*)sgl_malloc(sizeof(sgl_timer_t));
+    memset(t, 0, sizeof(sgl_timer_t));
+    return t;
 }
 
 
@@ -66,7 +68,7 @@ int sgl_timer_delete(sgl_timer_t *timer)
  * @return true if successful, false if failed
  * @note Timer will be inserted in ascending order by interval
  */
-bool sgl_timer_setup(sgl_timer_t *timer, sgl_timer_callback_t callback, uint32_t interval, int32_t repeat_cnt, void *user_data)
+bool sgl_timer_setup(sgl_timer_t *timer, sgl_timer_callback_t callback, uint16_t interval, uint16_t repeat_cnt, void *user_data)
 {
     if (timer == NULL || callback == NULL || interval == 0) {
         return false;
