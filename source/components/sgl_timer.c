@@ -130,7 +130,8 @@ void sgl_timer_delete(sgl_timer_t *timer)
  * @param repeat_cnt Repeat count, -1 for infinite
  * @param user_data User data passed to callback function
  * @return true if successful, false if failed
- */bool sgl_timer_setup(sgl_timer_t *timer, sgl_timer_callback_t callback, uint16_t interval, int32_t repeat_cnt, void *user_data)
+ */
+bool sgl_timer_setup(sgl_timer_t *timer, sgl_timer_callback_t callback, uint16_t interval, int32_t repeat_cnt, void *user_data)
 {
     if (!timer || !callback || interval == 0) {
         return false;
