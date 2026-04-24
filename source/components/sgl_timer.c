@@ -4,7 +4,7 @@
 #include <string.h>
 
 #define SGL_SHORT_WHEEL_INIT(idx) { .next = &short_wheel[idx], .prev = &short_wheel[idx] }
-#define SGL_LONG_WHEEL_INIT(idx)  { .next = &long_wheel[idx], .prev = &long_wheel[idx] }
+#define SGL_LONG_WHEEL_INIT(idx)  { .next = &long_wheel[idx],  .prev = &long_wheel[idx] }
 
 static sgl_list_node_t short_wheel[SGL_TIMER_SHORT_SLOT] = {
     SGL_SHORT_WHEEL_INIT(0),   SGL_SHORT_WHEEL_INIT(1),   SGL_SHORT_WHEEL_INIT(2),   SGL_SHORT_WHEEL_INIT(3),
