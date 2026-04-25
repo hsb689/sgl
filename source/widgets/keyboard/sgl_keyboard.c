@@ -662,7 +662,7 @@ void sgl_keyboard_set_border_width(sgl_obj_t *obj, uint8_t width)
 void sgl_keyboard_set_border_alpha(sgl_obj_t *obj, uint8_t alpha)
 {
     sgl_keyboard_t *keyboard = sgl_container_of(obj, sgl_keyboard_t, obj);
-    keyboard->btn_desc.border_alpha = alpha;
+    keyboard->body_desc.border_alpha = alpha;
     sgl_obj_set_dirty(obj);
 }
 
