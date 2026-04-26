@@ -1826,6 +1826,7 @@ static inline bool sgl_area_is_overlap(sgl_area_t *area_a, sgl_area_t *area_b)
     return true;
 }
 
+
 /**
  * @brief check area is fullscreen
  * @param area: area
