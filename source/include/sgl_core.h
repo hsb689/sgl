@@ -486,6 +486,7 @@ typedef struct sgl_fbinfo {
  * @surf: Drawing surface associated with this page; defines the target buffer or area for rendering.
  * @dirty_num: dirty area number
  * @update_flag: update to widget flag
+ * @full_dirty: full dirty flag
  * @fb_swap: framebuffer swap flag
  * @fb_status: framebuffer status flag
  * @dirty: dirty area pool
@@ -495,7 +496,8 @@ typedef struct sgl_fbdev {
     sgl_fbinfo_t      fbinfo;
     sgl_surf_t        surf;
     uint8_t           dirty_num;
-    volatile uint8_t  update_flag;
+    uint8_t           update_flag : 4;
+    uint8_t           full_dirty : 4;
     volatile uint8_t  fb_swap;
     volatile uint8_t  fb_status;
     sgl_area_t        dirty[SGL_DIRTY_AREA_NUM_MAX];
@@ -1822,6 +1824,35 @@ static inline bool sgl_area_is_overlap(sgl_area_t *area_a, sgl_area_t *area_b)
     }
 
     return true;
+}
+
+/**
+ * @brief check area is fullscreen
+ * @param area: area
+ * @return true or false, true means fullscreen, false means not fullscreen
+ * @note: this function is unsafe, you should check the area is not NULL by yourself
+ */
+static inline bool sgl_area_is_fullscreen(const sgl_area_t *area)
+{
+    SGL_ASSERT(area != NULL);
+    return (area->x1 <= 0 && area->x2 >= sgl_system.fbdev.fbinfo.xres 
+                && area->y1 <= 0 && area->y2 >= sgl_system.fbdev.fbinfo.yres);
+}
+
+
+/**
+ * @brief set area to fullscreen
+ * @param area: area
+ * @return none
+ * @note: this function is unsafe, you should check the area is not NULL by yourself
+ */
+static inline void sgl_area_set_fullscreen(sgl_area_t *area)
+{
+    SGL_ASSERT(area != NULL);
+    area->x1 = 0;
+    area->x2 = sgl_system.fbdev.fbinfo.xres - 1;
+    area->y1 = 0;
+    area->y2 = sgl_system.fbdev.fbinfo.yres - 1;
 }
 
 

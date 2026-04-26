@@ -853,7 +853,13 @@ void sgl_dirty_area_push(sgl_area_t *area)
     SGL_ASSERT(area != NULL);
     int32_t best_idx = -1, min_growth = INT32_MAX, growth = INT32_MAX;
     /* skip invalid area */
-    if (area->x1 > area->x2 || area->y1 > area->y2) {
+    if (unlikely(sgl_system.fbdev.full_dirty || area->x1 > area->x2 || area->y1 > area->y2)) {
+        return;
+    }
+
+    if (unlikely(sgl_area_is_fullscreen(area))) {
+        sgl_system.fbdev.dirty_num = sgl_system.fbdev.full_dirty = 1;
+        sgl_area_set_fullscreen(&sgl_system.fbdev.dirty[0]);
         return;
     }
 
