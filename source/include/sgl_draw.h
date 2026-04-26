@@ -264,18 +264,19 @@ void sgl_draw_fill_rect(sgl_surf_t *surf, sgl_area_t *area, sgl_area_t *rect, in
 
 
 /**
- * @brief fill the border of a round rectangle with alpha
+ * @brief fill a round rectangle with alpha and border
  * @param surf point to surface
  * @param area area of rectangle that you want to draw
  * @param rect point to rectangle that you want to draw
  * @param radius radius of round
- * @param color color of border
+ * @param color color of rectangle
  * @param border_color color of border
  * @param border_width width of border
- * @param alpha alpha of border
+ * @param alpha alpha of rectangle
+ * @param border_alpha alpha of border
  * @return none
  */
-void sgl_draw_fill_rect_border(sgl_surf_t *surf, sgl_area_t *area, sgl_area_t *rect, int16_t radius, sgl_color_t border_color, uint8_t border_width, uint8_t alpha);
+void sgl_draw_fill_rect_with_border(sgl_surf_t *surf, sgl_area_t *area, sgl_area_t *rect, int16_t radius, sgl_color_t color, sgl_color_t border_color, uint8_t border_width, uint8_t alpha, uint8_t border_alpha);
 
 
 /**
