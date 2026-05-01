@@ -139,19 +139,6 @@ void sgl_bar_set_fill_color(sgl_obj_t *obj, sgl_color_t color)
 }
 
 /**
- * @brief set the fill alpha of the bar
- * @param obj bar object
- * @param alpha fill alpha
- * @return none
- */
-void sgl_bar_set_fill_alpha(sgl_obj_t *obj, uint8_t alpha)
-{
-    sgl_bar_t *bar = sgl_container_of(obj, sgl_bar_t, obj);
-    bar->alpha = alpha;
-    sgl_obj_set_dirty(obj);
-}
-
-/**
  * @brief set the track color of the bar
  * @param obj bar object
  * @param color track color
@@ -161,19 +148,6 @@ void sgl_bar_set_track_color(sgl_obj_t *obj, sgl_color_t color)
 {
     sgl_bar_t *bar = sgl_container_of(obj, sgl_bar_t, obj);
     bar->track_color = color;
-    sgl_obj_set_dirty(obj);
-}
-
-/**
- * @brief set the track alpha of the bar
- * @param obj bar object
- * @param alpha track alpha
- * @return none
- */
-void sgl_bar_set_track_alpha(sgl_obj_t *obj, uint8_t alpha)
-{
-    sgl_bar_t *bar = sgl_container_of(obj, sgl_bar_t, obj);
-    bar->alpha = alpha;
     sgl_obj_set_dirty(obj);
 }
 
@@ -259,5 +233,18 @@ void sgl_bar_set_pixmap(sgl_obj_t *obj, const sgl_pixmap_t *pixmap)
 {
     sgl_bar_t *bar = sgl_container_of(obj, sgl_bar_t, obj);
     bar->pixmap = pixmap;
+    sgl_obj_set_dirty(obj);
+}
+
+/**
+ * @brief set the alpha of the bar
+ * @param obj bar object
+ * @param alpha alpha
+ * @return none
+ */
+void sgl_bar_set_alpha(sgl_obj_t *obj, uint8_t alpha)
+{
+    sgl_bar_t *bar = sgl_container_of(obj, sgl_bar_t, obj);
+    bar->alpha = alpha;
     sgl_obj_set_dirty(obj);
 }

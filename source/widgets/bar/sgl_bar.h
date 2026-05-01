@@ -73,28 +73,12 @@ sgl_obj_t* sgl_bar_create(sgl_obj_t* parent);
 void sgl_bar_set_fill_color(sgl_obj_t *obj, sgl_color_t color);
 
 /**
- * @brief set the fill alpha of the bar
- * @param obj bar object
- * @param alpha fill alpha
- * @return none
- */
-void sgl_bar_set_fill_alpha(sgl_obj_t *obj, uint8_t alpha);
-
-/**
  * @brief set the track color of the bar
  * @param obj bar object
  * @param color track color
  * @return none
  */
 void sgl_bar_set_track_color(sgl_obj_t *obj, sgl_color_t color);
-
-/**
- * @brief set the track alpha of the bar
- * @param obj bar object
- * @param alpha track alpha
- * @return none
- */
-void sgl_bar_set_track_alpha(sgl_obj_t *obj, uint8_t alpha);
 
 /**
  * @brief set the bar direction
@@ -148,5 +132,13 @@ void sgl_bar_set_border_color(sgl_obj_t *obj, sgl_color_t color);
  * @param pixmap pixmap
  */
 void sgl_bar_set_pixmap(sgl_obj_t *obj, const sgl_pixmap_t *pixmap);
+
+/**
+ * @brief set the alpha of the bar
+ * @param obj bar object
+ * @param alpha alpha
+ * @return none
+ */
+void sgl_bar_set_alpha(sgl_obj_t *obj, uint8_t alpha);
 
 #endif // !__SGL_BAR_H__
