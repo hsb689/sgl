@@ -21,8 +21,9 @@
 # SOFTWARE.
 #
 
-
 set(SGL_SOURCE
     ${SGL_SOURCE}
-    ${CMAKE_CURRENT_LIST_DIR}/sgl_timer.c
+    ${CMAKE_CURRENT_LIST_DIR}/timer/sgl_timer.c
+    ${CMAKE_CURRENT_LIST_DIR}/qrcode/qrcodegen.c
+    ${CMAKE_CURRENT_LIST_DIR}/qrcode/sgl_qrcode.c
 )
