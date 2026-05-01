@@ -440,7 +440,7 @@ static void sgl_keyboard_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_even
 
         keyboard->btn_desc.color = btn_color;
     }
-    else if (evt->type == SGL_EVENT_PRESSED || evt->type == SGL_EVENT_OPTION_TAP) {
+    else if (evt->type == SGL_EVENT_PRESSED || evt->type == SGL_EVENT_KEY_ENTER) {
         index = keyboard_pos_to_index(evt->pos.x, evt->pos.y, keyboard, body_w, body_h, &keyboard->btn_area);
         if  (evt->type == SGL_EVENT_PRESSED) {
             if(index < 0) {
@@ -496,7 +496,7 @@ static void sgl_keyboard_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_even
 
         SGL_ASSERT(keyboard->font != NULL);
     }
-    else if (evt->type == SGL_EVENT_OPTION_WALK) {
+    else if (evt->type == SGL_EVENT_KEY_RIGHT) {
         keyboard->key_index ++;
 
         if (keyboard->key_index >= KEYBOARD_BTN_NUM) {

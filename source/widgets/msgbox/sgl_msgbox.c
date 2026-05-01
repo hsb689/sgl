@@ -158,7 +158,7 @@ static void sgl_msgbox_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_event_
             return;
         }
     }
-    else if (evt->type == SGL_EVENT_OPTION_WALK) {
+    else if (evt->type == SGL_EVENT_KEY_LEFT || evt->type == SGL_EVENT_KEY_RIGHT) {
         if (msgbox->status == SGL_MSGBOX_STATUS_NORMAL) {
             msgbox->status = SGL_MSGBOX_STATUS_LEFT;
         }
@@ -176,7 +176,7 @@ static void sgl_msgbox_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_event_
         }
         sgl_obj_update_area(&button_coords);
     }
-    else if (evt->type == SGL_EVENT_OPTION_TAP) {
+    else if (evt->type == SGL_EVENT_KEY_ENTER) {
         sgl_obj_set_destroyed(obj);
     }
 }
