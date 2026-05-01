@@ -62,6 +62,9 @@
 #include "widgets/bar/sgl_bar.h"
 #include "widgets/win/sgl_win.h"
 #include "widgets/chart/sgl_chart.h"
+#include "components/sgl_timer.h"
 #include "widgets/textlist/sgl_textlist.h"
+#include "components/timer/sgl_timer.h"
+#include "components/qrcode/sgl_qrcode.h"
 
 #endif // __SGL_H__
