@@ -829,11 +829,18 @@ static inline int32_t sgl_area_growth(sgl_area_t *a, sgl_area_t *b)
  */
 static inline bool sgl_merge_determines(sgl_area_t* a, sgl_area_t* b)
 {
-    const int16_t gap_x = (a->x1 > b->x2) ? (a->x1 - b->x2) : (b->x1 > a->x2) ? (b->x1 - a->x2) : 0;
-    const int16_t gap_y = (a->y1 > b->y2) ? (a->y1 - b->y2) : (b->y1 > a->y2) ? (b->y1 - a->y2) : 0;    
-    const int16_t threshold = (sgl_min4(a->x2 - a->x1 + 1, a->y2 - a->y1 + 1, b->x2 - b->x1 + 1, b->y2 - b->y1 + 1) >> 2);
+    if ((a->x1 > b->x2 && a->x1 - b->x2 > 32) || (b->x1 > a->x2 && b->x1 - a->x2 > 32)) {
+        return false;
+    }
+    if ((a->y1 > b->y2 && a->y1 - b->y2 > 32) || (b->y1 > a->y2 && b->y1 - a->y2 > 32)) {
+        return false;
+    }
 
-    return (gap_x <= threshold) && (gap_y <= threshold);
+    const int16_t mw = sgl_max(a->x2, b->x2) - sgl_min(a->x1, b->x1) + 1;
+    const int16_t mh = sgl_max(a->y2, b->y2) - sgl_min(a->y1, b->y1) + 1;
+    const int32_t sum = (int32_t)(a->x2-a->x1+1)*(a->y2-a->y1+1) + (int32_t)(b->x2-b->x1+1)*(b->y2-b->y1+1);
+
+    return (sum << 2) > (int32_t)mw * mh * 4;
 }
 
 
