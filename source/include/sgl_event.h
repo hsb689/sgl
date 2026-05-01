@@ -47,6 +47,7 @@ struct sgl_page;
  *        long press, etc. The event type is used to distinguish different events, 
  *        and the event type is used to trigger different callbacks
  */
+/* General event type */
 #define  SGL_EVENT_NULL                 (0)
 #define  SGL_EVENT_NORMAL               (1)    
 #define  SGL_EVENT_PRESSED              (2)
@@ -59,13 +60,20 @@ struct sgl_page;
 #define  SGL_EVENT_MOVE_LEFT            (9)
 #define  SGL_EVENT_MOVE_RIGHT           (10)
 #define  SGL_EVENT_LONG_PRESSED         (11)
-#define  SGL_EVENT_OPTION_WALK          (12)
-#define  SGL_EVENT_OPTION_TAP           (13)
-#define  SGL_EVENT_DRAW_INIT            (14)
-#define  SGL_EVENT_DRAW_MAIN            (15)
-#define  SGL_EVENT_FOCUSED              (16)
-#define  SGL_EVENT_UNFOCUSED            (17)
-#define  SGL_EVENT_DESTROYED            (18)
+#define  SGL_EVENT_DRAW_INIT            (12)
+#define  SGL_EVENT_DRAW_MAIN            (13)
+#define  SGL_EVENT_FOCUSED              (14)
+#define  SGL_EVENT_UNFOCUSED            (15)
+#define  SGL_EVENT_DESTROYED            (16)
+/* Key event type */
+#define  SGL_EVENT_KEY_UP               (17)
+#define  SGL_EVENT_KEY_DOWN             (18)
+#define  SGL_EVENT_KEY_LEFT             (19)
+#define  SGL_EVENT_KEY_RIGHT            (20)
+#define  SGL_EVENT_KEY_ENTER            (21)
+#define  SGL_EVENT_KEY_ESC              (22)
+
+
 #define  sgl_event_type_t               uint8_t
 
 

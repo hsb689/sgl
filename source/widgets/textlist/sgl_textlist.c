@@ -35,6 +35,21 @@
 #define  SGL_TEXTLIST_ITEM_PAD    (3)
 #define  SGL_TEXTLIST_ITEM_SPACE  (3)
 
+static void sgl_textlist_change_item(sgl_textlist_t *textlist, int16_t item_height, int16_t index)
+{
+    sgl_obj_t *obj = &textlist->obj;
+    sgl_rect_t select = textlist->obj.coords;
+    select.y1 = obj->coords.y1 + textlist->item_selected * item_height + textlist->pos_y;
+    select.y2 = select.y1 + item_height;
+    sgl_obj_update_area(&select);
+
+    textlist->item_selected = index;
+
+    select.y1 = obj->coords.y1 + index * item_height + textlist->pos_y;
+    select.y2 = select.y1 + item_height;
+    sgl_obj_update_area(&select);
+}
+
 static void sgl_textlist_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_event_t *evt)
 {
     sgl_textlist_t *textlist = sgl_container_of(obj, sgl_textlist_t, obj);
@@ -131,22 +146,23 @@ static void sgl_textlist_construct_cb(sgl_surf_t *surf, sgl_obj_t* obj, sgl_even
             sgl_obj_set_dirty(obj);
         }
     }
-    else if (evt->type == SGL_EVENT_CLICKED) {
+    else if (evt->type == SGL_EVENT_CLICKED || evt->type == SGL_EVENT_KEY_ENTER) {
         int16_t click_y = evt->pos.y;
         int16_t local_y = click_y - obj->coords.y1;
 
         int clicked_index = (local_y - textlist->pos_y + SGL_TEXTLIST_ITEM_SPACE) / item_height;
         if (clicked_index >= 0 && clicked_index < textlist->item_num) {
-
-            select.y1 = obj->coords.y1 + textlist->item_selected * item_height + textlist->pos_y;
-            select.y2 = select.y1 + item_height;
-            sgl_obj_update_area(&select);
-
-            textlist->item_selected = clicked_index;
-
-            select.y1 = obj->coords.y1 + clicked_index * item_height + textlist->pos_y;
-            select.y2 = select.y1 + item_height;
-            sgl_obj_update_area(&select);
+            sgl_textlist_change_item(textlist, item_height, clicked_index);
+        }
+    }
+    else if (evt->type == SGL_EVENT_KEY_DOWN) {
+        if (textlist->item_selected < (textlist->item_num - 1)) {
+            sgl_textlist_change_item(textlist, item_height, textlist->item_selected + 1);
+        }
+    }
+    else if (evt->type == SGL_EVENT_KEY_UP) {
+        if (textlist->item_selected > 0) {
+            sgl_textlist_change_item(textlist, item_height, textlist->item_selected - 1);
         }
     }
 }

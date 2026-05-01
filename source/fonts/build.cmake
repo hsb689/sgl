@@ -52,7 +52,7 @@ endif()
 if(SGL_FONT_CONSOLAS32)
     set(SGL_SOURCE
         ${SGL_SOURCE}
-        ${CMAKE_CURRENT_LIST_DIR}/sgl_ascii_consolas34.c
+        ${CMAKE_CURRENT_LIST_DIR}/sgl_ascii_consolas32.c
     )
 endif()
 
