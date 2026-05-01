@@ -840,7 +840,7 @@ static inline bool sgl_merge_determines(sgl_area_t* a, sgl_area_t* b)
     const int16_t mh = sgl_max(a->y2, b->y2) - sgl_min(a->y1, b->y1) + 1;
     const int32_t sum = (int32_t)(a->x2-a->x1+1)*(a->y2-a->y1+1) + (int32_t)(b->x2-b->x1+1)*(b->y2-b->y1+1);
 
-    return (sum << 2) > (int32_t)mw * mh * 4;
+    return sum > (int32_t)(mw * mh);
 }
 
 
