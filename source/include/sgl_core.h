@@ -2112,6 +2112,16 @@ int sgl_vsnprintf(char *buf, size_t size, const char *fmt, va_list ap);
 int sgl_snprintf(char *buf, size_t size, const char *fmt, ...);
 
 
+/**
+ * @brief format a string, a simple version of sprintf (with width alignment support)
+ * @param buf buffer
+ * @param fmt format string
+ * @param ... arguments
+ * @return number of characters written
+ */
+int sgl_sprintf(char *buf, const char *fmt, ...);
+
+
 #if (CONFIG_SGL_OBJ_USE_NAME && CONFIG_SGL_DEBUG)
 /**
  * @brief set object name

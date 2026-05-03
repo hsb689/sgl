@@ -324,3 +324,20 @@ int sgl_snprintf(char *buf, size_t size, const char *fmt, ...)
     va_end(ap);
     return ret;
 }
+
+
+/**
+ * @brief format a string, a simple version of sprintf (with width alignment support)
+ * @param buf buffer
+ * @param fmt format string
+ * @param ... arguments
+ * @return number of characters written
+ */
+int sgl_sprintf(char *buf, const char *fmt, ...)
+{
+    va_list ap;
+    va_start(ap, fmt);
+    int ret = sgl_vsnprintf(buf, 65535, fmt, ap);
+    va_end(ap);
+    return ret;
+}

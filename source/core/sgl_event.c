@@ -631,7 +631,6 @@ void sgl_event_key_enter(void)
  * @return none
  * @note: you can call it in physical keyboard event handler function
  */
-
 void sgl_event_key_esc(void)
 {
     sgl_obj_t *obj = evt_ctx.focused;
