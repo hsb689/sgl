@@ -337,6 +337,11 @@ static inline void event_inject_motion(sgl_obj_t *obj, sgl_event_t *evt)
     }
     evt_ctx.last_motion = obj;
     event_callback(obj, evt);
+
+    /* call user event function */
+    if(obj->event_fn) {
+        obj->event_fn(evt);
+    }
 }
 
 
