@@ -379,6 +379,7 @@ void sgl_monitor_trace(sgl_surf_t *surf)
         sgl_label_set_font(fps, &monitor_font);
         sgl_label_set_text_align(fps, SGL_ALIGN_LEFT_MID);
         sgl_label_set_text(fps, fps_str);
+        sgl_label_set_text_color(fps, SGL_MONITOR_TEXT_COLOR);
 
         mem = sgl_label_create(monitor);
         sgl_obj_set_pos(mem, 0, SGL_MONITOR_COORDS_HEIGHT / 2);
@@ -387,6 +388,7 @@ void sgl_monitor_trace(sgl_surf_t *surf)
         sgl_label_set_font(mem, &monitor_font);
         sgl_label_set_text_align(mem, SGL_ALIGN_LEFT_MID);
         sgl_label_set_text(mem, mem_str);
+        sgl_label_set_text_color(mem, SGL_MONITOR_TEXT_COLOR);
     }
 }
 #endif
