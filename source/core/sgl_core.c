@@ -1932,10 +1932,6 @@ void sgl_task_handler_sync(void)
         sgl_dirty_area_harvest(sgl_system.fbdev.active);
         /* reset the flag */
         sgl_system.fbdev.update_flag = 0;
-
-#if (CONFIG_SGL_MONITOR_TRACE)
-        sgl_update_area(&SGL_MONITOR_COORDS);
-#endif
     }
 
 #if (CONFIG_SGL_DIRTY_AREA_TRACE)
@@ -1952,6 +1948,12 @@ void sgl_task_handler_sync(void)
         }
     }
 #endif
+#if (CONFIG_SGL_MONITOR_TRACE)
+    if (sgl_system.fbdev.dirty_num) {
+        sgl_update_area(&SGL_MONITOR_COORDS);
+    }
+#endif
+
     /* draw all object into screen */
     sgl_draw_task(&sgl_system.fbdev, sgl_system.fbdev.dirty, sgl_system.fbdev.dirty_num);
 
