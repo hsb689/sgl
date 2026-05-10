@@ -1751,7 +1751,6 @@ static inline void draw_obj_slice(sgl_obj_t *obj, sgl_surf_t *surf)
         sgl_draw_wireframe(surf, (sgl_area_t*)surf, surf->dirty, 1, SGL_DIRTY_AREA_TRACE_COLOR, SGL_ALPHA_MAX);
     }
 #endif
-
 #if (CONFIG_SGL_MONITOR_TRACE)
     sgl_monitor_trace(surf);
 #endif
