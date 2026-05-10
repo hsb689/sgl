@@ -56,4 +56,6 @@ set(SGL_SOURCE
     ${CMAKE_CURRENT_LIST_DIR}/win/sgl_win.c
     ${CMAKE_CURRENT_LIST_DIR}/textlist/sgl_textlist.c
     ${CMAKE_CURRENT_LIST_DIR}/viewlist/sgl_viewlist.c
+    ${CMAKE_CURRENT_LIST_DIR}/qrcode/qrcode.c
+    ${CMAKE_CURRENT_LIST_DIR}/qrcode/sgl_qrcode.c
 )
