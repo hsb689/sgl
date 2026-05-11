@@ -32,17 +32,15 @@
 /**
  * @brief calculate a point color by bilinear interpolate (with mask support)
  * @param buffer point to image pixmap start buffer (RGB)
- * @param mask   point to mask buffer (8bit: 0=transparent, non-0=opaque)
  * @param w      width of buffer
  * @param h      height of buffer
  * @param fx     x coordinate of point (fixed point, SGL_FIXED_SHIFT bits fraction)
  * @param fy     y coordinate of point (fixed point, SGL_FIXED_SHIFT bits fraction)
  * @return point color (RGB: interpolated if mask non-0, transparent/black if mask 0)
  */
-sgl_color_t sgl_draw_biln_color(const sgl_color_t *buffer, const uint8_t *mask, int16_t w, int16_t h, int32_t fx, int32_t fy)
+sgl_color_t sgl_draw_biln_color(const sgl_color_t *buffer, int16_t w, int16_t h, int32_t fx, int32_t fy)
 {
     sgl_color_t ret = {0};
-    uint8_t mask_val = SGL_ALPHA_MAX;
 
     const int32_t max_x = ((int32_t)w - 1) << SGL_FIXED_SHIFT;
     const int32_t max_y = ((int32_t)h - 1) << SGL_FIXED_SHIFT;
@@ -60,21 +58,6 @@ sgl_color_t sgl_draw_biln_color(const sgl_color_t *buffer, const uint8_t *mask, 
     const int32_t idx01 = idx00 + 1;
     const int32_t idx10 = idx00 + w;
     const int32_t idx11 = idx10 + 1;
-
-    if (mask != NULL) {
-        const uint8_t m00 = mask[idx00];
-        const uint8_t m01 = mask[idx01];
-        const uint8_t m10 = mask[idx10];
-        const uint8_t m11 = mask[idx11];
-
-        const int32_t m_y0 = (m00 * dx1 + m01 * dx) >> SGL_FIXED_SHIFT;
-        const int32_t m_y1 = (m10 * dx1 + m11 * dx) >> SGL_FIXED_SHIFT;
-        mask_val = (m_y0 * dy1 + m_y1 * dy) >> SGL_FIXED_SHIFT;
-    }
-
-    if (mask_val == 0) {
-        return ret;
-    }
 
     const sgl_color_t p00 = buffer[idx00];
     const sgl_color_t p01 = buffer[idx01];
@@ -165,7 +148,7 @@ void sgl_draw_xform_surf(sgl_surf_t *dst, sgl_surf_t *src, sgl_area_t *area, int
             int32_t src_y_fp = src_y << SGL_FIXED_SHIFT;
 
             if (src_x >= 0 && src_x < buf_width - 1 && src_y >= 0 && src_y < buf_height - 1) {
-                sgl_color_t color = sgl_draw_biln_color(src->buffer, NULL, buf_width, buf_height, src_x_fp, src_y_fp);
+                sgl_color_t color = sgl_draw_biln_color(src->buffer, buf_width, buf_height, src_x_fp, src_y_fp);
                 int dst_idx = (dst_y - dst->y1) * dst->w + (dst_x - dst->x1);
                 dst->buffer[dst_idx] = color;
             }

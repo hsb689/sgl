@@ -165,7 +165,7 @@ void sgl_draw_fill_circle_pixmap(sgl_surf_t *surf, sgl_area_t *area, int16_t cx,
             dx2 = sgl_pow2(2 * x - cx2) + dy2;
 
             fx = (int32_t)(x - s_x) * scale_x;
-            ip_color = sgl_draw_biln_color(pbuf, NULL, pixmap->width, pixmap->height, fx, fy);
+            ip_color = sgl_draw_biln_color(pbuf, pixmap->width, pixmap->height, fx, fy);
 
             if (dx2 >= r2_max) {
                 if(x > cx)

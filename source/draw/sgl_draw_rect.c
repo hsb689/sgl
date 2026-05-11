@@ -396,7 +396,7 @@ void sgl_draw_fill_rect_pixmap(sgl_surf_t *surf, sgl_area_t *area, sgl_area_t *r
             fy = (int32_t)(y - rect->y1) * scale_y;
             for (int x = clip.x1; x <= clip.x2; x++, blend++) {
                 fx = (int32_t)(x - rect->x1) * scale_x;
-                ip_color = sgl_draw_biln_color(pbuf, NULL, pixmap->width, pixmap->height, fx, fy);
+                ip_color = sgl_draw_biln_color(pbuf, pixmap->width, pixmap->height, fx, fy);
                 *blend = (alpha == SGL_ALPHA_MAX) ? ip_color : sgl_color_mixer(ip_color, *blend, alpha);
             }
             buf += surf->w;
@@ -422,7 +422,7 @@ void sgl_draw_fill_rect_pixmap(sgl_surf_t *surf, sgl_area_t *area, sgl_area_t *r
         if (y >= cy1 && y <= cy2) {
             for (int x = clip.x1; x <= clip.x2; x++, blend++) {
                 fx = (int32_t)(x - rect->x1) * scale_x;
-                ip_color = sgl_draw_biln_color(pbuf, NULL, pixmap->width, pixmap->height, fx, fy);
+                ip_color = sgl_draw_biln_color(pbuf, pixmap->width, pixmap->height, fx, fy);
                 *blend = (alpha == SGL_ALPHA_MAX) ? ip_color : sgl_color_mixer(ip_color, *blend, alpha);
             }
         }
@@ -432,7 +432,7 @@ void sgl_draw_fill_rect_pixmap(sgl_surf_t *surf, sgl_area_t *area, sgl_area_t *r
 
             for (int x = clip.x1; x <= clip.x2; x++, blend++) {
                 fx = (int32_t)(x - rect->x1) * scale_x;
-                ip_color = sgl_draw_biln_color(pbuf, NULL, pixmap->width, pixmap->height, fx, fy);
+                ip_color = sgl_draw_biln_color(pbuf, pixmap->width, pixmap->height, fx, fy);
 
                 if (x >= cx1 && x <= cx2) {
                     *blend = (alpha == SGL_ALPHA_MAX) ? ip_color : sgl_color_mixer(ip_color, *blend, alpha);

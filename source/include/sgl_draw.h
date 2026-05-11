@@ -531,14 +531,13 @@ void sgl_draw_fill_arc(sgl_surf_t *surf, sgl_area_t *area, sgl_draw_arc_t *desc)
 /**
  * @brief calculate a point color by bilinear interpolate (with mask support)
  * @param buffer point to image pixmap start buffer (RGB)
- * @param mask   point to mask buffer (8bit: 0=transparent, non-0=opaque)
  * @param w      width of buffer
  * @param h      height of buffer
  * @param fx     x coordinate of point (fixed point, SGL_FIXED_SHIFT bits fraction)
  * @param fy     y coordinate of point (fixed point, SGL_FIXED_SHIFT bits fraction)
  * @return point color (RGB: interpolated if mask non-0, transparent/black if mask 0)
  */
-sgl_color_t sgl_draw_biln_color(const sgl_color_t *buffer, const uint8_t *mask, int16_t w, int16_t h, int32_t fx, int32_t fy);
+sgl_color_t sgl_draw_biln_color(const sgl_color_t *buffer, int16_t w, int16_t h, int32_t fx, int32_t fy);
 
 
 /**
