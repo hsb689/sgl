@@ -70,7 +70,7 @@
 /**
  * \brief           LwMEM default structure used by application
  */
-static lwmem_t lwmem_default;
+lwmem_t lwmem_default;
 
 /**
  * \brief           Get LwMEM instance based on user input

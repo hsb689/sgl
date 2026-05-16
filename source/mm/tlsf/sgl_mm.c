@@ -92,6 +92,7 @@ sgl_mm_monitor_t sgl_mm_get_monitor(void)
 {
     static sgl_mm_monitor_t monitor;
     tlsf_walk_ctx_t ctx = {0};
+    int integer, decimal;
 
     if (mem_tlsf == NULL || g_total_pool_size == 0) {
         return monitor;
@@ -103,8 +104,8 @@ sgl_mm_monitor_t sgl_mm_get_monitor(void)
     monitor.free_size = ctx.free_bytes;
     monitor.used_size = g_total_pool_size - ctx.free_bytes;
 
-    int integer = (monitor.used_size * 100) / monitor.total_size;
-    int decimal = ((monitor.used_size * 10000) / monitor.total_size) % 100;
+    integer = (monitor.used_size * 100) / monitor.total_size;
+    decimal = ((monitor.used_size * 10000) / monitor.total_size) % 100;
     monitor.used_rate = (integer << 8) | (decimal & 0xFF);
 
     return monitor;
